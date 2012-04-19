@@ -8,18 +8,21 @@ SUBDIRS =
 EXTRA_DIST = 
 
 # target library
-lib_LTLIBRARIES = lib@GENERIC_LIBRARY_NAME@.la
+lib_LTLIBRARIES = lib@PACKAGE_TARNAME@.la
 
 # source-files
-lib@GENERIC_LIBRARY_NAME@_la_SOURCES = \
+lib@PACKAGE_TARNAME@_la_SOURCES = \
 	niftyprefs.c
 
 
 # cflags 
-lib@GENERIC_LIBRARY_NAME@_la_CFLAGS = 
+lib@PACKAGE_TARNAME@_la_CFLAGS = -Wall
 
 # linker flags
-lib@GENERIC_LIBRARY_NAME@_la_LDFLAGS = 
+lib@PACKAGE_TARNAME@_la_LDFLAGS = \
+        -version-info @PACKAGE_API_CURRENT@:@PACKAGE_API_REVISION@:@PACKAGE_API_AGE@ \
+        -release @PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@.@PACKAGE_MICRO_VERSION@ \
+        -Wall -no-undefined
 
 # link in modules from subdirectories
-lib@GENERIC_LIBRARY_NAME@_la_LIBADD = 
+lib@PACKAGE_TARNAME@_la_LIBADD = 

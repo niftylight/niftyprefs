@@ -21,7 +21,9 @@ AC_DEFINE(PACKAGE_DESCRIPTION, [lightweight modelless preferences management lib
 AC_SUBST([PACKAGE_MAJOR_VERSION], m4_esyscmd([./version.sh --major]), [major version])
 AC_SUBST([PACKAGE_MINOR_VERSION], m4_esyscmd([./version.sh --minor]), [minor version])
 AC_SUBST([PACKAGE_MICRO_VERSION], m4_esyscmd([./version.sh --micro]), [micro version])
-AC_SUBST([PACKAGE_API_VERSION], m4_esyscmd([./version.sh --api]), [api version])
+AC_SUBST([PACKAGE_API_REVISION], m4_esyscmd([./version.sh --api-revision]), [api revision])
+AC_SUBST([PACKAGE_API_CURRENT], m4_esyscmd([./version.sh --api-current]), [api current])
+AC_SUBST([PACKAGE_API_AGE], m4_esyscmd([./version.sh --api-age]), [api age])
 AC_SUBST([PACKAGE_GIT_VERSION], m4_esyscmd([./version.sh --git]), [git version])
 
 
@@ -83,6 +85,10 @@ AC_CHECK_FUNC(strndup,
 # --------------------------------
 
 
+# --------------------------------
+#   compile process
+# --------------------------------
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([no])])
 
 
 # --------------------------------
@@ -91,6 +97,8 @@ AC_CHECK_FUNC(strndup,
 AC_CONFIG_FILES(
 [
     Makefile \
+    src/Makefile \
+    include/Makefile \
     include/niftyprefs-version.h
 ])
 AC_OUTPUT
@@ -99,17 +107,17 @@ AC_OUTPUT
 echo "
 Configure report:
 
-    Package.....................:  $PACKAGE_STRING
-    API Version.................:  $PACKAGE_API_VERSION
-    Bugreport...................:  $PACKAGE_BUGREPORT
+    Package.....................:  ${PACKAGE_STRING}
+    Libtool Version.............:  ${PACKAGE_API_CURRENT}:${PACKAGE_API_REVISION}:${PACKAGE_API_AGE}
+    Bugreports..................:  ${PACKAGE_BUGREPORT}
 
-    Install prefix..............:  $prefix
-    C compiler..................:  $CC
-    C++ compiler................:  $CPP
-    System CFLAGS...............:  $CFLAGS
-    System CPPFLAGS.............:  $CPPFLAGS
-    System LDFLAGS..............:  $LDFLAGS
-    API CFLAGS..................:  $API_CFLAGS
-    API LDLIBS..................:  $API_LIBS
-    API LDFLAGS.................:  $API_LDFLAGS
+    Install prefix..............:  ${prefix}
+    C compiler..................:  ${CC}
+    C++ compiler................:  ${CPP}
+    System CFLAGS...............:  ${CFLAGS}
+    System CPPFLAGS.............:  ${CPPFLAGS}
+    System LDFLAGS..............:  ${LDFLAGS}
+    API CFLAGS..................:  ${API_CFLAGS}
+    API LDLIBS..................:  ${API_LIBS}
+    API LDFLAGS.................:  ${API_LDFLAGS}
 "

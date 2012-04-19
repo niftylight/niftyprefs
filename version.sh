@@ -2,17 +2,25 @@
 
 # generate version string
 
-
-
+######################
+# release version
 MAJOR=0
 MINOR=0
 MICRO=1
-API=000000
-#    |   |
-#    |   +-- increment by one if interfaces were added without 
-#    |       breaking the API (results in a warning)
-#    +------ increment by 10000 on API changes that break older versions
-#            (results in an error)
+
+######################
+# libtool/API version
+
+# updating: http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html#Updating-version-info
+
+# The implementation number of the current interface.
+API_REVISION=0
+# The most recent interface number that this library implements.
+API_CURRENT=0
+# The difference between the newest and oldest interfaces that this library 
+# implements. In other words, the library implements all the interface numbers 
+# in the range from number current - age to current.
+API_AGE=0
 
 
 # ----------------------------------------------
@@ -20,7 +28,7 @@ API=000000
 # function to print helptext
 function help()
 {
-    echo "$0 --long | --short | --major | --minor | --micro | --git | --api"
+    echo "$0 --long | --short | --major | --minor | --micro | --git | --api-revision | --api-current | --api-age"
 }
 
 # output micro version
@@ -41,10 +49,22 @@ function major()
     echo -n $MAJOR
 }
 
-# output api version
-function api()
+# output api revision
+function api_revision()
 {
-    echo -n $API
+    echo -n $API_REVISION
+}
+
+# output api current
+function api_current()
+{
+    echo -n $API_CURRENT
+}
+
+# output api age
+function api_age()
+{
+    echo -n $API_AGE
 }
 
 # output git version
@@ -67,7 +87,7 @@ function output_long()
 }
 
 # parse cmdline arguments
-TEMP=`getopt -o lsMmuga --long long,short,major,minor,micro,git,api -n 'version.sh' -- "$@"`
+TEMP=`getopt -o lsMmugrca --long long,short,major,minor,micro,git,api-revision,api-current,api-age -n 'version.sh' -- "$@"`
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -93,8 +113,14 @@ while true ; do
         # micro
         -u|--micro) micro ; shift 1 ;;
 
-        # api
-        -a|--api) api ; shift 1 ;;
+        # api-revision
+        -r|--api-revision) api_revision ; shift 1 ;;
+
+        # api-current
+        -c|--api-current) api_current ; shift 1 ;;
+
+        # api-age
+        -c|--api-age) api_age ; shift 1 ;;
 
         # ?!
         --) shift ; break ;;

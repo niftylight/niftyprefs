@@ -6,7 +6,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 
 # flags for all objects
-#AM_CFLAGS = $(niftylog_CFLAGS) $(xml_CFLAGS)
+AM_CFLAGS = $(niftylog_CFLAGS) $(xml_CFLAGS)
 #AM_CPPFLAGS =
 #AM_LIBADD = $(niftylog_LIBS) $(xml_LIBS)
 #AM_LDFLAGS =
