@@ -7,6 +7,12 @@
 MAJOR=0
 MINOR=0
 MICRO=1
+API=000000
+#    |   |
+#    |   +-- increment by one if interfaces were added without 
+#    |       breaking the API (results in a warning)
+#    +------ increment by 10000 on API changes that break older versions
+#            (results in an error)
 
 
 # ----------------------------------------------
@@ -14,7 +20,7 @@ MICRO=1
 # function to print helptext
 function help()
 {
-    echo "$0 --long | --short | --major | --minor | --micro | --git"
+    echo "$0 --long | --short | --major | --minor | --micro | --git | --api"
 }
 
 # output micro version
@@ -33,6 +39,12 @@ function minor()
 function major()
 {
     echo -n $MAJOR
+}
+
+# output api version
+function api()
+{
+    echo -n $API
 }
 
 # output git version
@@ -55,7 +67,7 @@ function output_long()
 }
 
 # parse cmdline arguments
-TEMP=`getopt -o lsMmug --long long,short,major,minor,micro,git -n 'version.sh' -- "$@"`
+TEMP=`getopt -o lsMmuga --long long,short,major,minor,micro,git,api -n 'version.sh' -- "$@"`
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
@@ -81,6 +93,10 @@ while true ; do
         # micro
         -u|--micro) micro ; shift 1 ;;
 
+        # api
+        -a|--api) api ; shift 1 ;;
+
+        # ?!
         --) shift ; break ;;
         *) echo "Argument parsing error!" ; exit 1 ;;
     esac
