@@ -30,8 +30,6 @@ AC_SUBST([PACKAGE_GIT_VERSION], m4_esyscmd([./version.sh --git]), [git version])
 # --------------------------------
 #    checks for programs
 # --------------------------------
-AC_PROG_CC
-AM_PROG_CC_C_O
 LT_INIT
 PKG_PROG_PKG_CONFIG([0.14])
 if test -z "$PKG_CONFIG"; then
@@ -114,10 +112,4 @@ Configure report:
     Install prefix..............:  ${prefix}
     C compiler..................:  ${CC}
     C++ compiler................:  ${CPP}
-    System CFLAGS...............:  ${CFLAGS}
-    System CPPFLAGS.............:  ${CPPFLAGS}
-    System LDFLAGS..............:  ${LDFLAGS}
-    API CFLAGS..................:  ${API_CFLAGS}
-    API LDLIBS..................:  ${API_LIBS}
-    API LDFLAGS.................:  ${API_LDFLAGS}
 "

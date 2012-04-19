@@ -16,7 +16,7 @@ lib@PACKAGE_TARNAME@_la_SOURCES = \
 
 
 # cflags 
-lib@PACKAGE_TARNAME@_la_CFLAGS = -Wall
+lib@PACKAGE_TARNAME@_la_CFLAGS = $(xml_CFLAGS) $(niftylog_CFLAGS) -Wall
 
 # linker flags
 lib@PACKAGE_TARNAME@_la_LDFLAGS = \
@@ -25,4 +25,4 @@ lib@PACKAGE_TARNAME@_la_LDFLAGS = \
         -Wall -no-undefined
 
 # link in modules from subdirectories
-lib@PACKAGE_TARNAME@_la_LIBADD = 
+lib@PACKAGE_TARNAME@_la_LIBADD = $(xml_LIBS) $(niftylog_LIBS)
