@@ -59,6 +59,10 @@
 #ifndef _NFT_SETTINGS_VERSION
 #define _NFT_SETTINGS_VERSION
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 
 /** API version we will provide */
 #define NFT_SETTINGS_LONG           "@PACKAGE_VERSION@"
