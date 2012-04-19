@@ -7,7 +7,7 @@ INCLUDE_DIRS = -I../include -I$(top_srcdir)/include
 SUBDIRS =
 EXTRA_DIST = 
 # source-files
-lib@PACKAGE_TARNAME@_la_SOURCES = \
+lib@PACKAGE@_la_SOURCES = \
 	niftyprefs.c
 
 
@@ -20,16 +20,16 @@ endif
 
 
 # target library
-lib_LTLIBRARIES = lib@PACKAGE_TARNAME@.la
+lib_LTLIBRARIES = lib@PACKAGE@.la
 
 # cflags 
-lib@PACKAGE_TARNAME@_la_CFLAGS = $(xml_CFLAGS) $(niftylog_CFLAGS) $(OPT_CFLAGS) -Wall
+lib@PACKAGE@_la_CFLAGS = $(xml_CFLAGS) $(niftylog_CFLAGS) $(OPT_CFLAGS) -Wall
 
 # linker flags
-lib@PACKAGE_TARNAME@_la_LDFLAGS = \
+lib@PACKAGE@_la_LDFLAGS = \
         -version-info @PACKAGE_API_CURRENT@:@PACKAGE_API_REVISION@:@PACKAGE_API_AGE@ \
         -release @PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@.@PACKAGE_MICRO_VERSION@ \
         -Wall -no-undefined
 
 # link in modules from subdirectories
-lib@PACKAGE_TARNAME@_la_LIBADD = $(xml_LIBS) $(niftylog_LIBS)
+lib@PACKAGE@_la_LIBADD = $(xml_LIBS) $(niftylog_LIBS)
