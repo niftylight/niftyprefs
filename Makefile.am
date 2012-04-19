@@ -6,12 +6,18 @@ ACLOCAL_AMFLAGS = -I m4
 
 
 # flags for all objects
-AM_CFLAGS = $(niftylog_CFLAGS) $(xml_CFLAGS)
-#AM_CPPFLAGS =
-#AM_LIBADD = $(niftylog_LIBS) $(xml_LIBS)
-#AM_LDFLAGS =
+AM_CFLAGS = 
+AM_CPPFLAGS =
+AM_LIBS = 
+AM_LDFLAGS =
 
 
 # subdirs to build
 SUBDIRS = src include
+
+# compile tests for "make check"? (configure argument "--disable-tests")
+if RUN_TESTS
+    SUBDIRS += tests
+endif
+
 

@@ -6,17 +6,24 @@ INCLUDE_DIRS = -I../include -I$(top_srcdir)/include
 # module-subdirs to include
 SUBDIRS =
 EXTRA_DIST = 
-
-# target library
-lib_LTLIBRARIES = lib@PACKAGE_TARNAME@.la
-
 # source-files
 lib@PACKAGE_TARNAME@_la_SOURCES = \
 	niftyprefs.c
 
 
+# compile for debugging ?
+if DEBUG
+    OPT_CFLAGS = -O0 -g
+else
+    OPT_CFLAGS = -O2
+endif
+
+
+# target library
+lib_LTLIBRARIES = lib@PACKAGE_TARNAME@.la
+
 # cflags 
-lib@PACKAGE_TARNAME@_la_CFLAGS = $(xml_CFLAGS) $(niftylog_CFLAGS) -Wall
+lib@PACKAGE_TARNAME@_la_CFLAGS = $(xml_CFLAGS) $(niftylog_CFLAGS) $(OPT_CFLAGS) -Wall
 
 # linker flags
 lib@PACKAGE_TARNAME@_la_LDFLAGS = \

@@ -31,6 +31,7 @@ AC_SUBST([PACKAGE_GIT_VERSION], m4_esyscmd([./version.sh --git]), [git version])
 #    checks for programs
 # --------------------------------
 LT_INIT
+AM_PROG_CC_C_O
 PKG_PROG_PKG_CONFIG([0.14])
 if test -z "$PKG_CONFIG"; then
   AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/ or check your distribution.])
@@ -86,7 +87,26 @@ AC_CHECK_FUNC(strndup,
 # --------------------------------
 #   compile process
 # --------------------------------
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([no])])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
+
+# --------------------------------
+# Arguments for configure-script
+# --------------------------------
+AC_ARG_ENABLE(
+        debug,
+	[  --disable-debug         Don't compile for debugging ],
+	[ debug=false ],
+	[ debug=true])
+AM_CONDITIONAL(DEBUG, test x$debug = xtrue)				
+
+
+AC_ARG_ENABLE(
+	tests,
+	[  --disable-tests         Don't run tests before install ],
+	[ tests=false ],
+	[ tests=true])
+AM_CONDITIONAL(RUN_TESTS, test x$tests = xtrue)
 
 
 # --------------------------------
@@ -97,6 +117,7 @@ AC_CONFIG_FILES(
 [
     Makefile \
     src/Makefile \
+    tests/Makefile \
     include/Makefile \
     include/niftyprefs-version.h
 ])
@@ -113,4 +134,7 @@ Configure report:
     Install prefix..............:  ${prefix}
     C compiler..................:  ${CC}
     C++ compiler................:  ${CPP}
+    System CFLAGS...............:  ${CFLAGS}
+    System CXXFLAGS.............:  ${CXXFLAGS}
+    System LDFLAGS..............:  ${LDFLAGS}
 "
