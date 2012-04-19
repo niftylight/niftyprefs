@@ -107,7 +107,7 @@ echo "
 Configure report:
 
     Package.....................:  ${PACKAGE_STRING}
-    Libtool Version.............:  ${PACKAGE_API_CURRENT}:${PACKAGE_API_REVISION}:${PACKAGE_API_AGE}
+    Libtool version.............:  ${PACKAGE_API_CURRENT}:${PACKAGE_API_REVISION}:${PACKAGE_API_AGE}
     Bugreports..................:  ${PACKAGE_BUGREPORT}
 
     Install prefix..............:  ${prefix}
