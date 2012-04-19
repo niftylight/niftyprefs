@@ -3,11 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: @GENERIC_LIBRARY_NAME@
-Description: @DESCRIPTION@
-Version: @VERSION@
-Libs: @API_LIBS@
-Libs.private: @API_LIBS_PRIV@
-Cflags: @API_CFLAGS@
-
-
+Name: @PACKAGE@
+Description: @PACKAGE_DESCRIPTION@
+Version: @PACKAGE_VERSION@
+Libs: -L${libdir} -l@PACKAGE@ @niftylog_LIBS@ @xml_LIBS@
+Libs.private:
+Cflags: -I@includedir@/lib@PACKAGE@-@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ @niftylog_CFLAGS@ @xml_CFLAGS@

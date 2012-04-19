@@ -119,7 +119,8 @@ AC_CONFIG_FILES(
     src/Makefile \
     tests/Makefile \
     include/Makefile \
-    include/niftyprefs-version.h
+    include/niftyprefs-version.h \
+    $PACKAGE.pc
 ])
 AC_OUTPUT
 
