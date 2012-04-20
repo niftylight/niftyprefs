@@ -45,16 +45,58 @@
 #include <stdlib.h>
 
 
+/* one "object" */
+struct Person
+{
+    char name[256];
+    char email[256];
+};
+
+/* printable name of "object" */
+#define PERSON_NAME "person"
+/* file to write to */
+#define FILE_NAME   "test.xml"
+
+
+/* some example data */
+struct Person persons[] =
+{
+        { .name = "Bob"   , .email = "bob@example.com"   },
+        { .name = "Alice" , .email = "alice@example.com" },
+};
+
 
 /******************************************************************************/
 
 
+/** create preferences from object definitIon */
 int main(int argc, char *argv[])
 {
+        /* fail per default */
         int result = EXIT_FAILURE;
 
     
-           
+        /* register "person" object to niftyprefs */
+
+
+        printf("Generating preferences for objects:\n");
+
+        
+        /* walk all persons in model */
+        int i;
+        for(i=0; i < sizeof(persons)/sizeof(struct Person); i++)
+        {
+            /* print info */
+            printf("\tperson(name=\"%s\",email=\"%s\")\n",
+                    persons[i].name, persons[i].email);
+
+            /* generate preferences */
+        }
+
+        /* dump to file */
+
+        
+        /* all went fine */
         result = EXIT_SUCCESS;
            
 _deinit:       

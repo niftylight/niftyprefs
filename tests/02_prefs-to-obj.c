@@ -45,16 +45,33 @@
 #include <stdlib.h>
 
 
+/* one "object" */
+struct Person
+{
+    char name[256];
+    char email[256];
+};
+
+/* printable name of "object" */
+#define PERSON_NAME "person"
+/* file to read from */
+#define FILE_NAME   "test.xml"
+
 
 /******************************************************************************/
 
 
+/** create object from preferences definition */
 int main(int argc, char *argv[])
 {
+        /* fail per default */
         int result = EXIT_FAILURE;
 
-    
-           
+        /* register "person" object to niftyprefs */
+
+        /* load & parse config file */
+
+        /* all went fine */   
         result = EXIT_SUCCESS;
            
 _deinit:       
