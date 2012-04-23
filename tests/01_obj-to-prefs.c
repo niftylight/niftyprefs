@@ -42,7 +42,9 @@
  */
 
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <niftyprefs.h>
 
 
 /* one "object" */
@@ -65,20 +67,47 @@ struct Person persons[] =
         { .name = "Alice" , .email = "alice@example.com" },
 };
 
+/******************************************************************************/
+
+/** function to generate preferences for a Person object */
+static NftResult _person_to_prefs(const NftPrefsNode *newNode, const NftPrefsNode *parentNode, const void *obj, const void *userptr)
+{
+    struct Person *p = (struct Person *) obj;
+
+        
+    /** NULL object means failure -> exit early */
+    if(!p)
+        return NFT_FAILURE;
+
+        
+    /** fill empty node that has been created for us */
+
+
+    /** everything fine - node contains preferences now */
+    return NFT_SUCCESS;
+}
+
 
 /******************************************************************************/
 
 
-/** create preferences from object definitIon */
+/** MINIMAL procedure to create preferences 
+    from arbitrary "object" definitions */
 int main(int argc, char *argv[])
 {
         /* fail per default */
         int result = EXIT_FAILURE;
 
-    
+
+        /* initialize libniftyprefs */
+        if(!nft_prefs_init())
+                goto _deinit;
+        
         /* register "person" object to niftyprefs */
+        if(!nft_prefs_obj_class_register(PERSON_NAME, NULL, &_person_to_prefs))
+                goto _deinit;
 
-
+        
         printf("Generating preferences for objects:\n");
 
         
@@ -91,8 +120,12 @@ int main(int argc, char *argv[])
                     persons[i].name, persons[i].email);
 
             /* generate preferences */
+            NftPrefsNode *n;
+            if(!nft_prefs_obj_to_prefs(&n, &persons[i]))
+                goto _deinit;
         }
 
+        
         /* dump to file */
 
         
@@ -100,6 +133,8 @@ int main(int argc, char *argv[])
         result = EXIT_SUCCESS;
            
 _deinit:       
+        nft_prefs_obj_class_unregister(PERSON_NAME);
+        nft_prefs_exit();
         
         return result;
 }

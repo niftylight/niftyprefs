@@ -1,5 +1,5 @@
 
-INCLUDE_DIRS = -I../include -I$(top_srcdir)/include
+INCLUDE_DIRS = -I$(top_srcdir)/include
 tests_CFLAGS_PRIV = -Wall $(INCLUDE_DIRS) $(xml_CFLAGS) $(niftylog_CFLAGS)
 tests_LDFLAGS_PRIV =
 tests_LDADD_PRIV = ../src/libniftyprefs.la $(xml_LIBS) $(niftylog_LIBS)

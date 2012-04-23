@@ -23,7 +23,12 @@ endif
 lib_LTLIBRARIES = lib@PACKAGE@.la
 
 # cflags 
-lib@PACKAGE@_la_CFLAGS = $(xml_CFLAGS) $(niftylog_CFLAGS) $(OPT_CFLAGS) -Wall
+lib@PACKAGE@_la_CFLAGS = \
+        $(xml_CFLAGS) \
+        $(niftylog_CFLAGS) \
+        $(OPT_CFLAGS) \
+        -I$(top_srcdir)/include \
+        -Wall
 
 # linker flags
 lib@PACKAGE@_la_LDFLAGS = \

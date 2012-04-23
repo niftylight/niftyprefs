@@ -41,8 +41,25 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * @file niftyprefs.h
+ */
+
+
+/**      
+ * @defgroup prefs niftyprefs
+ * @brief main API
+ *
+ * @{
+ */
+
 #ifndef _NIFTYPREFS_H
 #define _NIFTYPREFS_H
+
+
+#include <niftylog.h>
+
+
 
 /** a node that holds various properties about an object */
 typedef struct _NftPrefsNode NftPrefsNode;
@@ -72,15 +89,22 @@ typedef NftResult (NftPrefsToObjFunc)(void **newObject, const NftPrefsNode *node
 
 
 
+NftResult   nft_prefs_init();
+void        nft_prefs_exit();
 
 NftResult   nft_prefs_obj_class_register(const char *className, NftPrefsToObjFunc *toObj, NftPrefsFromObjFunc *fromObj);
 void        nft_prefs_obj_class_unregister(const char *className);
 NftResult   nft_prefs_obj_register(const char *className, void *obj);
 void        nft_prefs_obj_unregister(void *obj);
 
-NftResult   nft_prefs_obj_to_prefs(NftPrefsNode *node, void *obj);
+NftResult   nft_prefs_obj_to_prefs(NftPrefsNode **node, void *obj);
 NftResult   nft_prefs_obj_from_prefs(const NftPrefsNode *node, void **obj);
 
 
 
 #endif /* _NIFTYPREFS_H */
+
+
+/**
+ * @}
+ */

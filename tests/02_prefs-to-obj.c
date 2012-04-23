@@ -41,8 +41,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
+#include <stdio.h>
 #include <stdlib.h>
+#include <niftyprefs.h>
+
 
 
 /* one "object" */
@@ -67,6 +69,12 @@ int main(int argc, char *argv[])
         /* fail per default */
         int result = EXIT_FAILURE;
 
+
+        /* initialize libniftyprefs */
+        if(!nft_prefs_init())
+                goto _deinit;
+
+        
         /* register "person" object to niftyprefs */
 
         /* load & parse config file */
@@ -75,6 +83,7 @@ int main(int argc, char *argv[])
         result = EXIT_SUCCESS;
            
 _deinit:       
+        nft_prefs_exit();
         
         return result;
 }
