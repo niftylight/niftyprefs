@@ -24,11 +24,11 @@ lib_LTLIBRARIES = lib@PACKAGE@.la
 
 # cflags 
 lib@PACKAGE@_la_CFLAGS = \
+        -Wall \
         $(xml_CFLAGS) \
         $(niftylog_CFLAGS) \
         $(OPT_CFLAGS) \
-        -I$(top_srcdir)/include \
-        -Wall
+        -I$(top_srcdir)/include
 
 # linker flags
 lib@PACKAGE@_la_LDFLAGS = \
