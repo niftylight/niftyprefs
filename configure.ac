@@ -17,6 +17,9 @@ AC_CONFIG_MACRO_DIR([m4])
 # infos
 AC_DEFINE(PACKAGE_DESCRIPTION, [lightweight modelless preferences management library], [description])
 
+# reconfigure when version.sh changed
+AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ['$(top_srcdir)/version.sh'])
+
 # versioning (s. version.sh)
 AC_SUBST([PACKAGE_MAJOR_VERSION], m4_esyscmd([./version.sh --major]), [major version])
 AC_SUBST([PACKAGE_MINOR_VERSION], m4_esyscmd([./version.sh --minor]), [minor version])
@@ -130,6 +133,7 @@ Configure report:
 
     Package.....................:  ${PACKAGE_STRING}
     Libtool version.............:  ${PACKAGE_API_CURRENT}:${PACKAGE_API_REVISION}:${PACKAGE_API_AGE}
+    URL.........................:  ${PACKAGE_URL}
     Bugreports..................:  ${PACKAGE_BUGREPORT}
 
     Install prefix..............:  ${prefix}
