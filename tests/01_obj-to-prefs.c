@@ -70,7 +70,7 @@ struct Person persons[] =
 /******************************************************************************/
 
 /** function to generate preferences for a Person object */
-static NftResult _person_to_prefs(const NftPrefsNode *newNode, const NftPrefsNode *parentNode, const void *obj, const void *userptr)
+static NftResult _person_to_prefs(NftPrefsObj *newNode, void *obj, void *userptr)
 {
     struct Person *p = (struct Person *) obj;
 
@@ -100,11 +100,12 @@ int main(int argc, char *argv[])
 
 
         /* initialize libniftyprefs */
-        if(!nft_prefs_init())
+        NftPrefs *prefs = NULL;
+        if(!(prefs = nft_prefs_init()))
                 goto _deinit;
         
         /* register "person" object to niftyprefs */
-        if(!nft_prefs_obj_class_register(PERSON_NAME, NULL, &_person_to_prefs))
+        if(!(nft_prefs_class_register(prefs, PERSON_NAME, NULL, &_person_to_prefs)))
                 goto _deinit;
 
         
@@ -115,14 +116,17 @@ int main(int argc, char *argv[])
         int i;
         for(i=0; i < sizeof(persons)/sizeof(struct Person); i++)
         {
-            /* print info */
-            printf("\tperson(name=\"%s\",email=\"%s\")\n",
+                /* print info */
+                printf("\tperson(name=\"%s\",email=\"%s\")\n",
                     persons[i].name, persons[i].email);
 
-            /* generate preferences */
-            NftPrefsNode *n;
-            if(!nft_prefs_obj_to_prefs(&n, &persons[i]))
-                goto _deinit;
+                /* register object */
+                if(!(nft_prefs_obj_register(prefs, PERSON_NAME, &persons[i])))
+                        goto _deinit;
+                
+                /* generate preferences */
+                if(!(nft_prefs_obj_to_prefs(prefs, &persons[i])))
+                        goto _deinit;
         }
 
         
@@ -133,8 +137,8 @@ int main(int argc, char *argv[])
         result = EXIT_SUCCESS;
            
 _deinit:       
-        nft_prefs_obj_class_unregister(PERSON_NAME);
-        nft_prefs_exit();
+        nft_prefs_class_unregister(prefs, PERSON_NAME);
+        nft_prefs_exit(prefs);
         
         return result;
 }

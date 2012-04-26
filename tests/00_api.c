@@ -41,50 +41,74 @@
  * Boston, MA 02111-1307, USA.
  */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <niftyprefs.h>
 
 
 
-/* one "object" */
-struct Person
-{
-    char name[256];
-    char email[256];
-};
-
-/* printable name of "object" */
-#define PERSON_NAME "person"
-/* file to read from */
-#define FILE_NAME   "test.xml"
-
-
-/******************************************************************************/
-
-
-/** create object from preferences definition */
+/** some generic API stresstests */
 int main(int argc, char *argv[])
 {
-        /* fail per default */
-        int result = EXIT_FAILURE;
 
-
-        /* initialize libniftyprefs */
-        NftPrefs *prefs;
-        if(!(prefs = nft_prefs_init()))
+        int res = EXIT_FAILURE;
+        NftPrefs *p;
+        if(!(p = nft_prefs_init()))
                 goto _deinit;
 
-        
-        /* register "person" object to niftyprefs */
 
-        /* load & parse config file */
+        /* a bunch of objects */
+        struct Object
+        {
+                int n;
+                char *name;
+        }objs[1024];
 
-        /* all went fine */   
-        result = EXIT_SUCCESS;
-           
-_deinit:       
-        nft_prefs_exit(prefs);
+        int i;
+        for(i=0; i < 1024; i++)
+        {
+                objs[i].n = i;
+                objs[i].name = "foobar";
+        }
         
-        return result;
+        /* register a bunch of classes */
+        for(i=0; i < 1024; i++)
+        {
+                char cName[64];
+                snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
+                NFT_LOG(L_DEBUG, "Registering class %d", i);
+                if(!(nft_prefs_class_register(p, cName, NULL, NULL)))
+                        goto _deinit;
+        }
+        
+        for(i=0; i < 1024; i++)
+        {
+                char cName[64];
+                snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
+                NFT_LOG(L_DEBUG, "Registering object %d", i);
+                if(!nft_prefs_obj_register(p, cName, &objs[i]))
+                        goto _deinit;
+        }
+        
+        for(i=0; i < 1024; i++)
+        {
+                NFT_LOG(L_DEBUG, "Unregistering object %d", i);
+                nft_prefs_obj_unregister(p, &objs[i]);
+        }
+        
+        for(i=0; i < 1024; i++)
+        {
+                char cName[64];
+                snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
+                NFT_LOG(L_DEBUG, "Unregistering class %d", i);
+                nft_prefs_class_unregister(p, cName);
+        }
+        
+        res = EXIT_SUCCESS;
+        
+_deinit:
+        nft_prefs_exit(p);
+        
+        return res;
 }

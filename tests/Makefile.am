@@ -6,11 +6,15 @@ tests_LDADD_PRIV = ../src/libniftyprefs.la $(xml_LIBS) $(niftylog_LIBS)
 
 
 
-check_PROGRAMS = obj-to-prefs prefs-to-obj
+check_PROGRAMS = api obj-to-prefs prefs-to-obj
 TESTS = $(check_PROGRAMS)
 
 
 
+api_SOURCES = 00_api.c
+api_CFLAGS = $(tests_CFLAGS_PRIV)
+api_LDFLAGS = $(tests_LDFLAGS_PRIV)
+api_LDADD = $(tests_LDADD_PRIV)
 
 obj_to_prefs_SOURCES = 01_obj-to-prefs.c
 obj_to_prefs_CFLAGS = $(tests_CFLAGS_PRIV)

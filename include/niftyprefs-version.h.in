@@ -43,21 +43,21 @@
 
 
 /**
- * @file settings_version.h
+ * @file niftyprefs_version.h
  */
 
 
 /**      
- * @addtogroup settings
+ * @addtogroup prefs
  * @{
- * @defgroup settings_version
+ * @defgroup prefs_version
  * @brief version handling
  *
  * @{
  */
  
-#ifndef _NFT_SETTINGS_VERSION
-#define _NFT_SETTINGS_VERSION
+#ifndef _NFT_PREFS_VERSION
+#define _NFT_PREFS_VERSION
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -65,24 +65,24 @@
 
 
 /** API version we will provide */
-#define NFT_SETTINGS_LONG           "@PACKAGE_VERSION@"
-#define NFT_MAJOR_VERSION           @PACKAGE_MAJOR_VERSION@
-#define NFT_MINOR_VERSION           @PACKAGE_MINOR_VERSION@
-#define NFT_MICRO_VERSION           @PACKAGE_MICRO_VERSION@
-#define NFT_SETTINGS_API_REVISION   @PACKAGE_API_REVISION@
-#define NFT_SETTINGS_API_CURENT     @PACKAGE_API_CURRENT@
-#define NFT_SETTINGS_API_AGE        @PACKAGE_API_AGE@
-#define NFT_SETTINGS_GIT_VERSION    "@PACKAGE_GIT_VERSION@"
+#define NFT_PREFS_VERSION_LONG   "@PACKAGE_VERSION@"
+#define NFT_PREFS_MAJOR_VERSION  @PACKAGE_MAJOR_VERSION@
+#define NFT_PREFS_MINOR_VERSION  @PACKAGE_MINOR_VERSION@
+#define NFT_PREFS_MICRO_VERSION  @PACKAGE_MICRO_VERSION@
+#define NFT_PREFS_API_REVISION   @PACKAGE_API_REVISION@
+#define NFT_PREFS_API_CURENT     @PACKAGE_API_CURRENT@
+#define NFT_PREFS_API_AGE        @PACKAGE_API_AGE@
+#define NFT_PREFS_GIT_VERSION    "@PACKAGE_GIT_VERSION@"
 
 /** macro to check version-compatibility */
-#define NFT_SETTINGS_CHECK_VERSION nft_settings_version_check(NFT_SETTINGS_API_REVISION);
+#define NFT_PREFS_CHECK_VERSION nft_prefs_version_check(NFT_PREFS_API_REVISION);
 
 
 
-void    nft_settings_version_check(int version);
+void    nft_prefs_version_check(int version);
 
 
-#endif /* _NFT_SETTINGS_VERSION */
+#endif /* _NFT_PREFS_VERSION */
 
 /**
  * @}

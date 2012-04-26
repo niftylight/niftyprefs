@@ -60,9 +60,15 @@
 #include <niftylog.h>
 
 
+/** maximum length of classname */
+#define NFT_PREFS_MAX_CLASSNAME 64
 
-/** a node that holds various properties about an object */
-typedef struct _NftPrefsNode NftPrefsNode;
+
+/** a context holding a list of PrefsClasses and PrefsNodes */
+typedef struct _NftPrefs NftPrefs;
+/** an object descriptor that holds various properties about an object */
+typedef struct _NftPrefsObj NftPrefsObj;
+
 
 
 /** 
@@ -74,31 +80,42 @@ typedef struct _NftPrefsNode NftPrefsNode;
  * @param userptr arbitrary pointer defined upon registering the object class
  * @result NFT_SUCCESS or NFT_FAILURE (processing will be aborted upon failure)
  */
-typedef NftResult (NftPrefsFromObjFunc)(const NftPrefsNode *newNode, const NftPrefsNode *parentNode, const void *obj, const void *userptr);
+typedef NftResult (NftPrefsFromObjFunc)(NftPrefsObj *newObj, 
+                                        void *obj, void *userptr);
+
+
 /** 
- * function that creates an object from a config-node 
+ * function that allocates a new object from a config-node 
  *
- * @param newObject space to put the pointer to a newly allocated object
+ * @param newObj space to put the pointer to a newly allocated object
+ * @param parentObj possible parent object (or NULL)
+ * @param firstChildObj possible child object (or NULL) 
+ * @param prevObj possible previous object (or NULL) 
+ * @param nextObj possible next object (or NULL)
  * @param node the preference node describing the object that's about to be created
- * @param parentObject possible parentObject when having a tree stracture
  * @param userptr arbitrary pointer defined upon registering the object class
  * @result NFT_SUCCESS or NFT_FAILURE (processing will be aborted upon failure)
  */
-typedef NftResult (NftPrefsToObjFunc)(void **newObject, const NftPrefsNode *node, const void *parentObject, const void *userptr);
+typedef NftResult (NftPrefsToObjFunc)(void **newObj, void *parentObj, 
+                                      void *firstChildObj, 
+                                      void *prevObj, void *nextObj, 
+                                      NftPrefsObj *node, const void *userptr);
 
 
 
 
-NftResult   nft_prefs_init();
-void        nft_prefs_exit();
+NftPrefs *              nft_prefs_init();
+void                    nft_prefs_exit(NftPrefs *prefs);
 
-NftResult   nft_prefs_obj_class_register(const char *className, NftPrefsToObjFunc *toObj, NftPrefsFromObjFunc *fromObj);
-void        nft_prefs_obj_class_unregister(const char *className);
-NftResult   nft_prefs_obj_register(const char *className, void *obj);
-void        nft_prefs_obj_unregister(void *obj);
+NftResult               nft_prefs_class_register(NftPrefs *p, const char *className, NftPrefsToObjFunc *toObj, NftPrefsFromObjFunc *fromObj);
+void                    nft_prefs_class_unregister(NftPrefs *p, const char *className);
 
-NftResult   nft_prefs_obj_to_prefs(NftPrefsNode **node, void *obj);
-NftResult   nft_prefs_obj_from_prefs(const NftPrefsNode *node, void **obj);
+NftResult               nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj);
+void                    nft_prefs_obj_unregister(NftPrefs *p, void *obj);
+
+NftResult               nft_prefs_obj_to_prefs(NftPrefs *p, void *obj);
+void *                  nft_prefs_obj_from_prefs(const char *className);
+
 
 
 
