@@ -94,6 +94,8 @@ struct _NftPrefsObj
 /** context descriptor */
 struct _NftPrefs
 {
+        /** temporary xmlDoc */
+        xmlDoc *doc;
         /** list of registered PrefsObjClasses */
         NftPrefsClass *classes;
         /** amount of entries stored in list */
@@ -116,9 +118,7 @@ struct _NftPrefs
 /******************************************************************************/
 
 
-/** 
- * libxml error handler 
- */
+/** libxml error handler */
 static void _xml_error_handler(void *ctx, const char * msg, ...)
 {
 	xmlError *err;
@@ -166,9 +166,7 @@ static void _xml_error_handler(void *ctx, const char * msg, ...)
 }
 
 
-/**
- * find first unallocated NftPrefsClass entry in list
- */
+/** find first unallocated NftPrefsClass entry in list */
 static NftPrefsClass *_class_find_free(NftPrefsClass list[], size_t length)
 {
 	if(!list)
@@ -189,9 +187,7 @@ static NftPrefsClass *_class_find_free(NftPrefsClass list[], size_t length)
 }
 
 
-/**
- * find class by name
- */
+/** find class by name */
 static NftPrefsClass *_class_find_by_name(NftPrefs *p, const char *className)
 {
 	if(!p || !className)
@@ -222,9 +218,7 @@ static NftPrefsClass *_class_find_by_name(NftPrefs *p, const char *className)
 }
 
 
-/**
- * find first unallocated NftPrefsObj entry in list
- */
+/** find first unallocated NftPrefsObj entry in list */
 static NftPrefsObj *_obj_find_free(NftPrefsObj list[], size_t length)
 {
 	if(!list)
@@ -244,9 +238,7 @@ static NftPrefsObj *_obj_find_free(NftPrefsObj list[], size_t length)
 }
 
 
-/**
- * find node by object
- */
+/** find node by object */
 static NftPrefsObj *_obj_find_by_ptr(NftPrefsObj list[], size_t length, void *obj)
 {
 	if(!list || !obj)
@@ -307,8 +299,22 @@ NftPrefs *nft_prefs_init()
         /* needed for indented output */
         xmlKeepBlanksDefault(0);
 
+        /* allocate new NftPrefs context */
+        NftPrefs *p;
+        if(!(p = calloc(1, sizeof(NftPrefs))))
+        {
+                NFT_LOG_PERROR("calloc");
+                return NULL;
+        }
+
+        /* preallocate xmlDoc descriptor for this context */
+        if(!(p->doc = xmlNewDoc(BAD_CAST "1.0")))
+        {
+                free(p);
+                return NULL;
+        }
         
-        return calloc(1, sizeof(NftPrefs));
+        return p;
 }
 
 
@@ -318,6 +324,10 @@ NftPrefs *nft_prefs_init()
  */
 void nft_prefs_exit(NftPrefs *p)
 {
+        /* free xmlDoc */
+        if(p->doc)
+                xmlFreeDoc(p->doc);
+        
         /* free lists */
         free(p->objects);
         free(p->classes);
