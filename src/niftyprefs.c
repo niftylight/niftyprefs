@@ -167,19 +167,19 @@ static void _xml_error_handler(void *ctx, const char * msg, ...)
 
 
 /** find first unallocated NftPrefsClass entry in list */
-static NftPrefsClass *_class_find_free(NftPrefsClass list[], size_t length)
+static NftPrefsClass *_class_find_free(NftPrefs *p)
 {
-	if(!list)
+	if(!p)
 		NFT_LOG_NULL(NULL);
 
 	/* find in list */
 	int i;
-	for(i=0; i < length; i++)
+	for(i=0; i < p->class_list_length; i++)
 	{
 		/** looking for name = NULL index? */
-		if(list[i].name[0] == '\0')
+		if(p->classes[i].name[0] == '\0')
 		{
-			return &list[i];
+			return &p->classes[i];
 		}
 	}
 
@@ -219,19 +219,19 @@ static NftPrefsClass *_class_find_by_name(NftPrefs *p, const char *className)
 
 
 /** find first unallocated NftPrefsObj entry in list */
-static NftPrefsObj *_obj_find_free(NftPrefsObj list[], size_t length)
+static NftPrefsObj *_obj_find_free(NftPrefs *p)
 {
-	if(!list)
+	if(!p)
 		NFT_LOG_NULL(NULL);
 
 	/* find in list */
 	int i;
-	for(i=0; i < length; i++)
+	for(i=0; i < p->obj_list_length; i++)
 	{
-                if(!list[i].object && 
-                   !list[i].node && 
-                   list[i].className[0] == '\0')
-                        return &list[i];
+                if(!p->objects[i].object && 
+                   !p->objects[i].node && 
+                   p->objects[i].className[0] == '\0')
+                        return &p->objects[i];
 	}
 
 	return NULL;
@@ -239,19 +239,19 @@ static NftPrefsObj *_obj_find_free(NftPrefsObj list[], size_t length)
 
 
 /** find node by object */
-static NftPrefsObj *_obj_find_by_ptr(NftPrefsObj list[], size_t length, void *obj)
+static NftPrefsObj *_obj_find_by_ptr(NftPrefs *p, void *obj)
 {
-	if(!list || !obj)
+	if(!p || !obj)
 		NFT_LOG_NULL(NULL);
         
 	/* find in list */
 	int i;
-	for(i=0; i < length; i++)
+	for(i=0; i < p->obj_list_length; i++)
 	{
 		/** looking for name = NULL index? */
-		if(list[i].object == obj)
+		if(p->objects[i].object == obj)
 		{
-			return &list[i];
+			return &p->objects[i];
 		}
 	}
 
@@ -389,7 +389,7 @@ NftResult nft_prefs_class_register(NftPrefs *p, const char *className,
         
         /* get an empty list entry */
         NftPrefsClass *n;
-	if(!(n = _class_find_free(p->classes, p->class_list_length)))
+	if(!(n = _class_find_free(p)))
 	{
 		NFT_LOG(L_ERROR, "Couldn't find free slot in NftPrefsClass list");
 		return NFT_FAILURE;
@@ -490,7 +490,7 @@ NftResult nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj)
         
         /* get a empty list entry */
         NftPrefsObj *n;
-	if(!(n = _obj_find_free(p->objects, p->obj_list_length)))
+	if(!(n = _obj_find_free(p)))
 	{
 		NFT_LOG(L_ERROR, "Couldn't find free slot in NftPrefsObj list");
 		return NFT_FAILURE;
@@ -519,7 +519,7 @@ void nft_prefs_obj_unregister(NftPrefs *p, void *obj)
                 return;
 
         NftPrefsObj *n;
-        if(!(n = _obj_find_by_ptr(p->objects, p->obj_list_length, obj)))
+        if(!(n = _obj_find_by_ptr(p, obj)))
                 return;
 
         _obj_clear(p, n);
@@ -528,6 +528,22 @@ void nft_prefs_obj_unregister(NftPrefs *p, void *obj)
 
 NftResult nft_prefs_obj_to_prefs(NftPrefs *p, void *obj)
 {
+        if(!p || !obj)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        
+        /* find object descriptor */
+        NftPrefsObj *o;
+        if(!(o = _obj_find_by_ptr(p, obj)))
+                return NFT_FAILURE;
+
+        /* find object class */
+        NftPrefsClass *c;
+        if(!(c = _class_find_by_name(p, o->className)))
+                return NFT_FAILURE;
+
+
+        
         return NFT_SUCCESS;
 }
 
