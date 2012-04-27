@@ -5,8 +5,10 @@
 # --------------------------------
 #    initialization
 # --------------------------------
-AC_INIT([libniftyprefs], m4_esyscmd([./version.sh --long]), [http://github.com/niftylight/niftylight/issues], [niftyprefs], [http://wiki.niftylight.de/AC_PACKAGE_NAME])
-AM_INIT_AUTOMAKE([color-tests dist-bzip2 parallel-tests silent-rules])
+AC_INIT([libniftyprefs], m4_esyscmd([./version.sh --short]), [http://github.com/niftylight/niftylight/issues], [niftyprefs], [http://wiki.niftylight.de/AC_PACKAGE_NAME])
+AC_COPYRIGHT([Copyright (C) 2006-2012 Daniel Hiepler])
+
+AM_INIT_AUTOMAKE([color-tests dist-bzip2 parallel-tests silent-rules -Wall])
 AC_CONFIG_MACRO_DIR([m4])
 
 
@@ -24,7 +26,6 @@ AC_SUBST([PACKAGE_MICRO_VERSION], m4_esyscmd([./version.sh --micro]), [micro ver
 AC_SUBST([PACKAGE_API_REVISION], m4_esyscmd([./version.sh --api-revision]), [api revision])
 AC_SUBST([PACKAGE_API_CURRENT], m4_esyscmd([./version.sh --api-current]), [api current])
 AC_SUBST([PACKAGE_API_AGE], m4_esyscmd([./version.sh --api-age]), [api age])
-AC_SUBST([PACKAGE_GIT_VERSION], m4_esyscmd([./version.sh --git]), [git version])
 
 
 # --------------------------------

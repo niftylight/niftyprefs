@@ -28,7 +28,8 @@ lib@PACKAGE@_la_CFLAGS = \
         $(xml_CFLAGS) \
         $(niftylog_CFLAGS) \
         $(OPT_CFLAGS) \
-        -I$(top_srcdir)/include
+        -I$(top_srcdir)/include \
+        -DPACKAGE_GIT_VERSION="\"`$(top_srcdir)/version.sh --git`\""
 
 # linker flags
 lib@PACKAGE@_la_LDFLAGS = \
