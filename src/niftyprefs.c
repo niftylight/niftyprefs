@@ -56,6 +56,7 @@
 #include <niftyprefs.h>
 #include <libxml/tree.h>
 #include "config.h"
+#include "niftyprefs-version.h"
 
 
 
@@ -283,7 +284,7 @@ static void _obj_clear(NftPrefs *p, NftPrefsObj *o)
 NftPrefs *nft_prefs_init()
 {
         /* welcome */
-        NFT_LOG(L_INFO, "%s - v%s", PACKAGE_NAME, PACKAGE_VERSION);
+        NFT_LOG(L_INFO, "%s - v%s", PACKAGE_NAME, NFT_PREFS_VERSION_LONG);
         
         /*
          * this initializes the library and check potential ABI mismatches
@@ -526,31 +527,136 @@ void nft_prefs_obj_unregister(NftPrefs *p, void *obj)
 }
 
 
-NftResult nft_prefs_obj_to_prefs(NftPrefs *p, void *obj)
+/**
+ * create prefs representation from current state of object
+ * 
+ * @result string holding xml representation of object (use free() to deallocate)
+ */
+char *nft_prefs_obj_to_xml(NftPrefs *p, void *obj, void *userptr)
 {
         if(!p || !obj)
-                NFT_LOG_NULL(NFT_FAILURE);
+                NFT_LOG_NULL(NULL);
 
         
         /* find object descriptor */
         NftPrefsObj *o;
         if(!(o = _obj_find_by_ptr(p, obj)))
-                return NFT_FAILURE;
+                return NULL;
 
         /* find object class */
         NftPrefsClass *c;
         if(!(c = _class_find_by_name(p, o->className)))
-                return NFT_FAILURE;
+                return NULL;
 
+        /* new node */
+        if(!(o->node = xmlNewNode(NULL, BAD_CAST c->name)))
+                return NULL;
+
+        /* call prefsFromObj() registered for this class */
+        if(!c->fromObj(o, obj, userptr))
+                return NULL;
+
+
+        /* result pointer (xml dump) */
+        char *dump = NULL;
 
         
-        return NFT_SUCCESS;
+        /* create buffer */
+        xmlBufferPtr buf;
+        if(!(buf = xmlBufferCreate()))
+        {
+                NFT_LOG(L_ERROR, "failed to xmlBufferCreate()");
+                goto _potx_exit;
+        }
+
+        /* dump node */
+        if(xmlNodeDump(buf, p->doc, o->node, 0, TRUE) < 0)
+        {
+                NFT_LOG(L_ERROR, "xmlNodeDump() failed");
+                goto _potx_exit;
+        }
+
+        /* allocate buffer */
+        if(!(dump = malloc(xmlBufferLength(buf)+1)))
+        {
+                NFT_LOG_PERROR("malloc()");
+                goto _potx_exit;
+        }
+
+        /* copy buffer */
+        strncpy(dump, (char *) xmlBufferContent(buf), xmlBufferLength(buf));
+        dump[xmlBufferLength(buf)] = '\0';
+
+_potx_exit:
+        xmlBufferFree(buf);
+
+        return dump;
 }
 
 
-void *nft_prefs_obj_from_prefs(const char *className)
+/**
+ * create new object from preferences
+ */
+void *nft_prefs_obj_from_xml(NftPrefs *p, const char *className, char *xml, void *userptr)
 {
-        return NULL;
+        if(!className || !xml)
+                NFT_LOG_NULL(NULL);
+
+        
+        /* parse XML */
+        xmlDocPtr doc;
+        if(!(doc = xmlReadMemory(xml, strlen(xml), 
+				 NULL, NULL, 0)))
+        {
+                NFT_LOG(L_ERROR, "Failed to xmlReadMemory()");
+                return NULL;
+        }
+
+        
+        /* result object */
+        void *result = NULL;
+
+        
+        /* get node */
+        xmlNode *node;
+        if(!(node = xmlDocGetRootElement(doc)))
+        {
+                NFT_LOG(L_ERROR, "No root element parsed");
+                goto _pofx_exit;
+        }
+
+        
+        /* find object class */
+        NftPrefsClass *c;
+        if(!(c = _class_find_by_name(p, className)))
+                return NULL;
+
+        
+        /* get a empty list entry */
+        NftPrefsObj *o;
+	if(!(o = _obj_find_free(p)))
+	{
+		NFT_LOG(L_ERROR, "Couldn't find free slot in NftPrefsObj list");
+		return NFT_FAILURE;
+	}
+
+        /* register parsed node */
+        o->node = node;
+
+        /* copy classname */
+        strncpy(o->className, className, NFT_PREFS_MAX_CLASSNAME);
+        
+        /* create object from prefs */
+        /*if(!(c->toObj(&result, o, userptr)))
+        {
+                NFT_LOG(L_ERROR, "toObj() function failed");
+        }*/
+        
+                
+_pofx_exit:
+        xmlFreeDoc(doc);
+        
+        return result;
 }
 
 
