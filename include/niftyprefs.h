@@ -51,7 +51,20 @@
  * @brief abstract preference handling for arbitrary objects
  *
  * Use case 1: Generate preferences from existing object
+ *  1.1 nft_prefs_init()
+ *  1.2 nft_prefs_class_register()
+ *  1.3 [create object]
+ *  1.4 nft_prefs_obj_register(obj)
+ *  1.5 prefsObj = nft_prefs_from_obj(obj)
+ *  1.6 [use prefsObj]
+ *  1.7 nft_prefs_obj_free(prefsObj)
+ *
  * Use case 2: Generate object from preferences
+ *  1.1 nft_prefs_init()
+ *  1.2 nft_prefs_class_register()
+ *  1.3 create NftPrefsNode nft_prefs_node_from_file() / nft_prefs_node_from_buffer()
+ *  1.4 create object(s) from NftPrefsNode
+ *
  * Use case 3: Dump preferences to file
  * Use case 4: Dump preferences to string
  * Use case 5: Parse preferences from file
@@ -74,7 +87,8 @@
 typedef struct _NftPrefs NftPrefs;
 /** an object descriptor that holds various properties about an object */
 typedef struct _NftPrefsObj NftPrefsObj;
-
+/** wrapper type for one xmlNode */
+typedef xmlNode NftPrefsNode;
 
 
 /** 
@@ -119,8 +133,12 @@ void            nft_prefs_class_unregister(NftPrefs *p, const char *className);
 NftResult       nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj);
 void            nft_prefs_obj_unregister(NftPrefs *p, void *obj);
 
-char *          nft_prefs_obj_to_xml(NftPrefs *p, void *obj, void *userptr);
-void *          nft_prefs_obj_from_xml(NftPrefs *p, const char *className, char *xml, void *userptr);
+NftPrefsNode *  nft_prefs_node_from_file(NftPrefs *p, const char *filename);
+NftPrefsNode *  nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsize);
+
+NftResult       nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *filename);
+char *          nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode *n);
+
 
 
 
