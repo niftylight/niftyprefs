@@ -26,6 +26,8 @@ AC_SUBST([PACKAGE_MICRO_VERSION], m4_esyscmd([./version.sh --micro]), [micro ver
 AC_SUBST([PACKAGE_API_REVISION], m4_esyscmd([./version.sh --api-revision]), [api revision])
 AC_SUBST([PACKAGE_API_CURRENT], m4_esyscmd([./version.sh --api-current]), [api current])
 AC_SUBST([PACKAGE_API_AGE], m4_esyscmd([./version.sh --api-age]), [api age])
+AC_SUBST([PACKAGE_GIT_VERSION], m4_esyscmd([./version.sh --git]), [git version])
+
 
 
 # --------------------------------
@@ -130,6 +132,7 @@ echo "
 Configure report:
 
     Package.....................:  ${PACKAGE_STRING}
+    Revision....................:  ${PACKAGE_GIT_VERSION}
     Libtool version.............:  ${PACKAGE_API_CURRENT}:${PACKAGE_API_REVISION}:${PACKAGE_API_AGE}
     URL.........................:  ${PACKAGE_URL}
     Bugreports..................:  ${PACKAGE_BUGREPORT}
