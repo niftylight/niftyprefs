@@ -125,8 +125,8 @@ int main(int argc, char *argv[])
                         goto _deinit;
                 
                 /* generate preferences */
-                if(!(nft_prefs_obj_to_prefs(prefs, &persons[i])))
-                        goto _deinit;
+               // if(!(nft_prefs_obj_to_prefs(prefs, &persons[i])))
+               //         goto _deinit;
         }
 
         

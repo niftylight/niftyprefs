@@ -54,7 +54,6 @@
 
 
 #include <niftyprefs.h>
-#include <libxml/tree.h>
 #include "config.h"
 #include "niftyprefs-version.h"
 
@@ -64,19 +63,17 @@
     you have one "Person" class) */
 typedef struct _NftPrefsClass NftPrefsClass;
 /** type for position in a table */
-typedef size_t NftPrefsClassSlot;
+typedef ssize_t NftPrefsClassSlot;
 /** type for position in a table */
-typedef size_t NftPrefsObjSlot;
+typedef ssize_t NftPrefsObjSlot;
 
 
 
 
 /** a node that holds various properties about an object (e.g. if your object
-    reflects persons, you might have one PrefsNode for Alice and one for Bob) */
+    reflects persons, you might have one PrefsObj for Alice and one for Bob) */
 struct _NftPrefsObj
 {
-        /** libxml node */
-        xmlNode *node;
         /** object */
         void *object;
         /** class this object belongs to */
@@ -84,7 +81,7 @@ struct _NftPrefsObj
 };
 
 
-/** a class of PrefsNodes (e.g. if your objects reflect persons, 
+/** a class of PrefsObjects (e.g. if your objects reflect persons, 
     you have one "Person" class) */
 struct _NftPrefsClass
 {
@@ -175,7 +172,7 @@ static void _xml_error_handler(void *ctx, const char * msg, ...)
 /** get class from slot */
 static NftPrefsClass *_class_get(NftPrefs *p, NftPrefsClassSlot s)
 {
-        if(!p || p->classes)
+        if(!p || !p->classes)
                 NFT_LOG_NULL(NULL);
 
         if(s < 0 || s >= p->class_list_length)
@@ -184,13 +181,13 @@ static NftPrefsClass *_class_get(NftPrefs *p, NftPrefsClassSlot s)
                 return NULL;
         }
         
-        return p->classes[s];
+        return &p->classes[s];
 }
 
 /** get object from slot */
 static NftPrefsObj *_obj_get(NftPrefsClass *c, NftPrefsObjSlot s)
 {
-        if(!c || c->objects)
+        if(!c || !c->objects)
                 NFT_LOG_NULL(NULL);
 
         if(s < 0 || s >= c->obj_list_length)
@@ -199,7 +196,7 @@ static NftPrefsObj *_obj_get(NftPrefsClass *c, NftPrefsObjSlot s)
                 return NULL;
         }
         
-        return c->objects[s];
+        return &c->objects[s];
 }
 
 
@@ -251,9 +248,9 @@ static NftPrefsClass *_class_find_free(NftPrefs *p)
 
 
 /** find first unallocated NftPrefsObj entry in list */
-static NftPrefsObj *_obj_find_free(NftPrefs *p)
+static NftPrefsObj *_obj_find_free(NftPrefsClass *c)
 {
-	if(!p)
+	if(!c)
 		NFT_LOG_NULL(NULL);
 
         /** increase list by this amount of entries if space runs out */
@@ -261,11 +258,11 @@ static NftPrefsObj *_obj_find_free(NftPrefs *p)
 
         
         /* enough space left? */
-        if(p->obj_list_length <= p->obj_count)
+        if(c->obj_list_length <= c->obj_count)
         {
                 /* increase buffer */
-                if(!(p->objects = realloc(p->objects, 
-                                          (p->obj_list_length + NFT_PREFS_OBJBUF_INC)*
+                if(!(c->objects = realloc(c->objects, 
+                                          (c->obj_list_length + NFT_PREFS_OBJBUF_INC)*
                                           sizeof(NftPrefsObj))))
                 {
                         NFT_LOG_PERROR("realloc()");
@@ -274,24 +271,22 @@ static NftPrefsObj *_obj_find_free(NftPrefs *p)
 
                 
                 /* clear new memory */
-                memset(&p->objects[p->obj_list_length],
+                memset(&c->objects[c->obj_list_length],
                        0, 
                        NFT_PREFS_OBJBUF_INC*sizeof(NftPrefsObj));
 
                 
                 /* remember new listlength */
-                p->obj_list_length += NFT_PREFS_OBJBUF_INC;
+                c->obj_list_length += NFT_PREFS_OBJBUF_INC;
         }
 
         
 	/* find free slot in list */
 	int i;
-	for(i=0; i < p->obj_list_length; i++)
+	for(i=0; i < c->obj_list_length; i++)
 	{
-                if(!p->objects[i].object && 
-                   !p->objects[i].node && 
-                   p->objects[i].className[0] == '\0')
-                        return &p->objects[i];
+                if(!c->objects[i].object)
+                        return &c->objects[i];
 	}
 
 	return NULL;
@@ -302,66 +297,53 @@ static NftPrefsObj *_obj_find_free(NftPrefs *p)
 
 
 /** find class by name */
-static NftPrefsClass *_class_find_by_name(NftPrefs *p, const char *className)
+static NftPrefsClassSlot _class_find_by_name(NftPrefs *p, const char *className)
 {
-	if(!p || !className)
-		NFT_LOG_NULL(NULL);
+	if(!p || !className || !p->classes)
+		NFT_LOG_NULL(-1);
 
-        /* get list */
-        NftPrefsClass *list;
-        if(!(list = p->classes))
-        {
-                NFT_LOG(L_ERROR, "NftPrefs has no classes registered, yet");
-                return NULL;
-        }
         
 	/* find in list */
-	int i;
+	NftPrefsClassSlot i;
 	for(i=0; i < p->class_list_length; i++)
 	{
 		/** looking for name = NULL index? */
-		if(strcmp(list[i].name, className) == 0)
+		if(strcmp(p->classes[i].name, className) == 0)
 		{
-			return &list[i];
+			return i;
 		}
 	}
 
-        NFT_LOG(L_DEBUG, "didn't find class \"%s\"");
+        NFT_LOG(L_DEBUG, "didn't find class \"%s\"", className);
         
-	return NULL;
+	return -1;
 }
 
 
 /** find node by object */
-static NftPrefsObj *_obj_find_by_ptr(NftPrefs *p, void *obj)
+static NftPrefsObjSlot _obj_find_by_ptr(NftPrefsClass *c, void *obj)
 {
-	if(!p || !obj)
-		NFT_LOG_NULL(NULL);
+	if(!c || !obj || !c->objects)
+		NFT_LOG_NULL(-1);
         
 	/* find in list */
-	int i;
-	for(i=0; i < p->obj_list_length; i++)
+	NftPrefsObjSlot i;
+	for(i=0; i < c->obj_list_length; i++)
 	{
 		/** looking for name = NULL index? */
-		if(p->objects[i].object == obj)
+		if(c->objects[i].object == obj)
 		{
-			return &p->objects[i];
+			return i;
 		}
 	}
 
         NFT_LOG(L_DEBUG, "object %p not registered", obj);
         
-	return NULL;
+	return -1;
 }
 
 
 
-/** clear prefs object descriptor */
-static void _obj_clear(NftPrefs *p, NftPrefsObj *o)
-{
-        memset(o, 0, sizeof(NftPrefsObj));
-        p->obj_count--;
-}
 
 
 /******************************************************************************/
@@ -401,12 +383,6 @@ NftPrefs *nft_prefs_init()
                 return NULL;
         }
 
-        /* preallocate xmlDoc descriptor for this context */
-        if(!(p->doc = xmlNewDoc(BAD_CAST "1.0")))
-        {
-                free(p);
-                return NULL;
-        }
         
         return p;
 }
@@ -418,19 +394,12 @@ NftPrefs *nft_prefs_init()
 static void prefs_obj_free(NftPrefsObj *obj)
 {
         if(!obj)
-                NFT_LOG_NULL();
+               return;
 
-        /* free xmlNode */
-        if(obj->node)
-        {
-                xmlUnlinkNode(obj->node);
-                xmlFreeNode(obj->node);
-        }
-
+      
         /* invalidate obj descriptor */
-        obj->node = NULL;
         obj->object = NULL;
-        obj->klass = NULL;
+        obj->classSlot = -1;
 }
 
 
@@ -440,15 +409,15 @@ static void prefs_obj_free(NftPrefsObj *obj)
 static void prefs_class_free(NftPrefsClass *klass)
 {
         if(!klass)
-                NFT_LOG_NULL();
+                return;
 
         if(klass->objects)
         {
                 /* free all objects */
                 int i;
-                for(i = 0; i < klass->obj_count; i++)
+                for(i = 0; i < klass->obj_list_length; i++)
                 {
-                        prefs_obj_free(&klass->objects[i]);
+                        prefs_obj_free(_obj_get(klass, i));
                 }
 
                 /* free object list */
@@ -460,6 +429,8 @@ static void prefs_class_free(NftPrefsClass *klass)
         klass->fromObj = NULL;
         klass->toObj = NULL;
         klass->objects = NULL;
+        klass->obj_count = 0;
+        klass->obj_list_length = 0;
 }
 
 
@@ -478,12 +449,15 @@ void nft_prefs_exit(NftPrefs *p)
         if(p->classes)
         {
                 int i;
-                for(i = 0; i < p->class_count; i++)
+                for(i = 0; i < p->class_list_length; i++)
                 {
-                        prefs_class_free(&p->classes[i]);
+                        prefs_class_free(_class_get(p, i));
                 }
 
                 free(p->classes);
+                p->classes = NULL;
+                p->class_count = 0;
+                p->class_list_length = 0;
         }
 
         
@@ -522,6 +496,11 @@ NftResult nft_prefs_class_register(NftPrefs *p, const char *className,
                 return NFT_FAILURE;
         }
 
+        if(_class_find_by_name(p, className) >= 0)
+        {
+                NFT_LOG(L_ERROR, "class named \"%s\" already registered", className);
+                return NFT_FAILURE;
+        }
         
         /* get an empty list entry */
         NftPrefsClass *n;
@@ -558,8 +537,8 @@ void nft_prefs_class_unregister(NftPrefs *p, const char *className)
 
         
         /* find class */
-        NftPrefsClass *c;
-        if(!(c = _class_find_by_name(p, className)))
+        NftPrefsClassSlot cs;
+        if((cs = _class_find_by_name(p, className)) < 0)
         {
                 NFT_LOG(L_ERROR, 
                         "tried to unregister class \"%s\" that is not registered.", 
@@ -567,15 +546,8 @@ void nft_prefs_class_unregister(NftPrefs *p, const char *className)
         }
 
         
-        /* unregister all objects from this class */
-        int i;
-        for(i=0; i < p->obj_list_length; i++)
-        {
-                if(strcmp(p->objects[i].className, className) == 0)
-                        _obj_clear(p, &p->objects[i]);
-        }
-        
-        memset(c, 0, sizeof(NftPrefsClass));
+        /* free class */
+        prefs_class_free(_class_get(p, cs));
         
         if(--p->class_count < 0)
                 NFT_LOG(L_ERROR, "Negative class count. You messed up class_register() and class_unregister()... Double free?");
@@ -591,17 +563,16 @@ NftResult nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj)
                 NFT_LOG_NULL(NFT_FAILURE);
 
         /* find class */
-        NftPrefsClass *c;
-        if(!(c = _class_find_by_name(p, className)))
+        NftPrefsClassSlot cs;
+        if((cs = _class_find_by_name(p, className)) < 0)
         {
                 NFT_LOG(L_ERROR, "Unknown class \"%s\"", className);
                 return NFT_FAILURE;
         }
         
-        
         /* get a empty list entry */
-        NftPrefsObj *n;
-	if(!(n = _obj_find_free(p)))
+        NftPrefsObj *o;
+	if(!(o = _obj_find_free(_class_get(p, cs))))
 	{
 		NFT_LOG(L_ERROR, "Couldn't find free slot in NftPrefsObj list");
 		return NFT_FAILURE;
@@ -609,13 +580,12 @@ NftResult nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj)
 
         
         /* register new node */
-        n->node = NULL;
-        n->object = obj;
-        strncpy(n->className, className, NFT_PREFS_MAX_CLASSNAME);
-
+        o->object = obj;
+        o->classSlot = cs;
+        
         
         /* another class registered */
-        p->obj_count++;
+        p->classes[cs].obj_count++;
 
         return NFT_SUCCESS;
 }
@@ -624,16 +594,24 @@ NftResult nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj)
 /**
  * unregister object
  */
-void nft_prefs_obj_unregister(NftPrefs *p, void *obj)
+void nft_prefs_obj_unregister(NftPrefs *p, const char *className, void *obj)
 {
-        if(!p || !obj)
+        if(!p || !className || !obj)
                 return;
 
-        NftPrefsObj *n;
-        if(!(n = _obj_find_by_ptr(p, obj)))
+        /* find class */
+        NftPrefsClassSlot cs;
+        if((cs = _class_find_by_name(p, className)) < 0)
+        {
+                NFT_LOG(L_ERROR, "Unknown class \"%s\"", className);
+                return;
+        }
+        
+        NftPrefsObjSlot os;
+        if((os = _obj_find_by_ptr(_class_get(p, cs), obj)) < 0)
                 return;
 
-        _obj_clear(p, n);
+        prefs_obj_free(_obj_get(_class_get(p, cs), os));
 }
 
 
@@ -642,24 +620,30 @@ void nft_prefs_obj_unregister(NftPrefs *p, void *obj)
  * 
  * @result string holding xml representation of object (use free() to deallocate)
  */
-char *nft_prefs_obj_to_xml(NftPrefs *p, void *obj, void *userptr)
+char *nft_prefs_obj_to_buffer(NftPrefs *p, const char *className, void *obj, void *userptr)
 {
-        if(!p || !obj)
+        if(!p || !className || !obj)
                 NFT_LOG_NULL(NULL);
+
+        /* find object class */
+        NftPrefsClassSlot cs;
+        if((cs = _class_find_by_name(p, className)) < 0)
+                return NULL;
+
+        NftPrefsClass *c = _class_get(p, cs);
 
         
         /* find object descriptor */
-        NftPrefsObj *o;
-        if(!(o = _obj_find_by_ptr(p, obj)))
+        NftPrefsObjSlot os;
+        if((os = _obj_find_by_ptr(c, obj)) < 0)
                 return NULL;
 
-        /* find object class */
-        NftPrefsClass *c;
-        if(!(c = _class_find_by_name(p, o->className)))
-                return NULL;
+        NftPrefsObj *o = _obj_get(c, os);
+
 
         /* new node */
-        if(!(o->node = xmlNewNode(NULL, BAD_CAST c->name)))
+        NftPrefsNode *node;
+        if(!(node = xmlNewNode(NULL, BAD_CAST c->name)))
                 return NULL;
 
         /* call prefsFromObj() registered for this class */
@@ -680,7 +664,7 @@ char *nft_prefs_obj_to_xml(NftPrefs *p, void *obj, void *userptr)
         }
 
         /* dump node */
-        if(xmlNodeDump(buf, p->doc, o->node, 0, TRUE) < 0)
+        if(xmlNodeDump(buf, p->doc, node, 0, TRUE) < 0)
         {
                 NFT_LOG(L_ERROR, "xmlNodeDump() failed");
                 goto _potx_exit;
@@ -699,7 +683,8 @@ char *nft_prefs_obj_to_xml(NftPrefs *p, void *obj, void *userptr)
 
 _potx_exit:
         xmlBufferFree(buf);
-
+        xmlFreeNode(node);
+        
         return dump;
 }
 
@@ -707,64 +692,60 @@ _potx_exit:
 /**
  * create new object from preferences
  */
-void *nft_prefs_obj_from_xml(NftPrefs *p, const char *className, char *xml, void *userptr)
+void *nft_prefs_obj_from_buffer(NftPrefs *p, char *buffer, size_t bufsize, void *userptr)
 {
-        if(!className || !xml)
+        if(!p || !buffer)
                 NFT_LOG_NULL(NULL);
 
         
         /* parse XML */
         xmlDocPtr doc;
-        if(!(doc = xmlReadMemory(xml, strlen(xml), 
-				 NULL, NULL, 0)))
+        if(!(doc = xmlReadMemory(buffer, bufsize, NULL, NULL, 0)))
         {
                 NFT_LOG(L_ERROR, "Failed to xmlReadMemory()");
                 return NULL;
         }
 
-        
-        /* result object */
-        void *result = NULL;
-
-        
+                
         /* get node */
         xmlNode *node;
         if(!(node = xmlDocGetRootElement(doc)))
         {
                 NFT_LOG(L_ERROR, "No root element parsed");
-                goto _pofx_exit;
+                return NULL;
         }
 
         
         /* find object class */
-        NftPrefsClass *c;
-        if(!(c = _class_find_by_name(p, className)))
+        NftPrefsClassSlot cs;
+        if((cs = _class_find_by_name(p, (char *) node->name)) < 0)
                 return NULL;
 
-        
-        /* get a empty list entry */
+        NftPrefsClass *c = _class_get(p, cs);
+
+        /* register new object */
         NftPrefsObj *o;
-	if(!(o = _obj_find_free(p)))
-	{
-		NFT_LOG(L_ERROR, "Couldn't find free slot in NftPrefsObj list");
-		return NFT_FAILURE;
-	}
+        if(!(o = _obj_find_free(c)))
+                return NULL;
 
-        /* register parsed node */
-        o->node = node;
-
-        /* copy classname */
-        strncpy(o->className, className, NFT_PREFS_MAX_CLASSNAME);
+        /* register class */
+        o->classSlot = cs;
         
         /* create object from prefs */
-        /*if(!(c->toObj(&result, o, userptr)))
+        void *result = NULL;
+        if(!(c->toObj(&result, node, userptr)))
         {
                 NFT_LOG(L_ERROR, "toObj() function failed");
-        }*/
-        
-                
-_pofx_exit:
-        xmlFreeDoc(doc);
+        }
+
+        /* remember new object */
+        o->object = result;
+
+        /* free old doc? */
+        if(p->doc)
+                xmlFreeDoc(p->doc);
+
+        p->doc = doc;
         
         return result;
 }

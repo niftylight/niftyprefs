@@ -77,6 +77,8 @@
 
 
 #include <niftylog.h>
+#include <libxml/tree.h>
+
 
 
 /** maximum length of classname */
@@ -116,10 +118,7 @@ typedef NftResult (NftPrefsFromObjFunc)(NftPrefsObj *newObj,
  * @param userptr arbitrary pointer defined upon registering the object class
  * @result NFT_SUCCESS or NFT_FAILURE (processing will be aborted upon failure)
  */
-typedef NftResult (NftPrefsToObjFunc)(void **newObj, void *parentObj, 
-                                      void *firstChildObj, 
-                                      void *prevObj, void *nextObj, 
-                                      NftPrefsObj *node, const void *userptr);
+typedef NftResult (NftPrefsToObjFunc)(void **newObj, NftPrefsNode *node, const void *userptr);
 
 
 
@@ -131,13 +130,13 @@ NftResult       nft_prefs_class_register(NftPrefs *p, const char *className, Nft
 void            nft_prefs_class_unregister(NftPrefs *p, const char *className);
 
 NftResult       nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj);
-void            nft_prefs_obj_unregister(NftPrefs *p, void *obj);
+void            nft_prefs_obj_unregister(NftPrefs *p, const char *className, void *obj);
 
-NftPrefsNode *  nft_prefs_node_from_file(NftPrefs *p, const char *filename);
-NftPrefsNode *  nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsize);
+void *          nft_prefs_obj_from_file(NftPrefs *p, const char *filename);
+void *          nft_prefs_obj_from_buffer(NftPrefs *p, char *buffer, size_t bufsize, void *userptr);
 
-NftResult       nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *filename);
-char *          nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode *n);
+NftResult       nft_prefs_obj_to_file(NftPrefs *p, const char *className, void *obj, const char *filename);
+char *          nft_prefs_obj_to_buffer(NftPrefs *p, const char *className, void *obj, void *userptr);
 
 
 

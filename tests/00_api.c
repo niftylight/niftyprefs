@@ -93,8 +93,10 @@ int main(int argc, char *argv[])
         
         for(i=0; i < 1024; i++)
         {
+                char cName[64];
+                snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
                 NFT_LOG(L_DEBUG, "Unregistering object %d", i);
-                nft_prefs_obj_unregister(p, &objs[i]);
+                nft_prefs_obj_unregister(p, cName, &objs[i]);
         }
         
         for(i=0; i < 1024; i++)
