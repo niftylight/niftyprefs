@@ -346,6 +346,48 @@ static NftPrefsObjSlot _obj_find_by_ptr(NftPrefsClass *c, void *obj)
 
 
 
+/** create object from xmlDoc */
+static NftPrefsObj *_obj_from_doc(NftPrefs *p, xmlDoc *doc, void *userptr)
+{
+        if(!doc)
+                NFT_LOG_NULL(NULL);
+        
+        /* get node */
+        xmlNode *node;
+        if(!(node = xmlDocGetRootElement(doc)))
+        {
+                NFT_LOG(L_ERROR, "No root element found in XML");
+                return NULL;
+        }
+
+        /* find object class */
+        NftPrefsClassSlot cs;
+        if((cs = _class_find_by_name(p, (char *) node->name)) < 0)
+                return NULL;
+
+        NftPrefsClass *c = _class_get(p, cs);
+
+        /* register new object */
+        NftPrefsObj *o;
+        if(!(o = _obj_find_free(c)))
+                return NULL;
+
+        /* remember object class */
+        o->classSlot = cs;
+        
+        /* create object from prefs */
+        void *result = NULL;
+        if(!(c->toObj(&result, node, userptr)))
+        {
+                NFT_LOG(L_ERROR, "toObj() function failed");
+        }
+
+        /* remember new object */
+        o->object = result;
+
+        return o;
+}
+
 /******************************************************************************/
 /**************************** API FUNCTIONS ***********************************/
 /******************************************************************************/
@@ -616,7 +658,7 @@ void nft_prefs_obj_unregister(NftPrefs *p, const char *className, void *obj)
 
 
 /**
- * create prefs representation from current state of object
+ * create preferences buffer from current state of object
  * 
  * @result string holding xml representation of object (use free() to deallocate)
  */
@@ -634,11 +676,11 @@ char *nft_prefs_obj_to_buffer(NftPrefs *p, const char *className, void *obj, voi
 
         
         /* find object descriptor */
-        NftPrefsObjSlot os;
+        /*NftPrefsObjSlot os;
         if((os = _obj_find_by_ptr(c, obj)) < 0)
                 return NULL;
 
-        NftPrefsObj *o = _obj_get(c, os);
+        NftPrefsObj *o = _obj_get(c, os);*/
 
 
         /* new node */
@@ -647,9 +689,10 @@ char *nft_prefs_obj_to_buffer(NftPrefs *p, const char *className, void *obj, voi
                 return NULL;
 
         /* call prefsFromObj() registered for this class */
-        if(!c->fromObj(o, obj, userptr))
+        if(!c->fromObj(node, obj, userptr))
                 return NULL;
 
+        
 
         /* result pointer (xml dump) */
         char *dump = NULL;
@@ -690,7 +733,87 @@ _potx_exit:
 
 
 /**
- * create new object from preferences
+ * create preferences file from current state of object
+ *
+ * @param p NftPrefs context
+ * @param className name of class this object belongs to
+ * @param obj the object to snapshot
+ * @param filename full path of file to write to
+ * @param userptr arbitrary function that will be passed to NftPrefsToObjFunc
+ * @result newly created object or NULL
+ */
+NftResult nft_prefs_obj_to_file(NftPrefs *p, const char *className, void *obj, const char *filename, void *userptr)
+{
+        if(!p || !className || !obj)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        /* find object class */
+        NftPrefsClassSlot cs;
+        if((cs = _class_find_by_name(p, className)) < 0)
+                return NFT_FAILURE;
+
+        NftPrefsClass *c = _class_get(p, cs);
+
+        
+        /* find object descriptor */
+        /*NftPrefsObjSlot os;
+        if((os = _obj_find_by_ptr(c, obj)) < 0)
+                return NFT_FAILURE;
+
+        NftPrefsObj *o = _obj_get(c, os);*/
+
+
+        /* new node */
+        NftPrefsNode *node;
+        if(!(node = xmlNewNode(NULL, BAD_CAST c->name)))
+                return NFT_FAILURE;
+
+        /* overall result */
+        NftResult r = NFT_FAILURE;
+        xmlDoc *d = NULL;
+        
+        /* call prefsFromObj() registered for this class */
+        if(!c->fromObj(node, obj, userptr))
+                goto _potb_exit;
+
+        /* create temp xmlDoc */
+        if(!(d = xmlNewDoc(BAD_CAST "1.0")))
+                goto _potb_exit;
+
+        /* set node as root element of temporary doc */
+        if(!xmlDocSetRootElement(d, node))
+                goto _potb_exit;
+
+        /* write document to file */
+        if(xmlSaveFormatFileEnc(filename, d, "UTF-8", 1) < 0)
+                goto _potb_exit;
+
+        
+        /* successfully written file */
+        r = NFT_SUCCESS;
+
+        
+_potb_exit:
+        /* free node */
+        xmlUnlinkNode(node);
+        xmlFreeNode(node);
+
+        /* free temporary xmlDoc */
+        if(d)
+                xmlFreeDoc(d);
+        
+        return r;
+}
+
+
+/**
+ * create new object from preferences buffer
+ *
+ * @param p NftPrefs context
+ * @param buffer XML buffer
+ * @param bufsize size of XML buffer
+ * @param userptr arbitrary function that will be passed to NftPrefsToObjFunc
+ * @result newly created object or NULL
  */
 void *nft_prefs_obj_from_buffer(NftPrefs *p, char *buffer, size_t bufsize, void *userptr)
 {
@@ -706,51 +829,66 @@ void *nft_prefs_obj_from_buffer(NftPrefs *p, char *buffer, size_t bufsize, void 
                 return NULL;
         }
 
-                
-        /* get node */
-        xmlNode *node;
-        if(!(node = xmlDocGetRootElement(doc)))
-        {
-                NFT_LOG(L_ERROR, "No root element parsed");
-                return NULL;
-        }
-
         
-        /* find object class */
-        NftPrefsClassSlot cs;
-        if((cs = _class_find_by_name(p, (char *) node->name)) < 0)
-                return NULL;
-
-        NftPrefsClass *c = _class_get(p, cs);
-
-        /* register new object */
+        /* create object */        
         NftPrefsObj *o;
-        if(!(o = _obj_find_free(c)))
-                return NULL;
-
-        /* register class */
-        o->classSlot = cs;
-        
-        /* create object from prefs */
-        void *result = NULL;
-        if(!(c->toObj(&result, node, userptr)))
+        if(!(o = _obj_from_doc(p, doc, userptr)))
         {
-                NFT_LOG(L_ERROR, "toObj() function failed");
+                NFT_LOG(L_ERROR, "Failed to create object");
+                return NULL;
         }
-
-        /* remember new object */
-        o->object = result;
 
         /* free old doc? */
         if(p->doc)
                 xmlFreeDoc(p->doc);
 
+        /* save new doc */
         p->doc = doc;
         
-        return result;
+        return o->object;
 }
 
 
+/**
+ * create new object from preferences file
+ *
+ * @param p NftPrefs context
+ * @param filename full path of file
+ * @param userptr arbitrary function that will be passed to NftPrefsToObjFunc
+ * @result newly created object or NULL
+ */
+void *nft_prefs_obj_from_file(NftPrefs *p, const char *filename, void *userptr)
+{
+        if(!p || !filename)
+                NFT_LOG_NULL(NULL);
+
+        
+        /* parse XML */
+        xmlDocPtr doc;
+        if(!(doc = xmlReadFile(filename, NULL, 0)))
+        {
+		NFT_LOG(L_ERROR, "Failed to xmlReadFile(\"%s\")", filename);
+                return NULL;
+        }
+
+
+        /* create object */        
+        NftPrefsObj *o;
+        if(!(o = _obj_from_doc(p, doc, userptr)))
+        {
+                NFT_LOG(L_ERROR, "Failed to create object");
+                return NULL;
+        }
+
+        /* free old doc? */
+        if(p->doc)
+                xmlFreeDoc(p->doc);
+
+        /* save new doc */
+        p->doc = doc;
+        
+        return o->object;
+}
 
 
 /**
