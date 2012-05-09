@@ -56,6 +56,8 @@ struct Person
 
 /* printable name of "object" */
 #define PERSON_NAME "person"
+#define PEOPLE_NAME "people"
+
 /* file to write to */
 #define FILE_NAME   "test.xml"
 
@@ -67,10 +69,25 @@ struct Person persons[] =
         { .name = "Alice" , .email = "alice@example.com" },
 };
 
+/* our toplevel object */
+struct People
+{
+        struct Person *people;
+        size_t people_count;
+};
+
+
 /******************************************************************************/
 
 /** function to generate preferences for a Person object */
-static NftResult _person_to_prefs(NftPrefsObj *newNode, void *obj, void *userptr)
+static NftResult _people_to_prefs(NftPrefsNode *newNode, void *obj, void *userptr)
+{
+        return NFT_SUCCESS;
+}
+
+
+/** function to generate preferences for a Person object */
+static NftResult _person_to_prefs(NftPrefsNode *newNode, void *obj, void *userptr)
 {
     struct Person *p = (struct Person *) obj;
 
@@ -103,6 +120,10 @@ int main(int argc, char *argv[])
         NftPrefs *prefs = NULL;
         if(!(prefs = nft_prefs_init()))
                 goto _deinit;
+
+        /* register "people" object to niftyprefs */
+        if(!(nft_prefs_class_register(prefs, PEOPLE_NAME, NULL, &_people_to_prefs)))
+                goto _deinit;
         
         /* register "person" object to niftyprefs */
         if(!(nft_prefs_class_register(prefs, PERSON_NAME, NULL, &_person_to_prefs)))
@@ -111,6 +132,14 @@ int main(int argc, char *argv[])
         
         printf("Generating preferences for objects:\n");
 
+
+        /* register toplevel object (that holds all other objects) */
+        struct People people = 
+        { 
+                .people = persons, 
+                .people_count = sizeof(people)/sizeof(struct Person) 
+        };
+        nft_prefs_obj_register(prefs, PEOPLE_NAME, &people);
         
         /* walk all persons in model */
         int i;
@@ -124,19 +153,18 @@ int main(int argc, char *argv[])
                 if(!(nft_prefs_obj_register(prefs, PERSON_NAME, &persons[i])))
                         goto _deinit;
                 
-                /* generate preferences */
-               // if(!(nft_prefs_obj_to_prefs(prefs, &persons[i])))
-               //         goto _deinit;
         }
 
         
         /* dump to file */
-
+        if(!nft_prefs_obj_to_file(prefs, PEOPLE_NAME, &people, "-", NULL))
+                goto _deinit;
         
         /* all went fine */
         result = EXIT_SUCCESS;
            
 _deinit:       
+        nft_prefs_class_unregister(prefs, PEOPLE_NAME);
         nft_prefs_class_unregister(prefs, PERSON_NAME);
         nft_prefs_exit(prefs);
         

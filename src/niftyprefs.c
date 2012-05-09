@@ -768,26 +768,36 @@ NftResult nft_prefs_obj_to_file(NftPrefs *p, const char *className, void *obj, c
         if(!(node = xmlNewNode(NULL, BAD_CAST c->name)))
                 return NFT_FAILURE;
 
+        /* set name of node */
+        xmlNodeSetName(node, BAD_CAST className);
+        
         /* overall result */
         NftResult r = NFT_FAILURE;
         xmlDoc *d = NULL;
         
         /* call prefsFromObj() registered for this class */
         if(!c->fromObj(node, obj, userptr))
+        {
+                NFT_LOG(L_ERROR, "Object failed to create it's prefs");
                 goto _potb_exit;
-
+        }
+        
         /* create temp xmlDoc */
         if(!(d = xmlNewDoc(BAD_CAST "1.0")))
+        {
+                NFT_LOG(L_ERROR, "Failed to create new XML doc");
                 goto _potb_exit;
-
+        }
+        
         /* set node as root element of temporary doc */
-        if(!xmlDocSetRootElement(d, node))
-                goto _potb_exit;
-
+        xmlDocSetRootElement(d, node);
+                
         /* write document to file */
         if(xmlSaveFormatFileEnc(filename, d, "UTF-8", 1) < 0)
+        {
+                NFT_LOG(L_ERROR, "Failed to save XML file \"%s\"", filename);
                 goto _potb_exit;
-
+        }
         
         /* successfully written file */
         r = NFT_SUCCESS;
