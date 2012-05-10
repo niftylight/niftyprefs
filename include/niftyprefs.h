@@ -85,7 +85,7 @@
 #define NFT_PREFS_MAX_CLASSNAME 64
 
 
-/** a context holding a list of PrefsClasses and PrefsNodes */
+/** a context holding a list of PrefsClasses and PrefsNodes - acquired by nft_prefs_init() */
 typedef struct _NftPrefs NftPrefs;
 /** an object descriptor that holds various properties about an object */
 typedef struct _NftPrefsObj NftPrefsObj;
@@ -96,13 +96,13 @@ typedef xmlNode NftPrefsNode;
 /** 
  * function that creates a config-node for a certain object 
  *
+ * @param p current NftPrefs context
  * @param newNode newly created empty node that will be filled by the function
- * @param parentNode possible parentNode when having a tree structure
  * @param obj the object to process
  * @param userptr arbitrary pointer defined upon registering the object class
  * @result NFT_SUCCESS or NFT_FAILURE (processing will be aborted upon failure)
  */
-typedef NftResult (NftPrefsFromObjFunc)(NftPrefsNode *newNode, 
+typedef NftResult (NftPrefsFromObjFunc)(NftPrefs *p, NftPrefsNode *newNode, 
                                         void *obj, void *userptr);
 
 
@@ -125,6 +125,7 @@ typedef NftResult (NftPrefsToObjFunc)(void **newObj, NftPrefsNode *node, const v
 
 NftPrefs *      nft_prefs_init();
 void            nft_prefs_exit(NftPrefs *prefs);
+void            nft_prefs_free(void *p);
 
 NftResult       nft_prefs_class_register(NftPrefs *p, const char *className, NftPrefsToObjFunc *toObj, NftPrefsFromObjFunc *fromObj);
 void            nft_prefs_class_unregister(NftPrefs *p, const char *className);
@@ -135,11 +136,16 @@ void            nft_prefs_obj_unregister(NftPrefs *p, const char *className, voi
 void *          nft_prefs_obj_from_file(NftPrefs *p, const char *filename, void *userptr);
 void *          nft_prefs_obj_from_buffer(NftPrefs *p, char *buffer, size_t bufsize, void *userptr);
 
+NftPrefsNode *  nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *obj, void *userptr);
 NftResult       nft_prefs_obj_to_file(NftPrefs *p, const char *className, void *obj, const char *filename, void *userptr);
 char *          nft_prefs_obj_to_buffer(NftPrefs *p, const char *className, void *obj, void *userptr);
 
+NftResult       nft_prefs_node_add_child(NftPrefsNode *parent, NftPrefsNode *cur);
 
-
+NftResult       nft_prefs_node_prop_string_set(NftPrefsNode *n, const char *name, char *value);
+char *          nft_prefs_node_prop_string_get(NftPrefsNode *n, const char *name);
+NftResult       nft_prefs_node_prop_int_set(NftPrefsNode *n, const char *name, int val);
+NftResult       nft_prefs_node_prop_int_get(NftPrefsNode *n, const char *name, int *val);
 
 
 #endif /* _NIFTYPREFS_H */

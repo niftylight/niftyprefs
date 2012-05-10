@@ -517,6 +517,16 @@ void nft_prefs_exit(NftPrefs *p)
 
 
 /**
+ * wrapper for xmlFree()
+ */
+void nft_prefs_free(void *p)
+{
+        if(p)
+                xmlFree(p);
+}
+
+
+/**
  * register object class
  *
  * @param className unique name of this class
@@ -658,11 +668,9 @@ void nft_prefs_obj_unregister(NftPrefs *p, const char *className, void *obj)
 
 
 /**
- * create preferences buffer from current state of object
- * 
- * @result string holding xml representation of object (use free() to deallocate)
+ * create a NftPrefsNode from a previously registered object 
  */
-char *nft_prefs_obj_to_buffer(NftPrefs *p, const char *className, void *obj, void *userptr)
+NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *obj, void *userptr)
 {
         if(!p || !className || !obj)
                 NFT_LOG_NULL(NULL);
@@ -682,22 +690,41 @@ char *nft_prefs_obj_to_buffer(NftPrefs *p, const char *className, void *obj, voi
 
         NftPrefsObj *o = _obj_get(c, os);*/
 
-
         /* new node */
         NftPrefsNode *node;
         if(!(node = xmlNewNode(NULL, BAD_CAST c->name)))
                 return NULL;
 
+        /* set name of node */
+        xmlNodeSetName(node, BAD_CAST className);
+        
         /* call prefsFromObj() registered for this class */
-        if(!c->fromObj(node, obj, userptr))
+        if(!c->fromObj(p, node, obj, userptr))
                 return NULL;
 
+        return node;
+}
+
+
+/**
+ * create preferences buffer from current state of object
+ * 
+ * @result string holding xml representation of object (use free() to deallocate)
+ */
+char *nft_prefs_obj_to_buffer(NftPrefs *p, const char *className, void *obj, void *userptr)
+{
+        if(!p || !className || !obj)
+                NFT_LOG_NULL(NULL);
+
         
+
+        xmlNode *node;
+        if(!(node = nft_prefs_obj_to_node(p, className, obj, userptr)))
+             return NULL;
 
         /* result pointer (xml dump) */
         char *dump = NULL;
 
-        
         /* create buffer */
         xmlBufferPtr buf;
         if(!(buf = xmlBufferCreate()))
@@ -747,42 +774,18 @@ NftResult nft_prefs_obj_to_file(NftPrefs *p, const char *className, void *obj, c
         if(!p || !className || !obj)
                 NFT_LOG_NULL(NFT_FAILURE);
 
-        /* find object class */
-        NftPrefsClassSlot cs;
-        if((cs = _class_find_by_name(p, className)) < 0)
+                
+        xmlNode *node;
+        if(!(node = nft_prefs_obj_to_node(p, className, obj, userptr)))
                 return NFT_FAILURE;
 
-        NftPrefsClass *c = _class_get(p, cs);
-
-        
-        /* find object descriptor */
-        /*NftPrefsObjSlot os;
-        if((os = _obj_find_by_ptr(c, obj)) < 0)
-                return NFT_FAILURE;
-
-        NftPrefsObj *o = _obj_get(c, os);*/
-
-
-        /* new node */
-        NftPrefsNode *node;
-        if(!(node = xmlNewNode(NULL, BAD_CAST c->name)))
-                return NFT_FAILURE;
-
-        /* set name of node */
-        xmlNodeSetName(node, BAD_CAST className);
         
         /* overall result */
         NftResult r = NFT_FAILURE;
-        xmlDoc *d = NULL;
-        
-        /* call prefsFromObj() registered for this class */
-        if(!c->fromObj(node, obj, userptr))
-        {
-                NFT_LOG(L_ERROR, "Object failed to create it's prefs");
-                goto _potb_exit;
-        }
+
         
         /* create temp xmlDoc */
+        xmlDoc *d = NULL;
         if(!(d = xmlNewDoc(BAD_CAST "1.0")))
         {
                 NFT_LOG(L_ERROR, "Failed to create new XML doc");
@@ -898,6 +901,120 @@ void *nft_prefs_obj_from_file(NftPrefs *p, const char *filename, void *userptr)
         p->doc = doc;
         
         return o->object;
+}
+
+
+
+/**
+ * add current node as child of parent node
+ *
+ * @param parent parent node
+ * @param cur child node
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_add_child(NftPrefsNode *parent, NftPrefsNode *cur)
+{
+        return xmlAddChild(parent, cur) ? NFT_SUCCESS : NFT_FAILURE;
+}
+
+
+/**
+ * set string property of a node
+ * @param n node where property should be set
+ * @param name name of property
+ * @param value string-value of property
+ */
+NftResult nft_prefs_node_prop_string_set(NftPrefsNode *n, const char *name, char *value)
+{
+	if(!n || !name || !value)
+		NFT_LOG_NULL(NFT_FAILURE);
+
+	if(!xmlSetProp(n, (xmlChar *) name, (xmlChar *) value))
+	{
+		NFT_LOG(L_DEBUG, "Failed to set property \"%s\" = \"%s\"", name, value);
+		return NFT_FAILURE;
+	}
+
+	return NFT_SUCCESS;
+}
+
+
+/**
+ * get string property
+ *
+ * @param n NftPrefsNode to get string property from
+ * @param name name of property
+ * @result string with value or NULL (free using nft_prefs_free())
+ */
+char *nft_prefs_node_prop_string_get(NftPrefsNode *n, const char *name)
+{
+        if(!n || !name)
+                NFT_LOG_NULL(NULL);
+
+        return (char *) xmlGetProp(n, BAD_CAST name);
+}
+
+
+/**
+ * set integer property
+ *
+ * @param n node where property should be set
+ * @param name name of property
+ * @param val value of property
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_prop_int_set(NftPrefsNode *n, const char *name, int val)
+{
+        if(!n || !name)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        char *tmp;
+        if(!(tmp = alloca(32)))
+        {
+                NFT_LOG_PERROR("alloca()");
+                return NFT_FAILURE;
+        }
+
+        if(snprintf(tmp, 32, "%d", val) < 0)
+        {
+                NFT_LOG_PERROR("snprintf()");
+                return NFT_FAILURE;
+        }
+        
+        return nft_prefs_node_prop_string_set(n, name, tmp);
+}
+
+
+/**
+ * get integer property
+ *
+ * @param n node to read property from
+ * @param name name of property
+ * @param val space for value of property
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_prop_int_get(NftPrefsNode *n, const char *name, int *val)
+{
+        if(!n || !name || !val)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        char *tmp;
+        if(!(tmp = nft_prefs_node_prop_string_get(n, name)))
+        {
+                NFT_LOG(L_DEBUG, "property \"%s\" not found in <%s>", name, n->name);
+                return NFT_FAILURE;
+        }
+
+	NftResult result = NFT_SUCCESS;
+        if(sscanf(tmp, "%d", val) != 1)
+        {
+                NFT_LOG(L_ERROR, "sscanf() failed");
+                result = NFT_FAILURE;
+        }
+
+	nft_prefs_free(tmp);
+	
+        return result;
 }
 
 

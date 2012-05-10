@@ -52,6 +52,7 @@ struct Person
 {
     char name[256];
     char email[256];
+    int age;
 };
 
 /* printable name of "object" */
@@ -65,8 +66,8 @@ struct Person
 /* some example data */
 struct Person persons[] =
 {
-        { .name = "Bob"   , .email = "bob@example.com"   },
-        { .name = "Alice" , .email = "alice@example.com" },
+        { .name = "Bob"   , .email = "bob@example.com", .age = 30  },
+        { .name = "Alice" , .email = "alice@example.com", .age = 30 },
 };
 
 /* our toplevel object */
@@ -79,29 +80,68 @@ struct People
 
 /******************************************************************************/
 
-/** function to generate preferences for a Person object */
-static NftResult _people_to_prefs(NftPrefsNode *newNode, void *obj, void *userptr)
+/** 
+ * function to generate preferences for a Person object -
+ *
+ * @param newNode emtpy <class/> node that has to be filled with object properties & attributes
+ * @param obj the object that has to be described
+ * @param userptr arbitrary user pointer (or NULL)
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+static NftResult _people_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj, void *userptr)
 {
+        if(!newNode || !obj)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        /* "People" object */
+        struct People *people = (struct People *) obj;
+
+        
+        /* process all persons */
+        size_t n;
+        for(n=0; n < people->people_count; n++)
+        {
+                /* generate prefs node for each person */
+                NftPrefsNode *node;
+                if(!(node = nft_prefs_obj_to_node(p, PERSON_NAME, &people->people[n], NULL)))
+                        return NFT_FAILURE;
+
+                /* add person object as child of people object */
+                nft_prefs_node_add_child(newNode, node);
+        }
+        
         return NFT_SUCCESS;
 }
 
 
 /** function to generate preferences for a Person object */
-static NftResult _person_to_prefs(NftPrefsNode *newNode, void *obj, void *userptr)
+static NftResult _person_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj, void *userptr)
 {
-    struct Person *p = (struct Person *) obj;
+        /* NULL object means failure -> exit early */
+        if(!p || !newNode || !obj)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        /* get our person object */
+        struct Person *person = (struct Person *) obj;
 
         
-    /** NULL object means failure -> exit early */
-    if(!p)
-        return NFT_FAILURE;
+        /* person name */
+        if(!nft_prefs_node_prop_string_set(newNode, "name", person->name))
+                return NFT_FAILURE;
 
         
-    /** fill empty node that has been created for us */
+        /* person email */
+        if(!nft_prefs_node_prop_string_set(newNode, "email", person->email))
+                return NFT_FAILURE;
 
+        
+        /* person age */
+        if(!nft_prefs_node_prop_int_set(newNode, "age", person->age))
+                return NFT_FAILURE;
+        
 
-    /** everything fine - node contains preferences now */
-    return NFT_SUCCESS;
+        /** everything fine - node contains preferences now */
+        return NFT_SUCCESS;
 }
 
 
@@ -137,7 +177,7 @@ int main(int argc, char *argv[])
         struct People people = 
         { 
                 .people = persons, 
-                .people_count = sizeof(people)/sizeof(struct Person) 
+                .people_count = sizeof(persons)/sizeof(struct Person) 
         };
         nft_prefs_obj_register(prefs, PEOPLE_NAME, &people);
         
@@ -146,8 +186,8 @@ int main(int argc, char *argv[])
         for(i=0; i < sizeof(persons)/sizeof(struct Person); i++)
         {
                 /* print info */
-                printf("\tperson(name=\"%s\",email=\"%s\")\n",
-                    persons[i].name, persons[i].email);
+                printf("\tperson(name=\"%s\",email=\"%s\", age=\"%d\")\n",
+                    persons[i].name, persons[i].email, persons[i].age);
 
                 /* register object */
                 if(!(nft_prefs_obj_register(prefs, PERSON_NAME, &persons[i])))
