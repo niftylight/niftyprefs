@@ -389,9 +389,7 @@ NftPrefs *nft_prefs_init()
 }
 
 
-/**
- * free all resources of one NftPrefsObj
- */
+/** free all resources of one NftPrefsObj */
 static void prefs_obj_free(NftPrefsObj *obj)
 {
         if(!obj)
@@ -404,9 +402,7 @@ static void prefs_obj_free(NftPrefsObj *obj)
 }
 
 
-/**
- * free all resources of one NftPrefsClass
- */
+/** free all resources of one NftPrefsClass */
 static void prefs_class_free(NftPrefsClass *klass)
 {
         if(!klass)
@@ -449,6 +445,8 @@ static void prefs_class_free(NftPrefsClass *klass)
 /**
  * deinitialize libniftyprefs - call this after doing the last API call to
  * finally clean up
+ *
+ * @param p NftPrefs context
  */
 void nft_prefs_exit(NftPrefs *p)
 {
@@ -490,6 +488,8 @@ void nft_prefs_exit(NftPrefs *p)
 
 /**
  * wrapper for xmlFree()
+ *
+ * @param p pointer to memory previously allocated by niftyprefs
  */
 void nft_prefs_free(void *p)
 {
@@ -501,6 +501,7 @@ void nft_prefs_free(void *p)
 /**
  * register object class
  *
+ * @param p NftPrefs context
  * @param className unique name of this class
  * @param toObj pointer to NftPrefsToObjFunc used by this class
  * @param fromObj pointer to NftPrefsFromObjFunc used by this class
@@ -553,6 +554,9 @@ NftResult nft_prefs_class_register(NftPrefs *p, const char *className,
 
 /**
  * unregister class from current context
+ *
+ * @param p NftPrefs context
+ * @param className name of class
  */
 void nft_prefs_class_unregister(NftPrefs *p, const char *className)
 {
@@ -580,6 +584,11 @@ void nft_prefs_class_unregister(NftPrefs *p, const char *className)
 
 /**
  * register an object
+ *
+ * @param p NftPrefs context
+ * @param className name of class
+ * @param obj pointer to object to register
+ * @result NFT_SUCCESS or NFT_FAILURE
  */
 NftResult nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj)
 {
@@ -617,6 +626,10 @@ NftResult nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj)
 
 /**
  * unregister object
+ *
+ * @param p NftPrefs context
+ * @param className name of class
+ * @param obj pointer to object to unregister
  */
 void nft_prefs_obj_unregister(NftPrefs *p, const char *className, void *obj)
 {
@@ -641,6 +654,13 @@ void nft_prefs_obj_unregister(NftPrefs *p, const char *className, void *obj)
 
 /**
  * create a NftPrefsNode from a previously registered object 
+ *
+ * @param p NftPrefs context
+ * @param className name of class
+ * @param obj pointer to object
+ * @param userptr arbitrary pointer that will be passed to NftPrefsFromObjFunc
+ * @result newly created NftPrefsNode or NULL
+ * @note you should only need to use that from inside a NftPrefsFromObjFunc where it will be freed
  */
 NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *obj, void *userptr)
 {
@@ -681,6 +701,10 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *ob
 /**
  * create preferences buffer from current state of object
  * 
+ * @param p NftPrefs context
+ * @param className name of class
+ * @param obj pointer to object
+ * @param userptr arbitrary pointer that will be passed to NftPrefsToFromFunc
  * @result string holding xml representation of object (use free() to deallocate)
  */
 char *nft_prefs_obj_to_buffer(NftPrefs *p, const char *className, void *obj, void *userptr)
@@ -735,10 +759,10 @@ _potx_exit:
  * create preferences file from current state of object
  *
  * @param p NftPrefs context
- * @param className name of class this object belongs to
+ * @param className name of class 
  * @param obj the object to snapshot
  * @param filename full path of file to write to
- * @param userptr arbitrary function that will be passed to NftPrefsToObjFunc
+ * @param userptr arbitrary function that will be passed to NftPrefsFromObjFunc
  * @result newly created object or NULL
  */
 NftResult nft_prefs_obj_to_file(NftPrefs *p, const char *className, void *obj, const char *filename, void *userptr)
@@ -795,6 +819,12 @@ _potb_exit:
 
 /**
  * create object from a NftPrefsNode
+ *
+ * @param p NftPrefs context
+ * @param n NftPrefsNode
+ * @param userptr arbitrary function that will be passed to NftPrefsToObjFunc
+ * @result newly created object or NULL
+ * @note you should only need to use that from inside a NftPrefsToObjFunc where it will be freed
  */
 void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
 {

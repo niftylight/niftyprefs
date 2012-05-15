@@ -47,28 +47,48 @@
 
 
 /**      
- * @defgroup prefs niftyprefs
- * @brief abstract preference handling for arbitrary objects
+ * @mainpage preferences handling for arbitrary objects
+ *
+ * <h1>Introduction</h1>
+ * The basic idea is to define and manage "classes" for arbitrary (void *)
+ * pointers in a comfortable way. So you simply can:
+ * - "snapshot" the state of an object for saving it in a preferences-definition 
+ * - create an object from a previously created "snapshot"
+ *
+ *
+ * <h1>Usage</h1>
+ *
+ * In every case call:
+ *  - nft_prefs_init() before doing anything
+ *  - nft_prefs_class_register() for every object-class, before using the class 
+ *    with any of nft_prefs_*()
+ *  - ...
+ *  - nft_prefs_obj_unregister() when freeing resources of a registered object
+ *  - ...
+ *  - nft_prefs_class_unregister() when a class is not used anymore
+ *  - nft_prefs_exit() when no nft_prefs_*() needs to be called anymore
+ *
  *
  * Use case 1: Generate preferences from existing object
- *  1.1 nft_prefs_init()
- *  1.2 nft_prefs_class_register()
- *  1.3 [create object]
- *  1.4 nft_prefs_obj_register(obj)
- *  1.5 prefsObj = nft_prefs_from_obj(obj)
- *  1.6 [use prefsObj]
- *  1.7 nft_prefs_obj_free(prefsObj)
+ *  - ...
+ *  - [create object]
+ *  - nft_prefs_obj_register(obj)
+ *  - prefsObj = nft_prefs_from_obj(obj)
+ *  - [use prefsObj]
+ *  - nft_prefs_obj_free(prefsObj)
  *
  * Use case 2: Generate object from preferences
- *  1.1 nft_prefs_init()
- *  1.2 nft_prefs_class_register()
- *  1.3 create NftPrefsNode nft_prefs_node_from_file() / nft_prefs_node_from_buffer()
- *  1.4 create object(s) from NftPrefsNode
+ *  - ...
+ *  - create NftPrefsNode nft_prefs_node_from_file() / nft_prefs_node_from_buffer()
+ *  - create object(s) from NftPrefsNode
  *
  * Use case 3: Dump preferences to file
  * Use case 4: Dump preferences to string
  * Use case 5: Parse preferences from file
  * Use case 6: Parse preferences from string
+ *
+ * @defgroup prefs niftyprefs
+ * @brief abstract preference handling for arbitrary objects
  * @{
  */
 
@@ -109,16 +129,14 @@ typedef NftResult (NftPrefsFromObjFunc)(NftPrefs *p, NftPrefsNode *newNode,
 /** 
  * function that allocates a new object from a config-node 
  *
+ * @param p current NftPrefs context
  * @param newObj space to put the pointer to a newly allocated object
- * @param parentObj possible parent object (or NULL)
- * @param firstChildObj possible child object (or NULL) 
- * @param prevObj possible previous object (or NULL) 
- * @param nextObj possible next object (or NULL)
  * @param node the preference node describing the object that's about to be created
  * @param userptr arbitrary pointer defined upon registering the object class
  * @result NFT_SUCCESS or NFT_FAILURE (processing will be aborted upon failure)
  */
-typedef NftResult (NftPrefsToObjFunc)(NftPrefs *p, void **newObj, NftPrefsNode *node, void *userptr);
+typedef NftResult (NftPrefsToObjFunc)(NftPrefs *p, void **newObj, 
+                                      NftPrefsNode *node, void *userptr);
 
 
 

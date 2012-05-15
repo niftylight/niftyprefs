@@ -43,14 +43,14 @@
 
 
 /**
- * @file niftyprefs_version.h
+ * @file niftyprefs-version.h
  */
 
 
 /**      
  * @addtogroup prefs
  * @{
- * @defgroup prefs_version
+ * @defgroup prefs_version Version handling
  * @brief version handling
  *
  * @{
@@ -64,18 +64,25 @@
 #endif
 
 
-/** API version we will provide */
+/** major version */
 #define NFT_PREFS_MAJOR_VERSION  (@PACKAGE_MAJOR_VERSION@)
+/** minor version */
 #define NFT_PREFS_MINOR_VERSION  (@PACKAGE_MINOR_VERSION@)
+/** micro version */
 #define NFT_PREFS_MICRO_VERSION  (@PACKAGE_MICRO_VERSION@)
+/** API revision (libtool) */
 #define NFT_PREFS_API_REVISION   (@PACKAGE_API_REVISION@)
+/** current API version (libtool) */
 #define NFT_PREFS_API_CURENT     (@PACKAGE_API_CURRENT@)
+/** current API age (libtool) */
 #define NFT_PREFS_API_AGE        (@PACKAGE_API_AGE@)
+/** current git version hash - defined using -DPACKAGE_GIT_VERSION at compile */
 #define NFT_PREFS_GIT_VERSION    (PACKAGE_GIT_VERSION)
+/** nicely composed long version string */
 #define NFT_PREFS_VERSION_LONG   ("@PACKAGE_VERSION@-"PACKAGE_GIT_VERSION)
 
 
-/** macro to check version-compatibility */
+/** macro to check version-compatibility of headers <-> binary version */
 #define NFT_PREFS_CHECK_VERSION nft_prefs_version_check(NFT_PREFS_API_REVISION);
 
 

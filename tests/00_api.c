@@ -48,7 +48,7 @@
 
 
 
-/** some generic API stresstests */
+/** some generic API "stresstests" */
 int main(int argc, char *argv[])
 {
 
