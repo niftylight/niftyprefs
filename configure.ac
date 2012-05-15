@@ -5,7 +5,7 @@
 # --------------------------------
 #    initialization
 # --------------------------------
-AC_INIT([libniftyprefs], m4_esyscmd([./version.sh --short]), [http://github.com/niftylight/niftylight/issues], [niftyprefs], [http://wiki.niftylight.de/AC_PACKAGE_NAME])
+AC_INIT([libniftyprefs], m4_esyscmd([./version.sh --short]), [http://github.com/niftylight/niftyprefs/issues], [niftyprefs], [http://wiki.niftylight.de/AC_PACKAGE_NAME])
 AC_COPYRIGHT([Copyright (C) 2006-2012 Daniel Hiepler])
 
 AM_INIT_AUTOMAKE([color-tests dist-bzip2 parallel-tests silent-rules -Wall])
