@@ -46,21 +46,96 @@
 #include <niftyprefs.h>
 
 
+#define PEOPLECOUNT 2
+
 
 /* one "object" */
 struct Person
 {
-    char name[256];
-    char email[256];
-};
+        char name[256];
+        char email[256];
+        int age;
+}persons[PEOPLECOUNT];
+
+/* our toplevel object */
+struct People
+{
+        struct Person *people[PEOPLECOUNT];
+        size_t people_count;
+}people;
+
 
 /* printable name of "object" */
 #define PERSON_NAME "person"
+#define PEOPLE_NAME "people"
+
 /* file to read from */
 #define FILE_NAME   "test.xml"
 
 
 /******************************************************************************/
+
+/** function to generate a People "object" from a preferences description */
+static NftResult _people_from_prefs(NftPrefs *p, void **newObj, NftPrefsNode *node, void *userptr)
+{
+        people.people_count = sizeof(persons)/sizeof(struct Person);
+
+        /* call toObj() of child objects */
+        NftPrefsNode *child;
+        size_t i = 0;
+        for(child = nft_prefs_node_get_first_child(node); 
+            child;
+            child = nft_prefs_node_get_next(child))
+        {
+                if(i >= sizeof(persons)/sizeof(struct Person))
+                {
+                        NFT_LOG(L_ERROR, "more persons in prefs file than expected");
+                        return NFT_FAILURE;
+                }
+
+                /* call toObj function of child node (should be a <person> node) */
+                if(!(people.people[i++] = nft_prefs_obj_from_node(p, child, userptr)))
+                {
+                        NFT_LOG(L_ERROR, "Failed to create object from preference node");
+                        return NFT_FAILURE;
+                }
+        }
+        
+        /* save pointer to new object */
+        *newObj = &people;
+        
+        return NFT_SUCCESS;
+}
+
+
+/** function to generate a Person "object" from a preferences description */
+static NftResult _person_from_prefs(NftPrefs *p, void **newObj, NftPrefsNode *node, void *userptr)
+{
+        static size_t i;
+
+        /* only fill reserved space, not more */
+        if(i >= sizeof(persons)/sizeof(struct Person))
+                return NFT_FAILURE;
+
+        char *name = nft_prefs_node_prop_string_get(node, "name");
+        char *email = nft_prefs_node_prop_string_get(node, "email");
+        int age;
+        nft_prefs_node_prop_int_get(node, "age", &age);
+
+        strncpy(persons[i].name, name, sizeof(persons[i].name));
+        strncpy(persons[i].email, email, sizeof(persons[i].email));
+        persons[i].age = age;
+
+        /* free strings */
+        nft_prefs_free(name);
+        nft_prefs_free(email);
+        
+        /* save pointer to new object */
+        *newObj = &persons[i++];
+        
+                
+        return NFT_SUCCESS;
+}
 
 
 /** create object from preferences definition */
@@ -76,10 +151,41 @@ int main(int argc, char *argv[])
                 goto _deinit;
 
         
-        /* register "person" object to niftyprefs */
+        /* register "people" class to niftyprefs */
+        if(!(nft_prefs_class_register(prefs, PEOPLE_NAME, &_people_from_prefs, NULL)))
+                goto _deinit;
+        
+        /* register "person" class to niftyprefs */
+        if(!(nft_prefs_class_register(prefs, PERSON_NAME, &_person_from_prefs, NULL)))
+                goto _deinit;
+        
 
         /* load & parse config file */
+        struct People *people;
+        if(!(people = nft_prefs_obj_from_file(prefs, "test-prefs.xml", NULL)))
+                goto _deinit;
 
+        /* process all persons */
+        size_t n;
+        for(n=0; n < people->people_count; n++)
+        {
+                /* print info */
+                printf("\tperson(name=\"%s\",email=\"%s\", age=\"%d\")\n",
+                    people->people[n]->name, people->people[n]->email, people->people[n]->age);
+        }
+
+        /* we should get what we put in */
+        if((strcmp(people->people[0]->name, "Bob") != 0) ||
+           (strcmp(people->people[0]->email, "bob@example.com") != 0) ||
+           (people->people[0]->age != 30) ||
+           (strcmp(people->people[1]->name, "Alice") != 0) ||
+           (strcmp(people->people[1]->email, "alice@example.com") != 0) ||
+           (people->people[1]->age != 30))
+        {
+                NFT_LOG(L_ERROR, "Input from 01_obj-to-prefs.c doesn't match output!");
+                goto _deinit;
+        }
+        
         /* all went fine */   
         result = EXIT_SUCCESS;
            

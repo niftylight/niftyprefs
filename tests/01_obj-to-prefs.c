@@ -78,6 +78,7 @@ struct People
 };
 
 
+
 /******************************************************************************/
 
 /** 
@@ -161,11 +162,11 @@ int main(int argc, char *argv[])
         if(!(prefs = nft_prefs_init()))
                 goto _deinit;
 
-        /* register "people" object to niftyprefs */
+        /* register "people" class to niftyprefs */
         if(!(nft_prefs_class_register(prefs, PEOPLE_NAME, NULL, &_people_to_prefs)))
                 goto _deinit;
         
-        /* register "person" object to niftyprefs */
+        /* register "person" class to niftyprefs */
         if(!(nft_prefs_class_register(prefs, PERSON_NAME, NULL, &_person_to_prefs)))
                 goto _deinit;
 
@@ -197,7 +198,7 @@ int main(int argc, char *argv[])
 
         
         /* dump to file */
-        if(!nft_prefs_obj_to_file(prefs, PEOPLE_NAME, &people, "-", NULL))
+        if(!nft_prefs_obj_to_file(prefs, PEOPLE_NAME, &people, "test-prefs.xml", NULL))
                 goto _deinit;
         
         /* all went fine */

@@ -81,7 +81,7 @@
 
 
 
-/** maximum length of classname */
+/** maximum length of a classname */
 #define NFT_PREFS_MAX_CLASSNAME 64
 
 
@@ -118,7 +118,7 @@ typedef NftResult (NftPrefsFromObjFunc)(NftPrefs *p, NftPrefsNode *newNode,
  * @param userptr arbitrary pointer defined upon registering the object class
  * @result NFT_SUCCESS or NFT_FAILURE (processing will be aborted upon failure)
  */
-typedef NftResult (NftPrefsToObjFunc)(void **newObj, NftPrefsNode *node, const void *userptr);
+typedef NftResult (NftPrefsToObjFunc)(NftPrefs *p, void **newObj, NftPrefsNode *node, void *userptr);
 
 
 
@@ -127,20 +127,26 @@ NftPrefs *      nft_prefs_init();
 void            nft_prefs_exit(NftPrefs *prefs);
 void            nft_prefs_free(void *p);
 
+
 NftResult       nft_prefs_class_register(NftPrefs *p, const char *className, NftPrefsToObjFunc *toObj, NftPrefsFromObjFunc *fromObj);
 void            nft_prefs_class_unregister(NftPrefs *p, const char *className);
+
 
 NftResult       nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj);
 void            nft_prefs_obj_unregister(NftPrefs *p, const char *className, void *obj);
 
 void *          nft_prefs_obj_from_file(NftPrefs *p, const char *filename, void *userptr);
 void *          nft_prefs_obj_from_buffer(NftPrefs *p, char *buffer, size_t bufsize, void *userptr);
+void *          nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr);
 
-NftPrefsNode *  nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *obj, void *userptr);
 NftResult       nft_prefs_obj_to_file(NftPrefs *p, const char *className, void *obj, const char *filename, void *userptr);
 char *          nft_prefs_obj_to_buffer(NftPrefs *p, const char *className, void *obj, void *userptr);
+NftPrefsNode *  nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *obj, void *userptr);
+
 
 NftResult       nft_prefs_node_add_child(NftPrefsNode *parent, NftPrefsNode *cur);
+NftPrefsNode *  nft_prefs_node_get_first_child(NftPrefsNode *n);
+NftPrefsNode *  nft_prefs_node_get_next(NftPrefsNode *n);
 
 NftResult       nft_prefs_node_prop_string_set(NftPrefsNode *n, const char *name, char *value);
 char *          nft_prefs_node_prop_string_get(NftPrefsNode *n, const char *name);

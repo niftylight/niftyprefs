@@ -314,7 +314,7 @@ static NftPrefsClassSlot _class_find_by_name(NftPrefs *p, const char *className)
 		}
 	}
 
-        NFT_LOG(L_DEBUG, "didn't find class \"%s\"", className);
+        NFT_LOG(L_NOISY, "didn't find class \"%s\"", className);
         
 	return -1;
 }
@@ -346,47 +346,6 @@ static NftPrefsObjSlot _obj_find_by_ptr(NftPrefsClass *c, void *obj)
 
 
 
-/** create object from xmlDoc */
-static NftPrefsObj *_obj_from_doc(NftPrefs *p, xmlDoc *doc, void *userptr)
-{
-        if(!doc)
-                NFT_LOG_NULL(NULL);
-        
-        /* get node */
-        xmlNode *node;
-        if(!(node = xmlDocGetRootElement(doc)))
-        {
-                NFT_LOG(L_ERROR, "No root element found in XML");
-                return NULL;
-        }
-
-        /* find object class */
-        NftPrefsClassSlot cs;
-        if((cs = _class_find_by_name(p, (char *) node->name)) < 0)
-                return NULL;
-
-        NftPrefsClass *c = _class_get(p, cs);
-
-        /* register new object */
-        NftPrefsObj *o;
-        if(!(o = _obj_find_free(c)))
-                return NULL;
-
-        /* remember object class */
-        o->classSlot = cs;
-        
-        /* create object from prefs */
-        void *result = NULL;
-        if(!(c->toObj(&result, node, userptr)))
-        {
-                NFT_LOG(L_ERROR, "toObj() function failed");
-        }
-
-        /* remember new object */
-        o->object = result;
-
-        return o;
-}
 
 /******************************************************************************/
 /**************************** API FUNCTIONS ***********************************/
@@ -456,15 +415,26 @@ static void prefs_class_free(NftPrefsClass *klass)
         if(klass->objects)
         {
                 /* free all objects */
-                int i;
+                size_t objcount = 0;
+                size_t i;
                 for(i = 0; i < klass->obj_list_length; i++)
                 {
-                        prefs_obj_free(_obj_get(klass, i));
+                        NftPrefsObj *obj = _obj_get(klass, i);
+                        if(!(obj->object))
+                                continue;
+                        
+                        prefs_obj_free(obj);
+                        objcount++;
                 }
 
                 /* free object list */
                 free(klass->objects);
+
+                /* give some info */
+                if(objcount > 0)
+                        NFT_LOG(L_DEBUG, "Deallocated %d stale object(s) when deallocating class \"%s\"", objcount, klass->name);
         }
+        
         
         /* invalidate class */
         klass->name[0] = '\0';
@@ -484,8 +454,10 @@ void nft_prefs_exit(NftPrefs *p)
 {
         /* free xmlDoc */
         if(p->doc)
+        {
                 xmlFreeDoc(p->doc);
-
+                p->doc = NULL;
+        }
         
         /* free all classes */
         if(p->classes)
@@ -819,6 +791,46 @@ _potb_exit:
 }
 
 
+
+
+/**
+ * create object from a NftPrefsNode
+ */
+void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
+{
+        /* find object class */
+        NftPrefsClassSlot cs;
+        if((cs = _class_find_by_name(p, (char *) n->name)) < 0)
+                return NULL;
+
+        NftPrefsClass *c = _class_get(p, cs);
+
+        /* register new object */
+        NftPrefsObj *o;
+        if(!(o = _obj_find_free(c)))
+                return NULL;
+
+        /* remember object class */
+        o->classSlot = cs;
+        
+        /* create object from prefs */
+        void *result = NULL;
+        if(!(c->toObj(p, &result, n, userptr)))
+        {
+                NFT_LOG(L_ERROR, "toObj() function failed");
+        }
+
+        /* validate */
+        if(!(result))
+                NFT_LOG(L_DEBUG, "<%s> toObj() function returned successfully but created NULL object", n->name);
+        
+        /* remember new object */
+        o->object = result;
+
+        return result;
+}
+
+
 /**
  * create new object from preferences buffer
  *
@@ -843,13 +855,18 @@ void *nft_prefs_obj_from_buffer(NftPrefs *p, char *buffer, size_t bufsize, void 
         }
 
         
-        /* create object */        
-        NftPrefsObj *o;
-        if(!(o = _obj_from_doc(p, doc, userptr)))
+        /* get node */
+        xmlNode *node;
+        if(!(node = xmlDocGetRootElement(doc)))
         {
-                NFT_LOG(L_ERROR, "Failed to create object");
+                NFT_LOG(L_ERROR, "No root element found in XML");
                 return NULL;
         }
+
+
+        /* create object */
+        void *o = nft_prefs_obj_from_node(p, node, userptr);
+        
 
         /* free old doc? */
         if(p->doc)
@@ -858,7 +875,7 @@ void *nft_prefs_obj_from_buffer(NftPrefs *p, char *buffer, size_t bufsize, void 
         /* save new doc */
         p->doc = doc;
         
-        return o->object;
+        return o;
 }
 
 
@@ -885,22 +902,29 @@ void *nft_prefs_obj_from_file(NftPrefs *p, const char *filename, void *userptr)
         }
 
 
-        /* create object */        
-        NftPrefsObj *o;
-        if(!(o = _obj_from_doc(p, doc, userptr)))
+        /* get node */
+        xmlNode *node;
+        if(!(node = xmlDocGetRootElement(doc)))
         {
-                NFT_LOG(L_ERROR, "Failed to create object");
+                NFT_LOG(L_ERROR, "No root element found in XML");
                 return NULL;
         }
 
+
+        /* create object */
+        void *o = nft_prefs_obj_from_node(p, node, userptr);
+        
+
         /* free old doc? */
         if(p->doc)
+        {
                 xmlFreeDoc(p->doc);
-
+        }
+        
         /* save new doc */
         p->doc = doc;
         
-        return o->object;
+        return o;
 }
 
 
@@ -915,6 +939,30 @@ void *nft_prefs_obj_from_file(NftPrefs *p, const char *filename, void *userptr)
 NftResult nft_prefs_node_add_child(NftPrefsNode *parent, NftPrefsNode *cur)
 {
         return xmlAddChild(parent, cur) ? NFT_SUCCESS : NFT_FAILURE;
+}
+
+
+/**
+ * get first child of a node
+ *
+ * @param n parent node
+ * @result child node or NULL
+ */
+NftPrefsNode *nft_prefs_node_get_first_child(NftPrefsNode *n)
+{
+        return xmlFirstElementChild(n);
+}
+
+
+/**
+ * get next sibling of a node
+ *
+ * @param n node from which sibling should be fetched
+ * @result sibling node or NULL
+ */
+NftPrefsNode *nft_prefs_node_get_next(NftPrefsNode *n)
+{
+        return xmlNextElementSibling(n);
 }
 
 
