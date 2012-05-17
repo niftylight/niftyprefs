@@ -83,11 +83,11 @@
 
 
 /** macro to check version-compatibility of headers <-> binary version */
-#define NFT_PREFS_CHECK_VERSION nft_prefs_version_check(NFT_PREFS_API_REVISION);
+#define NFT_PREFS_CHECK_VERSION nft_prefs_check_version(NFT_PREFS_GIT_VERSION);
 
 
 
-void    nft_prefs_version_check(int version);
+void    nft_prefs_check_version(const char *version);
 
 
 #endif /* _NFT_PREFS_VERSION */

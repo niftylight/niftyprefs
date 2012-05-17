@@ -48,69 +48,62 @@
 
 
 
-/** some generic API "stresstests" */
+
+/** finder function for nft_array_find_slot() */
+static bool _finder(void *element, void *criterion)
+{
+        return ((int) element == (int) criterion);
+}
+
+
+/** some testing for NftArray */
 int main(int argc, char *argv[])
 {
 
-        int res = EXIT_FAILURE;
-        NftPrefs *p;
-        if(!(p = nft_prefs_init()))
-                goto _deinit;
+        int r = EXIT_FAILURE;
 
+        /* initialize an array */
+        NftArray a;
+        nft_array(&a);
 
-        /* a bunch of objects */
-        struct Object
-        {
-                int n;
-                char *name;
-        }objs[1024];
-
+        /* store some stuff in array */
         int i;
         for(i=0; i < 1024; i++)
         {
-                objs[i].n = i;
-                objs[i].name = "foobar";
+                nft_array_store(&a, (void *) i, NULL);
         }
-        
-        /* register a bunch of classes */
-        for(i=0; i < 1024; i++)
+
+        /* walk all elements & check content */
+        NftArraySlot slot;
+        for(slot=0; slot < nft_array_get_space(&a); slot++)
         {
-                char cName[64];
-                snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
-                NFT_LOG(L_DEBUG, "Registering class %d", i);
-                if(!(nft_prefs_class_register(p, cName, NULL, NULL)))
-                        goto _deinit;
+                if(nft_array_fetch_slot(&a, slot) != (int) slot)
+                {
+                        NFT_LOG(L_WARNING, "element hasn't expected content");
+                }
         }
-        
-        for(i=0; i < 1024; i++)
+
+        /* find an element */
+        if(!(nft_array_find_slot(&a, &slot, _finder, 512)))
         {
-                char cName[64];
-                snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
-                NFT_LOG(L_DEBUG, "Registering object %d", i);
-                if(!nft_prefs_obj_register(p, cName, &objs[i]))
-                        goto _deinit;
+                NFT_LOG(L_ERROR, "Couldn't find element although I should have...");
+                goto _deinit;
         }
-        
-        for(i=0; i < 1024; i++)
+
+        /* check if found element is correct */
+        if(nft_array_fetch_slot(&a, slot) != 512)
         {
-                char cName[64];
-                snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
-                NFT_LOG(L_DEBUG, "Unregistering object %d", i);
-                nft_prefs_obj_unregister(p, cName, &objs[i]);
+                NFT_LOG(L_ERROR, "nft_array_find_slot() appears to have found the wrong element");
+                goto _deinit;
         }
-        
-        for(i=0; i < 1024; i++)
-        {
-                char cName[64];
-                snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
-                NFT_LOG(L_DEBUG, "Unregistering class %d", i);
-                nft_prefs_class_unregister(p, cName);
-        }
-        
-        res = EXIT_SUCCESS;
-        
+
+        /* all fine */
+        r = EXIT_SUCCESS;
+
+
 _deinit:
-        nft_prefs_exit(p);
+        /* release array */
+        nft_array_free(&a);
         
-        return res;
+        return r;
 }

@@ -42,71 +42,32 @@
  */
 
 /**
- * @file niftyprefs.h
+ * @file niftyprefs-class.h
  */
 
-
-/**      
- * @mainpage preferences handling for arbitrary objects
- *
- * <h1>Introduction</h1>
- * The basic idea is to define and manage "classes" for arbitrary (void *)
- * pointers in a comfortable way. So you simply can:
- * - "snapshot" the state of an object for saving it in a preferences-definition 
- * - create an object from a previously created "snapshot"
- *
- *
- * <h1>Usage</h1>
- *
- * In every case call:
- *  - nft_prefs_init() before doing anything
- *  - nft_prefs_class_register() for every object-class, before using the class 
- *    with any of nft_prefs_*()
- *  - ...
- *  - nft_prefs_obj_unregister() when freeing resources of a registered object
- *  - ...
- *  - nft_prefs_class_unregister() when a class is not used anymore
- *  - nft_prefs_exit() when no nft_prefs_*() needs to be called anymore
- *
- *
- * Use case 1: Generate preferences from existing object
- *  - ...
- *  - [create object]
- *  - nft_prefs_obj_register(obj)
- *  - prefsObj = nft_prefs_from_obj(obj)
- *  - [use prefsObj]
- *  - nft_prefs_obj_free(prefsObj)
- *
- * Use case 2: Generate object from preferences
- *  - ...
- *  - create NftPrefsNode nft_prefs_node_from_file() / nft_prefs_node_from_buffer()
- *  - create object(s) from NftPrefsNode
- *
- * Use case 3: Dump preferences to file
- * Use case 4: Dump preferences to string
- * Use case 5: Parse preferences from file
- * Use case 6: Parse preferences from string
- *
- * @defgroup prefs niftyprefs
+/**
+ * @defgroup prefs_class NftPrefsClass
  * @brief abstract preference handling for arbitrary objects
  * @{
  */
 
-#ifndef _NIFTYPREFS_H
-#define _NIFTYPREFS_H
 
-
-
-
-/** a context holding a list of PrefsClasses and PrefsNodes - acquired by nft_prefs_init() */
-typedef struct _NftPrefs NftPrefs;
+#ifndef _NIFTYPREFS_CLASS_H
+#define _NIFTYPREFS_CLASS_H
 
 
 #include "niftyprefs-array.h"
-#include "niftyprefs-version.h"
-#include "niftyprefs-node.h"
 #include "niftyprefs-obj.h"
-#include "niftyprefs-class.h"
+
+
+
+/** maximum length of a classname */
+#define NFT_PREFS_MAX_CLASSNAME 64
+
+
+/** a class of PrefsObjects (e.g. if your object is "Person", 
+    you have one "Person" class) */
+typedef struct _NftPrefsClass NftPrefsClass;
 
 
 
@@ -118,9 +79,6 @@ typedef struct _NftPrefs NftPrefs;
 
 
 
-NftPrefs *      nft_prefs_init();
-void            nft_prefs_exit(NftPrefs *prefs);
-void            nft_prefs_free(void *p);
 
 
 
@@ -128,12 +86,14 @@ void            nft_prefs_free(void *p);
 
 
 
+//~ NftResult       nft_prefs_class_register(NftPrefs *p, const char *className, NftPrefsToObjFunc *toObj, NftPrefsFromObjFunc *fromObj);
+//~ void            nft_prefs_class_unregister(NftPrefs *p, const char *className);
 
 
 
-#endif /* _NIFTYPREFS_H */
-
+#endif /** _NIFTYPREFS_CLASS_H */
 
 /**
  * @}
  */
+
