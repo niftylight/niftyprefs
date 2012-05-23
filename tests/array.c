@@ -82,7 +82,8 @@ int main(int argc, char *argv[])
         /* initialize an array */
         NftArray a;
         nft_array_init(&a, sizeof(int));
-
+	nft_array_set_name(&a, "TestArray01");
+    
         /* store some stuff in array */
         int i;
         for(i=0; i < 1024; i++)
@@ -111,13 +112,18 @@ int main(int argc, char *argv[])
     	if(!(nft_array_foreach_element(&a, _element_validator, NULL)))
 		goto _deinit;
     
-        
+
+    	/* false error start */
+    	NFT_LOG(L_INFO, "==== IGNORE ERROR MESSAGES ====");
+    
     	/* try to get out-of-bound slot */
     	if(nft_array_get_element(&a, 1024))
 	{
 		NFT_LOG(L_ERROR, "Out-of-bound fetch succeeded although it shouldn't");
 	    	goto _deinit;
 	}
+
+    	NFT_LOG(L_INFO, "==== END IGNORING ERROR MESSAGES ====");
     
         /* find an element */
         //~ if(!(nft_array_find_slot(&a, &slot, _finder, 512)))
