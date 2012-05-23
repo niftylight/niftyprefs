@@ -27,8 +27,8 @@ static bool _slot_is_valid(NftArray *a, NftArraySlot s)
 
         if(s >= a->arraysize)
         {
-                NFT_LOG(L_ERROR, "Requested slot %d from array that only has %d slots", 
-                                s, a->arraysize);
+                NFT_LOG(L_ERROR, "requested slot %d from array \"%s\" that only has %d slots", 
+                                s+1, nft_array_get_name(a), a->arraysize);
                 return FALSE;
         }
 
@@ -105,7 +105,7 @@ const char *nft_array_get_name(NftArray *a)
 	if(!a)
 		NFT_LOG_NULL(NULL);
 
-    	return a->name ? a->name : ("[unnamed]");
+    	return a->name[0] ? a->name : ("[unnamed]");
 }
 
 
@@ -277,19 +277,6 @@ void nft_array_slot_free(NftArray *a, NftArraySlot s)
 }
 
 
-//~ /**
- //~ * get first occupied slot from array
- //~ *
- //~ * @param a NftArray descriptor
- //~ * @param s space where first occupied slot in array will be written 
- //~ * @result NFT_SUCCESS if slot was written to *s or NFT_FAILURE otherwise
- //~ */ 
-//~ NftArraySlot nft_array_slot_get_first(NftArray *a, NftArraySlot *s)
-//~ {
-
-//~ }
-
-
 /**
  * get element from array
  *
@@ -313,49 +300,6 @@ void *nft_array_get_element(NftArray *a, NftArraySlot s)
     
         return &a->buffer[a->elementsize*s];
 }
-
-
-//~ /**
- //~ * find the slot of a certain element by sequentially 
- //~ * walking array and comparing criteria using a finder function
- //~ *
- //~ * @param a NftArray descriptor
- //~ * @param s destination slot of found element
- //~ * @param finder Function to check if an element matches the criterion 
- //~ *        and then returns TRUE and FALSE otherwise
- //~ * @param the criterion that's passed to the finder function
- //~ * @param userptr arbitrary user pointer 
- //~ * @result NFT_SUCCESS if element was found an slot has been written into *s, 
- //~ *         NFT_FAILURE upon error
- //~ */
-//~ NftResult nft_array_find_slot(NftArray *a, 
-                              //~ NftArraySlot *s, 
-                              //~ bool (*finder)(void *element, 
-                                             //~ void *criterion, 
-                                             //~ void *userptr), 
-                              //~ void *criterion, 
-                              //~ void *userptr)
-//~ {
-        //~ if(!a || !s)
-                //~ NFT_LOG_NULL(NFT_FAILURE);
-
-        //~ NftArraySlot r;
-        //~ for(r = 0; r < a->arraysize; r++)
-        //~ {
-                //~ /* skip empty element */
-                //~ if(!a->elements[r].occupied)
-                        //~ continue;
-
-                //~ /* check if element matches */
-                //~ if(finder(a->elements[r].ptr, criterion, userptr))
-                //~ {
-                        //~ *s = r;
-                        //~ return NFT_SUCCESS;
-                //~ }
-        //~ }
-
-        //~ return NFT_FAILURE;
-//~ }
 
 
 /**
@@ -387,4 +331,47 @@ NftResult nft_array_foreach_element(NftArray *a,
 	}
 
     	return NFT_SUCCESS;
+}
+
+
+/**
+ * find the slot of a certain element by sequentially 
+ * walking array and comparing criteria using a finder function
+ *
+ * @param a NftArray descriptor
+ * @param s destination slot of found element
+ * @param finder Function to check if an element matches the criterion 
+ *        and then returns TRUE and FALSE otherwise
+ * @param the criterion that's passed to the finder function
+ * @param userptr arbitrary user pointer 
+ * @result NFT_SUCCESS if element was found an slot has been written into *s, 
+ *         NFT_FAILURE upon error
+ */
+NftResult nft_array_find_slot(NftArray *a, 
+                              NftArraySlot *s, 
+                              bool (*finder)(void *element, 
+                                             void *criterion, 
+                                             void *userptr), 
+                              void *criterion, 
+                              void *userptr)
+{
+        if(!a || !s)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        NftArraySlot r;
+        for(r = 0; r < a->arraysize; r++)
+        {
+                /* skip empty element */
+                if(!a->elements[r].occupied)
+                        continue;
+
+                /* check if element matches */
+                if(finder(&a->buffer[a->elementsize*r], criterion, userptr))
+                {
+                        *s = r;
+                        return NFT_SUCCESS;
+                }
+        }
+
+        return NFT_FAILURE;
 }
