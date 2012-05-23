@@ -121,7 +121,7 @@ void prefs_class_free(NftPrefsClass *klass)
 	nft_array_foreach_element(&klass->objects, _obj_free, &count);
 
 	/* free object array */
-	nft_array_free(&klass->objects);
+	nft_array_deinit(&klass->objects);
     
 	/* give some info */
 	if(count > 0)

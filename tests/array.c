@@ -56,6 +56,23 @@ static bool _finder(void *element, void *criterion)
 }
 
 
+/** element validator used with nft_array_foreach_element() */
+static bool _element_validator(void *element, void *userptr)
+{
+	static int current;
+	int *n = element;
+    
+    	if(*n != current++)
+    	{
+		NFT_LOG(L_ERROR, "Element didn't have expected content. Got %d, expected %d.", 
+		        *n, current);
+		return FALSE;
+	}
+    
+    	return TRUE;
+}
+
+
 /** some testing for NftArray */
 int main(int argc, char *argv[])
 {
@@ -64,46 +81,72 @@ int main(int argc, char *argv[])
 
         /* initialize an array */
         NftArray a;
-        nft_array(&a);
+        nft_array_init(&a, sizeof(int));
 
         /* store some stuff in array */
         int i;
         for(i=0; i < 1024; i++)
         {
-                nft_array_store(&a, (void *) i, NULL);
+	    	/** allocate new slot */
+	    	NftArraySlot s;
+	    	if(!(nft_array_slot_alloc(&a, &s)))
+	    	{
+			NFT_LOG(L_ERROR, "Failed to allocate new slot");
+			goto _deinit;
+		}
+
+	    	/* get pointer */
+	    	int *e;
+	    	if(!(e = nft_array_get_element(&a, s)))
+	    	{
+			NFT_LOG(L_ERROR, "Failed to nft_array_get_element()");
+			goto _deinit;
+		}
+
+	    	/* store integer */
+                *e = i;
         }
 
         /* walk all elements & check content */
-        NftArraySlot slot;
-        for(slot=0; slot < nft_array_get_space(&a); slot++)
-        {
-                if(nft_array_fetch_slot(&a, slot) != (int) slot)
-                {
-                        NFT_LOG(L_WARNING, "element hasn't expected content");
-                }
-        }
-
+    	if(!(nft_array_foreach_element(&a, _element_validator, NULL)))
+		goto _deinit;
+    
+        
+    	/* try to get out-of-bound slot */
+    	if(nft_array_get_element(&a, 1024))
+	{
+		NFT_LOG(L_ERROR, "Out-of-bound fetch succeeded although it shouldn't");
+	    	goto _deinit;
+	}
+    
         /* find an element */
-        if(!(nft_array_find_slot(&a, &slot, _finder, 512)))
-        {
-                NFT_LOG(L_ERROR, "Couldn't find element although I should have...");
-                goto _deinit;
-        }
+        //~ if(!(nft_array_find_slot(&a, &slot, _finder, 512)))
+        //~ {
+                //~ NFT_LOG(L_ERROR, "Couldn't find element although I should have...");
+                //~ goto _deinit;
+        //~ }
 
         /* check if found element is correct */
-        if(nft_array_fetch_slot(&a, slot) != 512)
-        {
-                NFT_LOG(L_ERROR, "nft_array_find_slot() appears to have found the wrong element");
-                goto _deinit;
-        }
+        //~ if(nft_array_fetch_slot(&a, slot) != 512)
+        //~ {
+                //~ NFT_LOG(L_ERROR, "nft_array_find_slot() appears to have found the wrong element");
+                //~ goto _deinit;
+        //~ }
 
+    	/* check array properties */
+    	if(nft_array_get_elementcount(&a) != 1024)
+    	{
+		NFT_LOG(L_ERROR, "array is not the size it should be: got %d, wanted %d.", nft_array_get_elementcount(&a), 1024);
+		goto _deinit;
+	}
+    
         /* all fine */
         r = EXIT_SUCCESS;
 
 
 _deinit:
         /* release array */
-        nft_array_free(&a);
+        nft_array_deinit(&a);
         
         return r;
 }

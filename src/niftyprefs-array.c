@@ -13,59 +13,6 @@
 /******************************************************************************/
 
 
-/** find first free slot in an NftArray */
-static NftResult _find_free_slot(NftArray *a, NftArraySlot *s)
-{
-	if(!a)
-		NFT_LOG_NULL(NFT_FAILURE);
-
-/** increase elementbuffer by this amount of entries if space runs out */
-#define NFT_ARRAY_INC	128
-
-        
-        /* enough space left? */
-        if(a->space <= a->elementcount)
-        {
-                /* increase buffer */
-                if(!(a->elements = realloc(a->elements, 
-                                          (a->space + NFT_ARRAY_INC)*
-                                          sizeof(NftElement))))
-                {
-                        NFT_LOG_PERROR("realloc()");
-                        return NFT_FAILURE;
-                }
-
-                
-                /* clear new memory */
-                memset(&a->elements[a->space],
-                       0, 
-                       NFT_ARRAY_INC*sizeof(NftElement));
-
-                
-                /* remember new listlength */
-                a->space += NFT_ARRAY_INC;
-        }
-
-        
-	/* find free slot in list */
-	NftArraySlot i;
-	for(i=0; i < a->space; i++)
-	{
-                if(!a->elements[i].occupied)
-                {
-                        /* save slot */
-                        *s = i;
-                        return NFT_SUCCESS;
-                }
-	}
-
-        /* huh? */
-        NFT_LOG(L_ERROR, "No free slot found but buffer was not increased. Something went wrong! Expect fancy stuff.");
-        
-	return NFT_FAILURE;
-}
-
-
 /**
  * check if NftArraySlot is plausible
  *
@@ -78,10 +25,10 @@ static bool _slot_is_valid(NftArray *a, NftArraySlot s)
         if(!a)
                 NFT_LOG_NULL(FALSE);
 
-        if(s >= a->space)
+        if(s >= a->arraysize)
         {
                 NFT_LOG(L_ERROR, "Requested slot %d from array that only has %d slots", 
-                                s, a->space);
+                                s, a->arraysize);
                 return FALSE;
         }
 
@@ -101,7 +48,7 @@ static bool _slot_is_valid(NftArray *a, NftArraySlot s)
  *
  * @param a pointer to space that should be initialized to be used as NftArray
  */
-void nft_array(NftArray *a, size_t elementSize)
+void nft_array_init(NftArray *a, size_t elementSize)
 {
         if(!a)
                 NFT_LOG_NULL();
@@ -117,16 +64,48 @@ void nft_array(NftArray *a, size_t elementSize)
  *
  * @param a NftArray descriptor
  */
-void nft_array_free(NftArray *a)
+void nft_array_deinit(NftArray *a)
 {
+
         if(!a)
                 NFT_LOG_NULL();
 
         free(a->elements);
+    	free(a->buffer);
         a->elements = NULL;
         a->elementcount = 0;
     	a->elementsize = 0;
-        a->space = 0;
+        a->arraysize = 0;
+}
+
+
+/**
+ * NftArray setter
+ *
+ * @param a NftArray descriptor
+ * @param name printable namestring with max. NFT_ARRAY_NAME_MAXLEN 
+ */
+void nft_array_set_name(NftArray *a, const char *name)
+{
+	if(!a || !name)
+		NFT_LOG_NULL();
+
+    	strncpy(a->name, name, sizeof(a->name));
+}
+
+
+/**
+ * NftArray getter
+ *
+ * @param a NftArray descriptor
+ * @result printable name of array or NULL upon error
+ */
+const char *nft_array_get_name(NftArray *a)
+{
+	if(!a)
+		NFT_LOG_NULL(NULL);
+
+    	return a->name ? a->name : ("[unnamed]");
 }
 
 
@@ -189,18 +168,126 @@ ssize_t nft_array_get_elementcount(NftArray *a)
 
 
 /**
- * NftArray getter
+ * allocate a fresh slot from array so the pointer to the slot element can be
+ * received with nft_array_get_slot() 
+ * 
+ * @param a NftArray descriptor
+ * @param s pointer where new free slot will be written to 
+ * @result NFT_SUCCESS or NFT_FAILURE 
+ * @note Use nft_array_free_slot() if you don't need the slot anymore
+ */
+NftResult nft_array_slot_alloc(NftArray *a, NftArraySlot *s)
+{
+	if(!a)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        /** increase elementbuffer by this amount of entries if space runs out */
+#define NFT_ARRAY_INC	2
+
+        
+        /* enough space left? */
+        if(a->arraysize <= a->elementcount)
+        {
+                /* increase element descriptor array by NFT_ARRAY_INC elements */
+                if(!(a->elements = realloc(
+                                          	a->elements, 
+                                           	/* total elements new array can hold */
+                                          	(a->arraysize + NFT_ARRAY_INC) *
+                                           	/* size of one element descriptor */
+                                          	(sizeof(NftElement))
+                                           )
+                     )
+                  )
+                {
+                        NFT_LOG_PERROR("realloc()");
+                        return NFT_FAILURE;
+                }
+
+                /* increase element buffer by NFT_ARRAY_INC elements */
+	    	if(!(a->buffer = realloc(a->buffer,
+		                         (a->arraysize + NFT_ARRAY_INC) *
+		                         a->elementsize)))
+	    	{
+			NFT_LOG_PERROR("realloc()");
+                        return NFT_FAILURE;
+		}
+	    
+                /* clear new memory */
+                memset(&a->elements[a->arraysize],
+                       0, 
+                       NFT_ARRAY_INC*sizeof(NftElement));
+		memset(&a->buffer[a->elementsize*a->arraysize],
+		       0,
+		       NFT_ARRAY_INC*a->elementsize);
+                
+                /* remember new arraysize */
+                a->arraysize += NFT_ARRAY_INC;
+        }
+
+        
+	/* find free slot in list */
+	NftArraySlot i;
+	for(i=0; i < a->arraysize; i++)
+	{
+                if(!a->elements[i].occupied)
+                {
+		    	/* set element as occupied */
+			a->elements[i].occupied = TRUE;
+
+			/* another element allocated... */
+			a->elementcount++;
+
+		    	/* save slot */
+                        *s = i;
+		    
+                        return NFT_SUCCESS;
+                }
+	}
+
+        /* huh? */
+        NFT_LOG(L_ERROR, "No free slot found in array \"%s\" but buffer was not increased. Something went wrong! Expect fancy stuff.",
+                nft_array_get_name(a));
+        
+	return NFT_FAILURE;
+}
+
+
+/**
+ * free array slot so it can be reused 
  *
  * @param a NftArray descriptor
- * @result amount of elements array can hold currently or -1 upon error
+ * @param s array slot to free
  */
-ssize_t nft_array_get_space(NftArray *a)
+void nft_array_slot_free(NftArray *a, NftArraySlot s)
 {
-        if(!a)
-                NFT_LOG_NULL(-1);
+	if(!a)
+                NFT_LOG_NULL();
 
-        return a->space;
+        if(!_slot_is_valid(a, s))
+                return;
+
+    	/* clear element */
+    	memset(&a->buffer[a->elementsize*s], 0, a->elementsize);
+    
+        /* mark element as unused */
+        a->elements[s].occupied = FALSE;
+
+        /* remove one element from array */
+        a->elementcount--;
 }
+
+
+//~ /**
+ //~ * get first occupied slot from array
+ //~ *
+ //~ * @param a NftArray descriptor
+ //~ * @param s space where first occupied slot in array will be written 
+ //~ * @result NFT_SUCCESS if slot was written to *s or NFT_FAILURE otherwise
+ //~ */ 
+//~ NftArraySlot nft_array_slot_get_first(NftArray *a, NftArraySlot *s)
+//~ {
+
+//~ }
 
 
 /**
@@ -210,114 +297,65 @@ ssize_t nft_array_get_space(NftArray *a)
  * @param s slot to fetch from
  * @result pointer that was stored at position s in array a or NULL upon error
  */
-void *nft_array_fetch_slot(NftArray *a, NftArraySlot s)
+void *nft_array_get_element(NftArray *a, NftArraySlot s)
 {
         if(!a || !a->elements)
                 NFT_LOG_NULL(NULL);
 
         if(!_slot_is_valid(a, s))
                 return NULL;
-        
-        return a->elements[s].element;
+
+    	if(!a->elements[s].occupied)
+    	{
+		NFT_LOG(L_ERROR, "requested unallocated slot \"%d\" from array \"%s\".", s, nft_array_get_name(a));
+		return NULL;
+	}
+    
+        return &a->buffer[a->elementsize*s];
 }
 
 
-/**
- * store pointer as element in array
- *
- * @param a NftArray descriptor
- * @param p pointer to store in array
- * @param s space for slot where pointer has been put or NULL to throw result away
- * @result NFT_SUCCESS or NFT_FAILURE
- */
-NftResult nft_array_store(NftArray *a, void *p, NftArraySlot *s)
-{
-        if(!a)
-                NFT_LOG_NULL(NFT_FAILURE);
+//~ /**
+ //~ * find the slot of a certain element by sequentially 
+ //~ * walking array and comparing criteria using a finder function
+ //~ *
+ //~ * @param a NftArray descriptor
+ //~ * @param s destination slot of found element
+ //~ * @param finder Function to check if an element matches the criterion 
+ //~ *        and then returns TRUE and FALSE otherwise
+ //~ * @param the criterion that's passed to the finder function
+ //~ * @param userptr arbitrary user pointer 
+ //~ * @result NFT_SUCCESS if element was found an slot has been written into *s, 
+ //~ *         NFT_FAILURE upon error
+ //~ */
+//~ NftResult nft_array_find_slot(NftArray *a, 
+                              //~ NftArraySlot *s, 
+                              //~ bool (*finder)(void *element, 
+                                             //~ void *criterion, 
+                                             //~ void *userptr), 
+                              //~ void *criterion, 
+                              //~ void *userptr)
+//~ {
+        //~ if(!a || !s)
+                //~ NFT_LOG_NULL(NFT_FAILURE);
 
-        /** find a free slot */
-        NftArraySlot slot;
-        if(!(_find_free_slot(a, &slot)))
-                return NFT_FAILURE;
+        //~ NftArraySlot r;
+        //~ for(r = 0; r < a->arraysize; r++)
+        //~ {
+                //~ /* skip empty element */
+                //~ if(!a->elements[r].occupied)
+                        //~ continue;
 
-        /* store element */
-        a->elements[slot].ptr = p;
-        a->elements[slot].occupied = TRUE;
+                //~ /* check if element matches */
+                //~ if(finder(a->elements[r].ptr, criterion, userptr))
+                //~ {
+                        //~ *s = r;
+                        //~ return NFT_SUCCESS;
+                //~ }
+        //~ }
 
-        /* another element stored... */
-        a->elementcount++;
-
-        /* save slot */
-        if(s)
-                *s = slot;
-        
-        return NFT_SUCCESS;
-}
-
-
-/**
- * release element in an array (so the space can be used for a new element)
- *
- * @param a NftArray descriptor
- * @param s NftArraySlot to unstore
- */
-void nft_array_unstore(NftArray *a, NftArraySlot s)
-{
-        if(!a)
-                NFT_LOG_NULL();
-
-        if(!_slot_is_valid(a, s))
-                return;
-
-        /* mark element as unused */
-        a->elements[s].occupied = FALSE;
-
-        /* remove one element from array */
-        a->elementcount--;
-}
-
-
-/**
- * find the slot of a certain element by sequentially 
- * walking array and comparing criteria using a finder function
- *
- * @param a NftArray descriptor
- * @param s destination slot of found element
- * @param finder Function to check if an element matches the criterion 
- *        and then returns TRUE and FALSE otherwise
- * @param the criterion that's passed to the finder function
- * @param userptr arbitrary user pointer 
- * @result NFT_SUCCESS if element was found an slot has been written into *s, 
- *         NFT_FAILURE upon error
- */
-NftResult nft_array_find_slot(NftArray *a, 
-                              NftArraySlot *s, 
-                              bool (*finder)(void *element, 
-                                             void *criterion, 
-                                             void *userptr), 
-                              void *criterion, 
-                              void *userptr)
-{
-        if(!a || !s)
-                NFT_LOG_NULL(NFT_FAILURE);
-
-        NftArraySlot r;
-        for(r = 0; r < a->space; r++)
-        {
-                /* skip empty element */
-                if(!a->elements[r].occupied)
-                        continue;
-
-                /* check if element matches */
-                if(finder(a->elements[r].ptr, criterion, userptr))
-                {
-                        *s = r;
-                        return NFT_SUCCESS;
-                }
-        }
-
-        return NFT_FAILURE;
-}
+        //~ return NFT_FAILURE;
+//~ }
 
 
 /**
@@ -338,13 +376,13 @@ NftResult nft_array_foreach_element(NftArray *a,
 		NFT_LOG_NULL(NFT_FAILURE);
 
 	NftArraySlot r;
-        for(r = 0; r < a->space; r++)
+        for(r = 0; r < a->arraysize; r++)
         {
                 /* skip empty element */
                 if(!a->elements[r].occupied)
                         continue;
 	
-	    	if(!(foreach(a->elements[r].ptr, userptr)))
+	    	if(!(foreach(&a->buffer[a->elementsize*r], userptr)))
 			return NFT_FAILURE;
 	}
 

@@ -129,7 +129,7 @@ static void _xml_error_handler(void *ctx, const char * msg, ...)
 /** helper for nft_array_foreach_element() */
 bool _class_free(void *element, void *userptr)
 {
-	prefs_class_free((NftPrefsClass *) element);
+	//prefs_class_free((NftPrefsClass *) element);
     	return TRUE;
 }
 
@@ -176,7 +176,7 @@ NftPrefs *nft_prefs_init()
         }
 
         /* initialize class-array */
-	nft_array(&p->classes);
+	//nft_array_init(&p->classes, sizeof(NftPrefsClass));
 	
         return p;
 }
@@ -201,7 +201,7 @@ void nft_prefs_exit(NftPrefs *p)
     	nft_array_foreach_element(&p->classes, _class_free, NULL);
 
     	/* free classes array */
-    	nft_array_free(&p->classes);
+    	nft_array_deinit(&p->classes);
             
         /* free xmlDoc */
         if(p->doc)
