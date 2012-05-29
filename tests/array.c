@@ -50,9 +50,14 @@
 
 
 /** finder function for nft_array_find_slot() */
-static bool _finder(void *element, void *criterion)
+static bool _finder(void *element, void *criterion, void *userptr)
 {
-        return ((int) element == (int) criterion);
+	/** current array element */
+	int *e = element;
+	/** search criterion */
+	int c = (int) criterion;
+    
+    	return (*e == c);
 }
 
 
@@ -126,18 +131,27 @@ int main(int argc, char *argv[])
     	NFT_LOG(L_INFO, "==== END IGNORING ERROR MESSAGES ====");
     
         /* find an element */
-        //~ if(!(nft_array_find_slot(&a, &slot, _finder, 512)))
-        //~ {
-                //~ NFT_LOG(L_ERROR, "Couldn't find element although I should have...");
-                //~ goto _deinit;
-        //~ }
+    	NftArraySlot slot;
+        if(!(nft_array_find_slot(&a, &slot, _finder, (void *) 512, NULL)))
+        {
+                NFT_LOG(L_ERROR, "Couldn't find element although I should have...");
+                goto _deinit;
+        }
 
-        /* check if found element is correct */
-        //~ if(nft_array_fetch_slot(&a, slot) != 512)
-        //~ {
-                //~ NFT_LOG(L_ERROR, "nft_array_find_slot() appears to have found the wrong element");
-                //~ goto _deinit;
-        //~ }
+    	/* fetch found element */    
+    	int *element;
+        if(!(element = nft_array_get_element(&a, slot)))
+    	{
+		NFT_LOG(L_ERROR, "Found NULL element (clearly a bug)");
+		goto _deinit;
+	}
+    
+	/* check if found element is correct */
+    	if(*element != 512)
+        {
+                NFT_LOG(L_ERROR, "nft_array_find_slot() appears to have found the wrong element");
+                goto _deinit;
+        }
 
     	/* check array properties */
     	if(nft_array_get_elementcount(&a) != 1024)
