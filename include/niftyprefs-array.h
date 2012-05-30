@@ -51,14 +51,14 @@ typedef struct _NftArray
         size_t arraysize;
         /** NftElement array with pointers to elements inside buffer */
         NftElement *elements;
-    	/** buffer for actal elements. large enough to hold space*elementsize bytes */
+    	/** buffer for actual elements. large enough to hold space*elementsize bytes */
     	char *buffer;
 }NftArray;
 
 
 
 
-void            nft_array_init(NftArray *a, size_t elementSize);
+NftResult       nft_array_init(NftArray *a, size_t elementSize);
 void            nft_array_deinit(NftArray *a);
 
 void		nft_array_set_name(NftArray *a, const char *name);

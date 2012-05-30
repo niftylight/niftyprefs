@@ -47,15 +47,18 @@ static bool _slot_is_valid(NftArray *a, NftArraySlot s)
  * initialize an array descriptor
  *
  * @param a pointer to space that should be initialized to be used as NftArray
+ * @result NFT_SUCCESS or NFT_FAILURE 
  */
-void nft_array_init(NftArray *a, size_t elementSize)
+NftResult nft_array_init(NftArray *a, size_t elementSize)
 {
         if(!a)
-                NFT_LOG_NULL();
+                NFT_LOG_NULL(NFT_FAILURE);
         
         memset(a, 0, sizeof(NftArray));
 
     	a->elementsize = elementSize;
+
+    	return NFT_SUCCESS;
 }
 
 
@@ -182,7 +185,7 @@ NftResult nft_array_slot_alloc(NftArray *a, NftArraySlot *s)
                 NFT_LOG_NULL(NFT_FAILURE);
 
         /** increase elementbuffer by this amount of entries if space runs out */
-#define NFT_ARRAY_INC	2
+#define NFT_ARRAY_INC	64
 
         
         /* enough space left? */

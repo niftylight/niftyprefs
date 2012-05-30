@@ -109,7 +109,6 @@ void prefs_obj_free(NftPrefsObj *obj)
         if(!obj)
                return;
 
-      
         /* invalidate obj descriptor */
         obj->object = NULL;
         obj->classSlot = -1;

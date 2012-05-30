@@ -18,6 +18,8 @@
 
 
 
+/** array of objects */
+typedef NftArray NftPrefsObjs;
 
 /** an object descriptor that holds various properties about an object */
 typedef struct _NftPrefsObj NftPrefsObj;

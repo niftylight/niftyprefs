@@ -65,6 +65,9 @@
 #define NFT_PREFS_MAX_CLASSNAME 64
 
 
+/** array of classes */
+typedef NftArray NftPrefsClasses;
+
 /** a class of PrefsObjects (e.g. if your object is "Person", 
     you have one "Person" class) */
 typedef struct _NftPrefsClass NftPrefsClass;
@@ -86,8 +89,8 @@ typedef struct _NftPrefsClass NftPrefsClass;
 
 
 
-//~ NftResult       nft_prefs_class_register(NftPrefs *p, const char *className, NftPrefsToObjFunc *toObj, NftPrefsFromObjFunc *fromObj);
-//~ void            nft_prefs_class_unregister(NftPrefs *p, const char *className);
+NftResult       nft_prefs_class_register(NftPrefs *p, const char *className, NftPrefsToObjFunc *toObj, NftPrefsFromObjFunc *fromObj);
+void            nft_prefs_class_unregister(NftPrefs *p, const char *className);
 
 
 

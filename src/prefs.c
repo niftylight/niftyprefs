@@ -54,6 +54,7 @@
 
 #include <libxml/tree.h>
 #include "niftyprefs.h"
+#include "class.h"
 #include "config.h"
 
 
@@ -65,13 +66,22 @@ struct _NftPrefs
         /** temporary xmlDoc */
         xmlDoc *doc;
         /** list of registered PrefsObjClasses */
-        NftArray classes;
+        NftPrefsClasses classes;
 };
 
 
 
 
 
+/******************************************************************************/
+/**************************** PRIVATE FUNCTIONS *******************************/
+/******************************************************************************/
+
+/** getter */ 
+NftPrefsClasses *prefs_classes(NftPrefs *p)
+{
+    return &p->classes;
+}
 
 /******************************************************************************/
 /**************************** STATIC FUNCTIONS ********************************/
@@ -175,9 +185,13 @@ NftPrefs *nft_prefs_init()
                 return NULL;
         }
 
-        /* initialize class-array */
-	//nft_array_init(&p->classes, sizeof(NftPrefsClass));
-	
+        if(!prefs_class_init_array(&p->classes))
+    	{
+		NFT_LOG(L_ERROR, "Failed to init class array");
+		free(p);
+		return NULL;
+	}
+    
         return p;
 }
 
@@ -215,16 +229,16 @@ void nft_prefs_exit(NftPrefs *p)
 }
 
 
-//~ /**
- //~ * wrapper for xmlFree()
- //~ *
- //~ * @param p pointer to memory previously allocated by niftyprefs
- //~ */
-//~ void nft_prefs_free(void *p)
-//~ {
-        //~ if(p)
-                //~ xmlFree(p);
-//~ }
+/**
+ * wrapper for xmlFree()
+ *
+ * @param p pointer to memory previously allocated by niftyprefs
+ */
+void nft_prefs_free(void *p)
+{
+        if(p)
+                xmlFree(p);
+}
 
 
 

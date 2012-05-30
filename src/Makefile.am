@@ -8,12 +8,12 @@ SUBDIRS =
 EXTRA_DIST = 
 # source-files
 lib@PACKAGE@_la_SOURCES = \
-	niftyprefs-obj.c \
-	niftyprefs-class.c \
-	niftyprefs-node.c \
-	niftyprefs-version.c \
-	niftyprefs-array.c \
-	niftyprefs.c
+	obj.c \
+	class.c \
+	node.c \
+	version.c \
+	array.c \
+	prefs.c
 
 
 # compile for debugging ?
