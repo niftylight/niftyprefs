@@ -56,6 +56,7 @@
 #define _NIFTYPREFS_CLASS_H
 
 
+#include "nifty-primitives.h"
 #include "niftyprefs-array.h"
 #include "niftyprefs-obj.h"
 
@@ -71,19 +72,6 @@ typedef NftArray NftPrefsClasses;
 /** a class of PrefsObjects (e.g. if your object is "Person", 
     you have one "Person" class) */
 typedef struct _NftPrefsClass NftPrefsClass;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

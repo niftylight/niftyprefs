@@ -42,8 +42,8 @@
  */
 
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <niftylog.h>
 #include <niftyprefs.h>
 
 

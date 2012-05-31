@@ -45,6 +45,9 @@
 #define _CLASS_H
 
 
+#include "niftyprefs-class.h"
+
+
 NftResult 		prefs_class_init_array(NftArray *a);
 NftPrefsObjs *		prefs_class_objects(NftPrefsClass *c);
 NftPrefsClass *		prefs_class_find_by_name(NftPrefsClasses *c, const char *name);

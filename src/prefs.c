@@ -43,7 +43,7 @@
 
 
 /**
- * @file niftyprefs.c
+ * @file prefs.c
  */
 
 /**
@@ -53,6 +53,7 @@
  */
 
 #include <libxml/tree.h>
+#include <niftylog.h>
 #include "niftyprefs.h"
 #include "class.h"
 #include "config.h"

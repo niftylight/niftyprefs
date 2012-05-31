@@ -45,6 +45,8 @@
 #define _PREFS_H
 
 
+#include "niftyprefs.h"
+
 
 NftPrefsClasses *	prefs_classes(NftPrefs *p);
 xmlDoc *		prefs_doc(NftPrefs *p);

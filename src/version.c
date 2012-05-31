@@ -43,7 +43,7 @@
 
 
 /**
- * @file niftyprefs-version.c
+ * @file version.c
  */
 
 /**

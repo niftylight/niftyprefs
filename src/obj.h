@@ -44,6 +44,8 @@
 #ifndef _OBJ_H
 #define _OBJ_H
 
+#include "niftyprefs-obj.h"
+
 
 NftResult 	prefs_obj_init_array(NftPrefsObjs *o);
 void 		prefs_obj_free(NftPrefsObj *obj);
