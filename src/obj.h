@@ -45,8 +45,8 @@
 #define _OBJ_H
 
 
-void 	prefs_obj_free(NftPrefsObj *obj);
-
+NftResult 	prefs_obj_init_array(NftPrefsObjs *o);
+void 		prefs_obj_free(NftPrefsObj *obj);
 
 
 #endif

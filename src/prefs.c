@@ -83,6 +83,20 @@ NftPrefsClasses *prefs_classes(NftPrefs *p)
     return &p->classes;
 }
 
+
+/** getter */
+xmlDoc *prefs_doc(NftPrefs *p)
+{
+	return p->doc;
+}
+
+
+/** setter */
+void prefs_doc_set(NftPrefs *p, xmlDoc *doc)
+{
+	p->doc = doc;
+}
+
 /******************************************************************************/
 /**************************** STATIC FUNCTIONS ********************************/
 /******************************************************************************/

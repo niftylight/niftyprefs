@@ -45,7 +45,11 @@
 #define _CLASS_H
 
 
-NftResult 	prefs_class_init_array(NftArray *a);
+NftResult 		prefs_class_init_array(NftArray *a);
+NftPrefsObjs *		prefs_class_objects(NftPrefsClass *c);
+NftPrefsClass *		prefs_class_find_by_name(NftPrefsClasses *c, const char *name);
+NftPrefsFromObjFunc *	prefs_class_fromObj(NftPrefsClass *c);
+NftPrefsToObjFunc *	prefs_class_toObj(NftPrefsClass *c);
 
 
 #endif /** _CLASS_H */

@@ -85,7 +85,7 @@ static bool _obj_free(void *element, void *userptr)
 //~ }
 
 
-/** find class by name */
+/** finder for nft_array_find_slot() */
 static bool _class_find_by_name(void *element, void *criterion, void *userptr)
 {
 	if(!element || !criterion)
@@ -108,6 +108,31 @@ NftResult prefs_class_init_array(NftPrefsClasses *a)
 {
 	/* initialize class-array */
 	return nft_array_init(a, sizeof(NftPrefsClass));
+}
+
+
+/** getter */
+NftPrefsObjs *prefs_class_objects(NftPrefsClass *c)
+{
+	if(!c)
+		NFT_LOG_NULL(NULL);
+    
+    	return &c->objects;
+}
+
+
+/** find class by name */
+NftPrefsClass *prefs_class_find_by_name(NftPrefsClasses *c, const char *name)
+{
+	/* find class in array */
+    	NftArraySlot slot;
+        if(!nft_array_find_slot(c, &slot, _class_find_by_name, (void *) name, NULL))
+        {
+                NFT_LOG(L_DEBUG, "Class \"%s\" not found", name);
+	    	return NULL;
+        }
+
+    	return nft_array_get_element(c, slot);
 }
 
 
@@ -136,6 +161,19 @@ void prefs_class_free(NftPrefsClass *klass)
 }
 
 
+/** getter */
+NftPrefsFromObjFunc *prefs_class_fromObj(NftPrefsClass *c)
+{
+	return c->fromObj;
+}
+
+
+/** getter */
+NftPrefsToObjFunc *prefs_class_toObj(NftPrefsClass *c)
+{
+	return c->toObj;
+}
+
 /******************************************************************************/
 /**************************** API FUNCTIONS ***********************************/
 /******************************************************************************/
@@ -163,13 +201,12 @@ NftResult nft_prefs_class_register(NftPrefs *p, const char *className,
                 return NFT_FAILURE;
         }
 
-    	/* find class in array */
-    	NftArraySlot slot;
-        if(nft_array_find_slot(prefs_classes(p), &slot, _class_find_by_name, (void *) className, NULL))
-        {
-                NFT_LOG(L_ERROR, "class named \"%s\" already registered", className);
+    	/** check if class is already registered */
+    	if(prefs_class_find_by_name(prefs_classes(p), className))
+	{
+		NFT_LOG(L_ERROR, "class named \"%s\" already registered", className);
                 return NFT_FAILURE;
-        }
+	}
     
     	/** allocate new slot in class array */
 	NftArraySlot s;
@@ -184,17 +221,25 @@ NftResult nft_prefs_class_register(NftPrefs *p, const char *className,
     	if(!(n = nft_array_get_element(prefs_classes(p), s)))
     	{
 		NFT_LOG(L_ERROR, "Failed to get element from array");
-		nft_array_slot_free(prefs_classes(p), s);
-		return NFT_FAILURE;
+		goto _pcr_error;
 	}
             
         /* register new class */
         strncpy(n->name, className, NFT_PREFS_MAX_CLASSNAME);
         n->toObj = toObj;
         n->fromObj = fromObj;
-    	nft_array_init(&n->objects, sizeof(NftPrefsObj));
-                
+
+    	if(!(prefs_obj_init_array(&n->objects)))
+    	{
+		NFT_LOG(L_ERROR, "Failed to initialize object array");
+		goto _pcr_error;
+	}
+    	                
         return NFT_SUCCESS;
+
+_pcr_error:
+    	nft_array_slot_free(prefs_classes(p), s);
+	return NFT_FAILURE;
 }
 
 
@@ -209,21 +254,15 @@ void nft_prefs_class_unregister(NftPrefs *p, const char *className)
         if(!p || !className)
                 NFT_LOG_NULL();
 
-        /* find class in array */
-    	NftArraySlot slot;
-        if(nft_array_find_slot(prefs_classes(p), &slot, _class_find_by_name, (void *) className, NULL))
-        {
-                NFT_LOG(L_ERROR, 
-                        "tried to unregister class \"%s\" that is not registered.", 
-                        className);
-	    	return;
-        }
+
     
         /* find class */
         NftPrefsClass *klass;
-    	if(!(klass = nft_array_get_element(prefs_classes(p), slot)))
+    	if(!(klass = prefs_class_find_by_name(prefs_classes(p), className)))
 	{
-		NFT_LOG(L_ERROR, "attempted to free NULL class");
+		NFT_LOG(L_ERROR, 
+                        "tried to unregister class \"%s\" that is not registered.", 
+                        className);
 	    	return;
 	}
 

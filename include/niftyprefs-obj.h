@@ -21,20 +21,11 @@
 /** array of objects */
 typedef NftArray NftPrefsObjs;
 
-/** an object descriptor that holds various properties about an object */
+/** a node that holds various properties about an object (e.g. if your object
+    reflects persons, you might have one PrefsObj for Alice and one for Bob) */
 typedef struct _NftPrefsObj NftPrefsObj;
 
 
-/** a node that holds various properties about an object (e.g. if your object
-    reflects persons, you might have one PrefsObj for Alice and one for Bob) */
-struct _NftPrefsObj
-{
-        /** object */
-        void *object;
-        /** slot in class-array of the NftPrefs 
-            context this object belongs to */
-        NftArraySlot classSlot;
-};
 
 
 /** 
