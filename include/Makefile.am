@@ -12,5 +12,7 @@ library_include_HEADERS = \
 	niftyprefs-class.h \
 	niftyprefs-node.h \
 	niftyprefs-array.h \
-	niftyprefs-version.h
+	niftyprefs-version.h \
+	nifty-primitives.h
+
 
