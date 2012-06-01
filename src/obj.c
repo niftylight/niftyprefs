@@ -69,76 +69,15 @@ struct _NftPrefsObj
         void *object;
         /** NftPrefsClass this object belongs to */
         NftPrefsClass *klass;
+        /** slot of this object inside its NftPrefsObjs array */
+    	NftArraySlot slot;
 };
 
 
 
-//~ /******************************************************************************/
-//~ /**************************** STATIC FUNCTIONS ********************************/
-//~ /******************************************************************************/
-
-
-//~ /** get object from slot */
-//~ static NftPrefsObj *_obj_get(NftPrefsClass *c, NftPrefsObjSlot s)
-//~ {
-        //~ if(!c || !c->objects)
-                //~ NFT_LOG_NULL(NULL);
-
-        //~ if(s < 0 || s >= c->obj_list_length)
-        //~ {
-                //~ NFT_LOG(L_ERROR, "invalid slot: %d (must be 0 < slot < %d)", s, c->obj_list_length);
-                //~ return NULL;
-        //~ }
-        
-        //~ return &c->objects[s];
-//~ }
-
-
-//~ /** find first unallocated NftPrefsObj entry in list */
-//~ static NftPrefsObj *_obj_find_free(NftPrefsClass *c)
-//~ {
-	//~ if(!c)
-		//~ NFT_LOG_NULL(NULL);
-
-        //~ /** increase list by this amount of entries if space runs out */
-//~ #define NFT_PREFS_OBJBUF_INC	64
-
-        
-        //~ /* enough space left? */
-        //~ if(c->obj_list_length <= c->obj_count)
-        //~ {
-                //~ /* increase buffer */
-                //~ if(!(c->objects = realloc(c->objects, 
-                                          //~ (c->obj_list_length + NFT_PREFS_OBJBUF_INC)*
-                                          //~ sizeof(NftPrefsObj))))
-                //~ {
-                        //~ NFT_LOG_PERROR("realloc()");
-                        //~ return NFT_FAILURE;
-                //~ }
-
-                
-                //~ /* clear new memory */
-                //~ memset(&c->objects[c->obj_list_length],
-                       //~ 0, 
-                       //~ NFT_PREFS_OBJBUF_INC*sizeof(NftPrefsObj));
-
-                
-                //~ /* remember new listlength */
-                //~ c->obj_list_length += NFT_PREFS_OBJBUF_INC;
-        //~ }
-
-        
-	//~ /* find free slot in list */
-	//~ int i;
-	//~ for(i=0; i < c->obj_list_length; i++)
-	//~ {
-                //~ if(!c->objects[i].object)
-                        //~ return &c->objects[i];
-	//~ }
-
-	//~ return NULL;
-//~ }
-
+/******************************************************************************/
+/**************************** STATIC FUNCTIONS ********************************/
+/******************************************************************************/
 
 /** finder for nft_array_find_slot() */
 static bool _obj_find_by_ptr(void *element, void *criterion, void *userptr)
@@ -150,6 +89,8 @@ static bool _obj_find_by_ptr(void *element, void *criterion, void *userptr)
 
     	return (o->object == criterion);
 }
+
+
 
 /******************************************************************************/
 /**************************** PRIVATE FUNCTIONS *******************************/
@@ -169,12 +110,38 @@ void prefs_obj_free(NftPrefsObj *obj)
         if(!obj)
                return;
 
-        /* invalidate obj descriptor */
+        /* deallocate array slot */
+    	nft_array_slot_free(prefs_class_objects(obj->klass), obj->slot);
+
+    	/* invalidate obj descriptor */
         obj->object = NULL;
         obj->klass = NULL;
 }
 
 
+/** find object by pointer */
+NftPrefsObj *prefs_obj_find_by_ptr(NftPrefsObjs *array, void *obj)
+{
+    	if(!array)
+		NFT_LOG_NULL(NULL);
+    
+	NftArraySlot slot;
+        if(nft_array_find_slot(array, &slot, _obj_find_by_ptr, (void *) obj, NULL))
+    	{
+		NFT_LOG(L_DEBUG, "Object %p not found", obj);
+		return NULL;
+	}
+    
+    	/* get object */
+        NftPrefsObj *o;
+    	if(!(o = nft_array_get_element(array, slot)))
+    	{
+		NFT_LOG(L_ERROR, "Null object?");
+		return NULL;
+	}
+
+    	return o;
+}
 
 /******************************************************************************/
 /**************************** API FUNCTIONS ***********************************/
@@ -222,7 +189,8 @@ NftResult nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj)
         /* register new node */
         o->object = obj;
         o->klass = c;
-        
+        o->slot = s;
+    
         return NFT_SUCCESS;
 }
 
@@ -248,22 +216,14 @@ void nft_prefs_obj_unregister(NftPrefs *p, const char *className, void *obj)
         }
 
 
-    	/* find object in array */
-    	NftArraySlot slot;
-        if(nft_array_find_slot(prefs_class_objects(c), &slot, _obj_find_by_ptr, (void *) obj, NULL))
-        {
-                NFT_LOG(L_ERROR, "Object \"%p\" not found", obj);
+    	/* find object in class */
+    	NftPrefsObj *o;
+    	if(!(o = prefs_obj_find_by_ptr(prefs_class_objects(c), obj)))
+	{
+                NFT_LOG(L_ERROR, "Object \"%p\" not found in class \"%s\"", obj, className);
 	    	return;
         }
-
-    	/* get object */
-        NftPrefsObj *o;
-    	if(!(o = nft_array_get_element(prefs_class_objects(c), slot)))
-    	{
-		NFT_LOG(L_ERROR, "Null object?");
-		return;
-	}
-
+    
         prefs_obj_free(o);
 }
 
@@ -475,52 +435,52 @@ void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
 }
 
 
-//~ /**
- //~ * create new object from preferences buffer
- //~ *
- //~ * @param p NftPrefs context
- //~ * @param buffer XML buffer
- //~ * @param bufsize size of XML buffer
- //~ * @param userptr arbitrary function that will be passed to NftPrefsToObjFunc
- //~ * @result newly created object or NULL
- //~ */
-//~ void *nft_prefs_obj_from_buffer(NftPrefs *p, char *buffer, size_t bufsize, void *userptr)
-//~ {
-        //~ if(!p || !buffer)
-                //~ NFT_LOG_NULL(NULL);
+/**
+ * create new object from preferences buffer
+ *
+ * @param p NftPrefs context
+ * @param buffer XML buffer
+ * @param bufsize size of XML buffer
+ * @param userptr arbitrary function that will be passed to NftPrefsToObjFunc
+ * @result newly created object or NULL
+ */
+void *nft_prefs_obj_from_buffer(NftPrefs *p, char *buffer, size_t bufsize, void *userptr)
+{
+        if(!p || !buffer)
+                NFT_LOG_NULL(NULL);
 
         
-        //~ /* parse XML */
-        //~ xmlDocPtr doc;
-        //~ if(!(doc = xmlReadMemory(buffer, bufsize, NULL, NULL, 0)))
-        //~ {
-                //~ NFT_LOG(L_ERROR, "Failed to xmlReadMemory()");
-                //~ return NULL;
-        //~ }
+        /* parse XML */
+        xmlDocPtr doc;
+        if(!(doc = xmlReadMemory(buffer, bufsize, NULL, NULL, 0)))
+        {
+                NFT_LOG(L_ERROR, "Failed to xmlReadMemory()");
+                return NULL;
+        }
 
         
-        //~ /* get node */
-        //~ xmlNode *node;
-        //~ if(!(node = xmlDocGetRootElement(doc)))
-        //~ {
-                //~ NFT_LOG(L_ERROR, "No root element found in XML");
-                //~ return NULL;
-        //~ }
+        /* get node */
+        xmlNode *node;
+        if(!(node = xmlDocGetRootElement(doc)))
+        {
+                NFT_LOG(L_ERROR, "No root element found in XML");
+                return NULL;
+        }
 
 
-        //~ /* create object */
-        //~ void *o = nft_prefs_obj_from_node(p, node, userptr);
+        /* create object */
+        void *o = nft_prefs_obj_from_node(p, node, userptr);
         
 
-        //~ /* free old doc? */
-        //~ if(p->doc)
-                //~ xmlFreeDoc(p->doc);
+        /* free old doc? */
+        if(prefs_doc(p))
+                xmlFreeDoc(prefs_doc(p));
 
-        //~ /* save new doc */
-        //~ p->doc = doc;
+        /* save new doc */
+        prefs_doc_set(p, doc);
         
-        //~ return o;
-//~ }
+        return o;
+}
 
 
 /**
@@ -570,6 +530,7 @@ void *nft_prefs_obj_from_file(NftPrefs *p, const char *filename, void *userptr)
         
         return o;
 }
+
 
 /**
  * @}

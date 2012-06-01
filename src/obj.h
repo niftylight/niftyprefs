@@ -49,6 +49,7 @@
 
 NftResult 	prefs_obj_init_array(NftPrefsObjs *o);
 void 		prefs_obj_free(NftPrefsObj *obj);
+NftPrefsObj *	prefs_obj_find_by_ptr(NftPrefsObjs *array, void *obj);
 
 
 #endif

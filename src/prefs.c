@@ -98,10 +98,11 @@ void prefs_doc_set(NftPrefs *p, xmlDoc *doc)
 	p->doc = doc;
 }
 
+
+
 /******************************************************************************/
 /**************************** STATIC FUNCTIONS ********************************/
 /******************************************************************************/
-
 
 /** libxml error handler */
 static void _xml_error_handler(void *ctx, const char * msg, ...)
@@ -154,7 +155,9 @@ static void _xml_error_handler(void *ctx, const char * msg, ...)
 /** helper for nft_array_foreach_element() */
 bool _class_free(void *element, void *userptr)
 {
-	//prefs_class_free((NftPrefsClass *) element);
+    	NftPrefs *p = userptr;
+    
+	prefs_class_free(p, (NftPrefsClass *) element);
     	return TRUE;
 }
 
@@ -227,7 +230,7 @@ void nft_prefs_exit(NftPrefs *p)
         }
         
         /* free all classes */
-    	nft_array_foreach_element(&p->classes, _class_free, NULL);
+    	nft_array_foreach_element(&p->classes, _class_free, p);
 
     	/* free classes array */
     	nft_array_deinit(&p->classes);

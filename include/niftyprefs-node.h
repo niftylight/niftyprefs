@@ -48,7 +48,12 @@
 
 /**
  * @defgroup prefs_node NftPrefsNode
- * @brief simple API to handle arrays
+ * @brief simple API to NftPrefsNodes
+ * "nodes" are used to represent the preferences of one object. They can
+ * hold various properties.
+ * Currently this is just a wrapper to libxml2 but can be abstracted to any
+ * other container format that supports trees & all needed properties.
+ * 
  * @{
  */
 
