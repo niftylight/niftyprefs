@@ -57,7 +57,12 @@
 #include "nifty-array.h"
 
 
-
+/** descriptor for one array element */
+struct _NftElement
+{
+        /** true if element is occupied, false if it's free */
+        bool occupied;
+};
 
 
 

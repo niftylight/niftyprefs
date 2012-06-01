@@ -68,11 +68,7 @@
 typedef size_t NftArraySlot;
 
 /** descriptor for one array element */
-typedef struct
-{
-        /** true if element is occupied, false if it's free */
-        bool occupied;
-}NftElement;
+typedef struct _NftElement NftElement;
 
 
 /** maximum length of NftArray->name */
