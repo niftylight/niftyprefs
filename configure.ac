@@ -118,6 +118,7 @@ AM_CONDITIONAL(RUN_TESTS, test x$tests = xtrue)
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES(
 [
+    Doxyfile \
     Makefile \
     src/Makefile \
     tests/Makefile \
