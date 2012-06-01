@@ -43,7 +43,7 @@
 
 
 /**
- * @file niftyprefs-array.h
+ * @file nifty-array.h
  */
 
 /**
