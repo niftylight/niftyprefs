@@ -243,9 +243,6 @@ NftResult nft_array_slot_alloc(NftArray *a, NftArraySlot *s)
 	if(!a)
                 NFT_LOG_NULL(NFT_FAILURE);
 
-        /** increase elementbuffer by this amount of entries if space runs out */
-#define NFT_ARRAY_INC	64
-
         
         /* enough space left? */
         if(a->arraysize <= a->elementcount)
@@ -254,7 +251,7 @@ NftResult nft_array_slot_alloc(NftArray *a, NftArraySlot *s)
                 if(!(a->elements = realloc(
                                           	a->elements, 
                                            	/* total elements new array can hold */
-                                          	(a->arraysize + NFT_ARRAY_INC) *
+                                          	(a->arraysize + NFT_ARRAY_DEFAULT_INC) *
                                            	/* size of one element descriptor */
                                           	(sizeof(NftElement))
                                            )
@@ -267,7 +264,7 @@ NftResult nft_array_slot_alloc(NftArray *a, NftArraySlot *s)
 
                 /* increase element buffer by NFT_ARRAY_INC elements */
 	    	if(!(a->buffer = realloc(a->buffer,
-		                         (a->arraysize + NFT_ARRAY_INC) *
+		                         (a->arraysize + NFT_ARRAY_DEFAULT_INC) *
 		                         a->elementsize)))
 	    	{
 			NFT_LOG_PERROR("realloc()");
@@ -277,13 +274,13 @@ NftResult nft_array_slot_alloc(NftArray *a, NftArraySlot *s)
                 /* clear new memory */
                 memset(&a->elements[a->arraysize],
                        0, 
-                       NFT_ARRAY_INC*sizeof(NftElement));
+                       NFT_ARRAY_DEFAULT_INC*sizeof(NftElement));
 		memset(&a->buffer[a->elementsize*a->arraysize],
 		       0,
-		       NFT_ARRAY_INC*a->elementsize);
+		       NFT_ARRAY_DEFAULT_INC*a->elementsize);
                 
                 /* remember new arraysize */
-                a->arraysize += NFT_ARRAY_INC;
+                a->arraysize += NFT_ARRAY_DEFAULT_INC;
         }
 
         

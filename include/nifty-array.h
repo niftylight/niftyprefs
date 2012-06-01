@@ -71,6 +71,8 @@ typedef size_t NftArraySlot;
 typedef struct _NftElement NftElement;
 
 
+/** increase array by this amount of element entries if space runs out */
+#define NFT_ARRAY_DEFAULT_INC 64
 /** maximum length of NftArray->name */
 #define NFT_ARRAY_NAME_MAXLEN 64
 
