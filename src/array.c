@@ -54,7 +54,7 @@
 
 
 #include <niftylog.h>
-#include "niftyprefs-array.h"
+#include "nifty-array.h"
 
 
 
@@ -100,6 +100,7 @@ static bool _slot_is_valid(NftArray *a, NftArraySlot s)
  * initialize an array descriptor
  *
  * @param a pointer to space that should be initialized to be used as NftArray
+ * @param elementSize size of one array element in bytes 
  * @result NFT_SUCCESS or NFT_FAILURE 
  */
 NftResult nft_array_init(NftArray *a, size_t elementSize)
@@ -395,10 +396,10 @@ NftResult nft_array_foreach_element(NftArray *a,
  * walking array and comparing criteria using a finder function
  *
  * @param a NftArray descriptor
- * @param s destination slot of found element
+ * @param s pointer where slot of found element will be written to
  * @param finder Function to check if an element matches the criterion 
  *        and then returns TRUE and FALSE otherwise
- * @param the criterion that's passed to the finder function
+ * @param criterion the criterion that's passed to the finder function
  * @param userptr arbitrary user pointer 
  * @result NFT_SUCCESS if element was found an slot has been written into *s, 
  *         NFT_FAILURE upon error

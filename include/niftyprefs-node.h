@@ -47,10 +47,17 @@
  */
 
 /**
+ * @addtogroup prefs_obj
+ * @{ 
  * @defgroup prefs_node NftPrefsNode
- * @brief simple API to NftPrefsNodes
+ * @brief simple API to NftPrefsNodes.
  * "nodes" are used to represent the preferences of one object. They can
  * hold various properties.
+ * NftPrefsNode is a kind of "meta-type" used to describe an (unexisting) object. 
+ * Basically a NftPrefsNode is the last abstraction for one object before the
+ * actual preference representation is written. And the other way, if a preference
+ * representation is parsed it will be converted into NftPrefsNode(s) first.
+ *
  * Currently this is just a wrapper to libxml2 but can be abstracted to any
  * other container format that supports trees & all needed properties.
  * 
@@ -85,5 +92,6 @@ NftResult       nft_prefs_node_prop_int_get(NftPrefsNode *n, const char *name, i
 #endif /** _NIFTYPREFS_NODE_H */
 
 /**
+ * @}
  * @}
  */

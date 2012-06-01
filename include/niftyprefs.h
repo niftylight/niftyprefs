@@ -52,7 +52,7 @@
  * <h1>Introduction</h1>
  * The basic idea is to define and manage "classes" for arbitrary (void *)
  * pointers in a comfortable way. So you simply can:
- * - "snapshot" the state of an object for saving it in a preferences-definition 
+ * - "snapshot" the state of an object for saving it in a preferences definition 
  * - create an object from a previously created "snapshot"
  *
  *
@@ -72,10 +72,11 @@
  * Use case 1: Generate preferences from existing object
  *  - ...
  *  - [create object]
- *  - nft_prefs_obj_register(obj)
+ *  - nft_prefs_obj_register(class, obj)
  *  - prefsObj = nft_prefs_from_obj(obj)
  *  - [use prefsObj]
- *  - nft_prefs_obj_free(prefsObj)
+ *  - nft_prefs_obj_unregister(prefsObj)
+ *  - [free object]
  *
  * Use case 2: Generate object from preferences
  *  - ...
@@ -88,7 +89,7 @@
  * Use case 6: Parse preferences from string
  *
  * @defgroup prefs niftyprefs
- * @brief abstract preference handling for arbitrary objects
+ * @brief abstract preference handling for arbitrary objects.
  * @{
  */
 
@@ -103,8 +104,8 @@ typedef struct _NftPrefs NftPrefs;
 
 
 #include "nifty-primitives.h"
+#include "nifty-array.h"
 #include "niftyprefs-version.h"
-#include "niftyprefs-array.h"
 #include "niftyprefs-node.h"
 #include "niftyprefs-obj.h"
 #include "niftyprefs-class.h"

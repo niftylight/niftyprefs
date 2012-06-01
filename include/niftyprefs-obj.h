@@ -47,8 +47,10 @@
  */
 
 /**
+ * @addtogroup prefs_class
+ * @{ 
  * @defgroup prefs_obj NftPrefsObj
- * @brief API to handle PrefsObjects
+ * @brief API to handle PrefsObjects.
  * @{
  */
 
@@ -113,5 +115,6 @@ NftPrefsNode *  nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *
 
 
 /**
+ * @}
  * @}
  */

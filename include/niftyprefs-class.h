@@ -46,8 +46,10 @@
  */
 
 /**
+ * @addtogroup prefs
+ * @{ 
  * @defgroup prefs_class NftPrefsClass
- * @brief abstract preference handling for arbitrary objects
+ * @brief API to handle various classes of prefs objects.
  * @{
  */
 
@@ -57,7 +59,7 @@
 
 
 #include "nifty-primitives.h"
-#include "niftyprefs-array.h"
+#include "nifty-array.h"
 #include "niftyprefs-obj.h"
 
 
@@ -85,6 +87,7 @@ void            nft_prefs_class_unregister(NftPrefs *p, const char *className);
 #endif /** _NIFTYPREFS_CLASS_H */
 
 /**
+ * @}
  * @}
  */
 

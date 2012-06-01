@@ -193,10 +193,10 @@ NftPrefsToObjFunc *prefs_class_toObj(NftPrefsClass *c)
 /**
  * register object class
  *
- * @param a NftArray of NftPrefsClasses
- * @param className unique name of this class
- * @param toObj pointer to NftPrefsToObjFunc used by this class
- * @param fromObj pointer to NftPrefsFromObjFunc used by this class
+ * @param p NftPrefs context where new class should be registered to
+ * @param className unique name of new class
+ * @param toObj pointer to NftPrefsToObjFunc used by the new class
+ * @param fromObj pointer to NftPrefsFromObjFunc used by the new class
  * @result NFT_SUCCESS or NFT_FAILURE
  */
 NftResult nft_prefs_class_register(NftPrefs *p, const char *className, 
