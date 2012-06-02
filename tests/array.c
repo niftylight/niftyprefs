@@ -82,6 +82,9 @@ static bool _element_validator(void *element, void *userptr)
 int main(int argc, char *argv[])
 {
 
+    	/* do preliminary version checks */
+    	NFT_PREFS_CHECK_VERSION
+	
         int r = EXIT_FAILURE;
 
         /* initialize an array */

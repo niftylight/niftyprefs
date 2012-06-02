@@ -53,6 +53,9 @@
 int main(int argc, char *argv[])
 {
 
+    	/* do preliminary version checks */
+    	NFT_PREFS_CHECK_VERSION
+	
         int res = EXIT_FAILURE;
         NftPrefs *p;
         if(!(p = nft_prefs_init()))

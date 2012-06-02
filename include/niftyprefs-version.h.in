@@ -77,17 +77,19 @@
 /** current API age (libtool) */
 #define NFT_PREFS_API_AGE        (@PACKAGE_API_AGE@)
 /** current git version hash - defined using -DPACKAGE_GIT_VERSION at compile */
-#define NFT_PREFS_GIT_VERSION    (PACKAGE_GIT_VERSION)
+#define NFT_PREFS_GIT_VERSION    (nft_prefs_version_git())
 /** nicely composed long version string */
-#define NFT_PREFS_VERSION_LONG   ("@PACKAGE_VERSION@-"PACKAGE_GIT_VERSION)
+#define NFT_PREFS_LONG_VERSION   (nft_prefs_version_long())
 
 
 /** macro to check version-compatibility of headers <-> binary version */
-#define NFT_PREFS_CHECK_VERSION nft_prefs_check_version(NFT_PREFS_GIT_VERSION);
+#define NFT_PREFS_CHECK_VERSION nft_prefs_version_check(NFT_PREFS_GIT_VERSION);
 
 
 
-void    nft_prefs_check_version(const char *version);
+void    	nft_prefs_version_check(const char *version);
+const char *	nft_prefs_version_git();
+const char *    nft_prefs_version_long();
 
 
 #endif /* _NFT_PREFS_VERSION */

@@ -142,7 +142,10 @@ static NftResult _person_from_prefs(NftPrefs *p, void **newObj, NftPrefsNode *no
 //~ /** create object from preferences definition */
 int main(int argc, char *argv[])
 {
-        //~ /* fail per default */
+    	/* do preliminary version checks */
+    	NFT_PREFS_CHECK_VERSION
+	
+        /* fail per default */
         int result = EXIT_FAILURE;
 
 

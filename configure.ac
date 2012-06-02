@@ -106,7 +106,7 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 AC_ARG_ENABLE(
 	tests,
-	[  --disable-tests         Don't run tests before install ],
+	[  --disable-tests         Don't build tests for "make check" ],
 	[ tests=false ],
 	[ tests=true])
 AM_CONDITIONAL(RUN_TESTS, test x$tests = xtrue)
@@ -121,6 +121,7 @@ AC_CONFIG_FILES(
     Doxyfile \
     Makefile \
     src/Makefile \
+    src/version.c \
     tests/Makefile \
     include/Makefile \
     include/niftyprefs-version.h \

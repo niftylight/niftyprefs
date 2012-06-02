@@ -153,6 +153,9 @@ static NftResult _person_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
     from arbitrary "object" definitions */
 int main(int argc, char *argv[])
 {
+    	/* do preliminary version checks */
+    	NFT_PREFS_CHECK_VERSION
+	
         //~ /* fail per default */
         int result = EXIT_FAILURE;
 
