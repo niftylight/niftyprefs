@@ -52,6 +52,7 @@
  *
  */
 
+#include <stdio.h>
 #include <niftylog.h>
 #include "niftyprefs-version.h"
 
@@ -66,8 +67,11 @@
  *
  * @param version the library version number
  */
-void nft_prefs_check_version(const char *version)
+void nft_prefs_version_check(const char *version)
 {
+        /* welcome */
+        NFT_LOG(L_INFO, "%s v%s - %s", PACKAGE_NAME, NFT_PREFS_LONG_VERSION, PACKAGE_URL);
+
         /* check version of dependencies */
         NFT_LOG_CHECK_VERSION
 
@@ -76,11 +80,7 @@ void nft_prefs_check_version(const char *version)
         
         
         NFT_LOG(L_WARNING, "%s compiled against version %s but currently installed is %s.",
-                PACKAGE_NAME, version, NFT_PREFS_GIT_VERSION);
-
-        /* welcome */
-        NFT_LOG(L_INFO, "%s v%s - %s", PACKAGE_NAME, NFT_PREFS_VERSION_LONG, PACKAGE_URL);
-        
+                PACKAGE_NAME, version, NFT_PREFS_GIT_VERSION);        
 }
 
 
