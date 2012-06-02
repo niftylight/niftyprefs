@@ -6,6 +6,7 @@ INCLUDE_DIRS = -I../include -I$(top_srcdir)/include
 # module-subdirs to include
 SUBDIRS =
 EXTRA_DIST = 
+
 # source-files
 lib@PACKAGE@_la_SOURCES = \
 	obj.c \
@@ -33,7 +34,7 @@ lib@PACKAGE@_la_CFLAGS = \
         $(xml_CFLAGS) \
         $(niftylog_CFLAGS) \
         $(OPT_CFLAGS) \
-        -I$(top_srcdir)/include \
+        $(INCLUDE_DIRS) \
         -DPACKAGE_GIT_VERSION="\"`$(top_srcdir)/version.sh --git`\""
 
 # linker flags
@@ -43,4 +44,4 @@ lib@PACKAGE@_la_LDFLAGS = \
         -Wall -no-undefined
 
 # link in modules from subdirectories
-lib@PACKAGE@_la_LIBADD = $(xml_LIBS) $(niftylog_LIBS)
+lib@PACKAGE@_la_LIBADD = $(SUBDIRS) $(xml_LIBS) $(niftylog_LIBS)
