@@ -23,4 +23,4 @@ endif
 
 # files to include in archive
 EXTRA_DIST = Doxyfile Doxyfile.in $(PACKAGE).pc $(PACKAGE).pc.in
-DISTCLEANFILES = $(PACKAGE).pc
+DISTCLEANFILES = Doxyfile $(PACKAGE).pc
