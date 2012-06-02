@@ -51,13 +51,13 @@
  *
  * <h1>Introduction</h1>
  * The basic idea is to define and manage "classes" for arbitrary (void *)
- * pointers in a comfortable way. So you simply can:
+ * pointers (encapsuled in "objects") in a comfortable way. 
+ * So you simply can:
  * - "snapshot" the state of an object for saving it in a preferences definition 
  * - create an object from a previously created "snapshot"
  *
  *
  * <h1>Usage</h1>
- *
  * In every case call:
  *  - nft_prefs_init() before doing anything
  *  - nft_prefs_class_register() for every object-class, before using the class 
