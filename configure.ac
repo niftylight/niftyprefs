@@ -17,7 +17,9 @@ AC_CONFIG_MACRO_DIR([m4])
 # --------------------------------
 
 # infos
-AC_DEFINE(PACKAGE_DESCRIPTION, [lightweight library to handle preferences for arbitrary objects], [description])
+PACKAGE_DESCRIPTION="lightweight library to handle preferences for arbitrary objects"
+AC_SUBST([PACKAGE_DESCRIPTION], [${PACKAGE_DESCRIPTION}], [package description])
+AC_DEFINE_UNQUOTED(PACKAGE_DESCRIPTION, "${PACKAGE_DESCRIPTION}", [package description])
 
 # versioning (s. version.sh)
 AC_SUBST([PACKAGE_MAJOR_VERSION], m4_esyscmd([./version.sh --major]), [major version])
