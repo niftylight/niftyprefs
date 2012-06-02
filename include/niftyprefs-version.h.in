@@ -42,12 +42,8 @@
  */
 
 
-/**
- * @file niftyprefs-version.h
- */
-
-
 /**      
+ * @file niftyprefs-version.h
  * @addtogroup prefs
  * @{
  * @defgroup prefs_version Version handling
