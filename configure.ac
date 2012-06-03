@@ -136,6 +136,7 @@ echo "
 Configure report:
 
     Package.....................:  ${PACKAGE_STRING}
+    Description.................:  ${PACKAGE_DESCRIPTION}
     Revision....................:  ${PACKAGE_GIT_VERSION}
     Libtool version.............:  ${PACKAGE_API_CURRENT}:${PACKAGE_API_REVISION}:${PACKAGE_API_AGE}
     URL.........................:  ${PACKAGE_URL}
