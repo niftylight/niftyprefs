@@ -184,7 +184,6 @@ NftPrefs *nft_prefs_init()
          * between the version it was compiled for and the actual shared
          * library used.
          */
-        LIBXML_TEST_VERSION
         NFT_PREFS_CHECK_VERSION
                 
         xmlSetBufferAllocationScheme(XML_BUFFER_ALLOC_DOUBLEIT);

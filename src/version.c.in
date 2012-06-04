@@ -74,6 +74,7 @@ void nft_prefs_version_check(const char *version)
 
         /* check version of dependencies */
         NFT_LOG_CHECK_VERSION
+	LIBXML_TEST_VERSION
 
         if(strcmp(version, NFT_PREFS_GIT_VERSION) == 0)
                 return;
