@@ -24,3 +24,7 @@ endif
 # files to include in archive
 EXTRA_DIST = Doxyfile Doxyfile.in $(PACKAGE).pc $(PACKAGE).pc.in
 DISTCLEANFILES = Doxyfile $(PACKAGE).pc
+
+# pkgconfig for libniftyprefs
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = $(PACKAGE).pc

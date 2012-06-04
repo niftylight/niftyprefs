@@ -66,9 +66,10 @@ struct People
 }people;
 
 
-/* printable name of "object" */
-#define PERSON_NAME "person"
+/* printable name of "objects" */
 #define PEOPLE_NAME "people"
+#define PERSON_NAME "person"
+
 
 /* file to read from */
 #define FILE_NAME   "test.xml"
