@@ -52,7 +52,7 @@
  *
  */
 
-#include <libxml/tree.h>
+
 #include <niftylog.h>
 #include "niftyprefs.h"
 #include "class.h"
