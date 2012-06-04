@@ -1,6 +1,4 @@
-======================================================
- lightweight modelless preferences management library
-======================================================
+lightweight library to handle preferences for arbitrary objects
 
-s. http://wiki.niftylight.de/libniftyprefs for further info
+s. http://wiki.niftylight.de/libniftyprefs for all further info
 
