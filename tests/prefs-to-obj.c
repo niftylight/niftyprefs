@@ -165,10 +165,18 @@ int main(int argc, char *argv[])
                 goto _deinit;
         
 
-        /* load & parse config file */
+    	/* parse file to prefs node */
+    	NftPrefsNode *node;
+    	if(!(node = nft_prefs_node_from_file(prefs, "test-prefs.xml")))
+		goto _deinit;
+    
+        /* create object from node */
         struct People *people;
-        if(!(people = nft_prefs_obj_from_file(prefs, "test-prefs.xml", NULL)))
+        if(!(people = nft_prefs_obj_from_node(prefs, node, NULL)))
                 goto _deinit;
+
+    	/* free node */
+    	nft_prefs_node_free(node);
 
         /* process all persons */
         size_t n;

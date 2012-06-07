@@ -97,8 +97,6 @@ typedef struct _NftArray
 
 
 
-
-
 NftResult       nft_array_init(NftArray *a, size_t elementSize);
 void            nft_array_deinit(NftArray *a);
 

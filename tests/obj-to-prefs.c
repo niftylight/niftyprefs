@@ -200,10 +200,17 @@ int main(int argc, char *argv[])
         }
 
         
-        /* dump to file */
-        if(!nft_prefs_obj_to_file(prefs, PEOPLE_NAME, &people, "test-prefs.xml", NULL))
+        /* dump people node */
+    	NftPrefsNode *n;
+        if(!(n = nft_prefs_obj_to_node(prefs, PEOPLE_NAME, &people, NULL)))
                 goto _deinit;
-        
+
+    	/* dump node to file */
+    	if(!nft_prefs_node_to_file(prefs, n, "test-prefs.xml"))
+		goto _deinit;
+
+    	nft_prefs_node_free(n);
+    
         /* all went fine */
         result = EXIT_SUCCESS;
            

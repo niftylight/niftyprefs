@@ -88,6 +88,13 @@ char *          nft_prefs_node_prop_string_get(NftPrefsNode *n, const char *name
 NftResult       nft_prefs_node_prop_int_set(NftPrefsNode *n, const char *name, int val);
 NftResult       nft_prefs_node_prop_int_get(NftPrefsNode *n, const char *name, int *val);
 
+char *		nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode *n);
+NftResult 	nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *filename);
+NftPrefsNode *	nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsize);
+NftPrefsNode *	nft_prefs_node_from_file(NftPrefs *p, const char *filename);
+
+void 		nft_prefs_node_free(NftPrefsNode *n);
+
 
 #endif /** _NIFTYPREFS_NODE_H */
 

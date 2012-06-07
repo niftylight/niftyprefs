@@ -54,6 +54,7 @@
 
 #include <niftylog.h>
 #include "prefs.h"
+#include "class.h"
 
 
 
@@ -193,6 +194,202 @@ NftResult nft_prefs_node_prop_int_get(NftPrefsNode *n, const char *name, int *va
 	
         return result;
 }
+
+
+/**
+ * create preferences buffer from NftPrefsNode
+ * 
+ * @param p NftPrefs context
+ * @param n NftPrefsNode
+ * @result string holding xml representation of object (use free() to deallocate)
+ */
+char *nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode *n)
+{
+    	if(!p || !n)
+		NFT_LOG_NULL(NULL);
+    
+	/* result pointer (xml dump) */
+        char *dump = NULL;
+
+        /* create buffer */
+        xmlBufferPtr buf;
+        if(!(buf = xmlBufferCreate()))
+        {
+                NFT_LOG(L_ERROR, "failed to xmlBufferCreate()");
+                return NULL;
+        }
+
+        /* dump node */
+        if(xmlNodeDump(buf, prefs_doc(p), n, 0, TRUE) < 0)
+        {
+                NFT_LOG(L_ERROR, "xmlNodeDump() failed");
+                goto _pntb_exit;
+        }
+
+        /* allocate buffer */
+        if(!(dump = malloc(xmlBufferLength(buf)+1)))
+        {
+                NFT_LOG_PERROR("malloc()");
+                goto _pntb_exit;
+        }
+
+        /* copy buffer */
+        strncpy(dump, (char *) xmlBufferContent(buf), xmlBufferLength(buf));
+        dump[xmlBufferLength(buf)] = '\0';
+
+_pntb_exit:
+        xmlBufferFree(buf);
+        
+        return dump;
+}
+
+
+/**
+ * create preferences file from NftPrefsNode and child nodes
+ *
+ * @param p NftPrefs context
+ * @param n NftPrefsNode
+ * @param filename full path of file to be written 
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *filename)
+{
+    	if(!p || !n || !filename)
+		NFT_LOG_NULL(NFT_FAILURE);
+
+
+        
+        /* create temp xmlDoc */
+        xmlDoc *d = NULL;
+        if(!(d = xmlNewDoc(BAD_CAST "1.0")))
+        {
+                NFT_LOG(L_ERROR, "Failed to create new XML doc");
+                return NFT_FAILURE;
+        }
+           
+	/* overall result */
+        NftResult r = NFT_FAILURE;
+    
+        /* set node as root element of temporary doc */
+        xmlDocSetRootElement(d, n);
+                
+        /* write document to file */
+        if(xmlSaveFormatFileEnc(filename, d, "UTF-8", 1) < 0)
+        {
+                NFT_LOG(L_ERROR, "Failed to save XML file \"%s\"", filename);
+                goto _potb_exit;
+        }
+        
+        /* successfully written file */
+        r = NFT_SUCCESS;
+
+        
+_potb_exit:
+        /* free temporary xmlDoc */
+        if(d)
+                xmlFreeDoc(d);
+        
+        return r;
+}
+
+
+/**
+ * create new NftPrefsNode from preferences file
+ *
+ * @param p NftPrefs context
+ * @param filename full path of file
+ * @result newly created NftPrefsNode or NULL
+ */
+NftPrefsNode *nft_prefs_node_from_file(NftPrefs *p, const char *filename)
+{
+        if(!p || !filename)
+                NFT_LOG_NULL(NULL);
+
+        
+        /* parse XML */
+        xmlDocPtr doc;
+        if(!(doc = xmlReadFile(filename, NULL, 0)))
+        {
+		NFT_LOG(L_ERROR, "Failed to xmlReadFile(\"%s\")", filename);
+                return NULL;
+        }
+
+        /* free old doc? */
+        if(prefs_doc(p))
+        {
+                xmlFreeDoc(prefs_doc(p));
+        }
+        
+        /* save new doc */
+        prefs_doc_set(p,doc);
+    
+        /* get node */
+        xmlNode *node;
+        if(!(node = xmlDocGetRootElement(doc)))
+        {
+                NFT_LOG(L_ERROR, "No root element found in XML");
+                return NULL;
+        }
+
+        return node;
+}
+
+
+/**
+ * create new NftPrefsNode from preferences buffer
+ *
+ * @param p NftPrefs context
+ * @param buffer XML buffer to parse
+ * @param bufsize size of XML buffer
+ * @result newly created NftPrefsNode or NULL
+ */
+NftPrefsNode *nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsize)
+{
+        if(!p || !buffer)
+                NFT_LOG_NULL(NULL);
+
+        
+        /* parse XML */
+        xmlDocPtr doc;
+        if(!(doc = xmlReadMemory(buffer, bufsize, NULL, NULL, 0)))
+        {
+                NFT_LOG(L_ERROR, "Failed to xmlReadMemory()");
+                return NULL;
+        }
+
+        /* free old doc? */
+        if(prefs_doc(p))
+                xmlFreeDoc(prefs_doc(p));
+
+        /* save new doc */
+        prefs_doc_set(p, doc);
+    
+        /* get node */
+        xmlNode *node;
+        if(!(node = xmlDocGetRootElement(doc)))
+        {
+                NFT_LOG(L_ERROR, "No root element found in XML");
+                return NULL;
+        }
+
+	return node;
+}
+
+
+/**
+ * free resources of a NftPrefsNode
+ *
+ * @param n NftPrefsNode to free
+ */
+void nft_prefs_node_free(NftPrefsNode *n)
+{
+	if(!n)
+		NFT_LOG_NULL();
+
+    	xmlUnlinkNode(n);
+    	xmlFreeNode(n);
+}
+
 
 /**
  * @}
