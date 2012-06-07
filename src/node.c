@@ -97,6 +97,20 @@ NftPrefsNode *nft_prefs_node_get_next(NftPrefsNode *n)
 
 
 /**
+ * get name of this NftPrefsNode
+ *
+ * @result classname of this NftPrefsNode or NULL
+ */ 
+const char *nft_prefs_node_get_name(NftPrefsNode *n)
+{
+	if(!n)
+		NFT_LOG_NULL(NULL);
+
+    	return (const char *) n->name;
+}
+
+
+/**
  * set string property of a node
  * @param n node where property should be set
  * @param name name of property
