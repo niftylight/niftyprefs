@@ -269,8 +269,12 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *ob
         
         /* call prefsFromObj() registered for this class */
         if(!prefs_class_fromObj(c)(p, node, obj, userptr))
+    	{
+		NFT_LOG(L_WARNING, "fromObj() of class \"%s\" failed.",
+		        className);
                 return NULL;
-
+	}
+    
         return node;
 }
 
@@ -299,7 +303,8 @@ void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
         void *result = NULL;
         if(!(prefs_class_toObj(c)(p, &result, n, userptr)))
         {
-                NFT_LOG(L_ERROR, "toObj() function failed");
+                NFT_LOG(L_ERROR, "toObj() of class \"%s\" function failed",
+                        n->name);
         }
 
         /* validate */

@@ -91,7 +91,7 @@ struct People
  */
 static NftResult _people_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj, void *userptr)
 {
-        if(!newNode || !obj)
+        if(!p || !newNode || !obj)
                 NFT_LOG_NULL(NFT_FAILURE);
 
         /* "People" object */
