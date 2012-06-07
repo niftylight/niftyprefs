@@ -17,7 +17,7 @@ AC_CONFIG_MACRO_DIR([m4])
 # --------------------------------
 
 # infos
-PACKAGE_DESCRIPTION="lightweight library to handle preferences for arbitrary objects"
+PACKAGE_DESCRIPTION="lightweight library to handle preferences for arbitrary (tree) objects using XML"
 AC_SUBST([PACKAGE_DESCRIPTION], [${PACKAGE_DESCRIPTION}], [package description])
 AC_DEFINE_UNQUOTED(PACKAGE_DESCRIPTION, "${PACKAGE_DESCRIPTION}", [package description])
 
