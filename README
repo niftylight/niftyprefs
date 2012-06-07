@@ -1,4 +1,4 @@
-lightweight library to handle preferences for arbitrary objects
+lightweight library to handle preferences for arbitrary (tree) objects using XML
 
 s. http://wiki.niftylight.de/libniftyprefs for all further info
 
