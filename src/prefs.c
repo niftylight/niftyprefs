@@ -219,7 +219,7 @@ NftPrefs *nft_prefs_init()
  *
  * @param p NftPrefs context
  */
-void nft_prefs_exit(NftPrefs *p)
+void nft_prefs_deinit(NftPrefs *p)
 {
         /* free xmlDoc */
         if(p->doc)

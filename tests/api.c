@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
         res = EXIT_SUCCESS;
         
 _deinit:
-        nft_prefs_exit(p);
+        nft_prefs_deinit(p);
         
         return res;
 }

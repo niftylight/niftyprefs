@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
         result = EXIT_SUCCESS;
            
 _deinit:       
-        nft_prefs_exit(prefs);
+        nft_prefs_deinit(prefs);
         
         return result;
 }

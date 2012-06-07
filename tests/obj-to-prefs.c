@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
 _deinit:       
         nft_prefs_class_unregister(prefs, PEOPLE_NAME);
         nft_prefs_class_unregister(prefs, PERSON_NAME);
-        nft_prefs_exit(prefs);
+        nft_prefs_deinit(prefs);
         
         return result;
 }
