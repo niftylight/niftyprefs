@@ -60,10 +60,8 @@
  * <h1>Usage</h1>
  * In every case call:
  *  - nft_prefs_init() before doing anything
- *  - nft_prefs_class_register() for every object-class, before using the class 
+ *  - nft_prefs_class_register("OBJ-KLASS-NAME") for every object-class, before using the class 
  *    with any of nft_prefs_*()
- *  - ...
- *  - nft_prefs_obj_unregister() when freeing resources of a registered object
  *  - ...
  *  - nft_prefs_class_unregister() when a class is not used anymore
  *  - nft_prefs_exit() when no nft_prefs_*() needs to be called anymore
@@ -72,21 +70,22 @@
  * Use case 1: Generate preferences from existing object
  *  - ...
  *  - [create object]
- *  - nft_prefs_obj_register(class, obj)
- *  - prefsObj = nft_prefs_from_obj(obj)
+ *    ...
  *  - [use prefsObj]
- *  - nft_prefs_obj_unregister(prefsObj)
+ *  - create NftPrefsNode:
+ *    prefsNode = nft_prefs_obj_to_node(obj);
+ *  - dump:
+ *    nft_prefs_node_to_file/buffer(prefsNode, ...);
+ *    ...
  *  - [free object]
  *
  * Use case 2: Generate object from preferences
  *  - ...
- *  - create NftPrefsNode nft_prefs_node_from_file() / nft_prefs_node_from_buffer()
- *  - create object(s) from NftPrefsNode
+ *  - create NftPrefsNode:
+ *    prefsNode = nft_prefs_node_from_file/buffer();
+ *  - create object:
+ *    foo = nft_prefs_obj_from_node(prefsNode, "OBJ-KLASS-NAME");
  *
- * Use case 3: Dump preferences to file
- * Use case 4: Dump preferences to string
- * Use case 5: Parse preferences from file
- * Use case 6: Parse preferences from string
  *
  * @defgroup prefs niftyprefs
  * @brief abstract preference handling for arbitrary objects.
