@@ -61,172 +61,21 @@
 
 
 
-/** a node that holds various properties about an object (e.g. if your object
-    reflects persons, you might have one PrefsObj for Alice and one for Bob) */
-struct _NftPrefsObj
-{
-        /** object */
-        void *object;
-        /** NftPrefsClass this object belongs to */
-        NftPrefsClass *klass;
-        /** slot of this object inside its NftPrefsObjs array */
-    	NftArraySlot slot;
-};
-
 
 
 /******************************************************************************/
 /**************************** STATIC FUNCTIONS ********************************/
 /******************************************************************************/
 
-/** finder for nft_array_find_slot() */
-static bool _obj_find_by_ptr(void *element, void *criterion, void *userptr)
-{
-	if(!element || !criterion)
-		NFT_LOG_NULL(-1);
-        
-	NftPrefsObj *o = element;
-
-    	return (o->object == criterion);
-}
-
-
 
 /******************************************************************************/
 /**************************** PRIVATE FUNCTIONS *******************************/
 /******************************************************************************/
 
-/** initialize obj array */
-NftResult prefs_obj_init_array(NftPrefsObjs *o)
-{
-	/* initialize class-array */
-	return nft_array_init(o, sizeof(NftPrefsObj));
-}
-
-
-/** free all resources of one NftPrefsObj */
-void prefs_obj_free(NftPrefsObj *obj)
-{
-        if(!obj)
-               return;
-
-        /* deallocate array slot */
-    	nft_array_slot_free(prefs_class_objects(obj->klass), obj->slot);
-
-    	/* invalidate obj descriptor */
-        obj->object = NULL;
-        obj->klass = NULL;
-}
-
-
-/** find object by pointer */
-NftPrefsObj *prefs_obj_find_by_ptr(NftPrefsObjs *array, void *obj)
-{
-    	if(!array)
-		NFT_LOG_NULL(NULL);
-    
-	NftArraySlot slot;
-        if(nft_array_find_slot(array, &slot, _obj_find_by_ptr, (void *) obj, NULL))
-    	{
-		NFT_LOG(L_DEBUG, "Object %p not found", obj);
-		return NULL;
-	}
-    
-    	/* get object */
-        NftPrefsObj *o;
-    	if(!(o = nft_array_get_element(array, slot)))
-    	{
-		NFT_LOG(L_ERROR, "Null object?");
-		return NULL;
-	}
-
-    	return o;
-}
 
 /******************************************************************************/
 /**************************** API FUNCTIONS ***********************************/
 /******************************************************************************/
-
-/**
- * register an object
- *
- * @param p NftPrefs context
- * @param className name of class
- * @param obj pointer to object to register
- * @result NFT_SUCCESS or NFT_FAILURE
- */
-NftResult nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj)
-{
-         if(!p || !className || !obj)
-                NFT_LOG_NULL(NFT_FAILURE);
-
-        /* find class */
-    	NftPrefsClass *c;
-    	if(!(c = prefs_class_find_by_name(prefs_classes(p), className)))
-        {
-                NFT_LOG(L_ERROR, "Unknown class \"%s\"", className);
-                return NFT_FAILURE;
-        }
-
-    	/** allocate new slot in objects array */
-	NftArraySlot s;
-	if(!(nft_array_slot_alloc(prefs_class_objects(c), &s)))
-	{
-		NFT_LOG(L_ERROR, "Failed to allocate new slot");
-		return NFT_FAILURE;
-	}
-    
-        /* get empty array element */
-        NftPrefsObj *o;
-    	if(!(o = nft_array_get_element(prefs_class_objects(c), s)))
-    	{
-		NFT_LOG(L_ERROR, "Failed to get element from array");
-		nft_array_slot_free(prefs_class_objects(c), s);
-		return NFT_FAILURE;
-	}
-    
-             
-        /* register new node */
-        o->object = obj;
-        o->klass = c;
-        o->slot = s;
-    
-        return NFT_SUCCESS;
-}
-
-
-/**
- * unregister object
- *
- * @param p NftPrefs context
- * @param className name of class
- * @param obj pointer to object to unregister
- */
-void nft_prefs_obj_unregister(NftPrefs *p, const char *className, void *obj)
-{
-        if(!p || !className || !obj)
-                return;
-
-        /* find class */
-        NftPrefsClass *c;
-        if((c = prefs_class_find_by_name(prefs_classes(p), className)) < 0)
-        {
-                NFT_LOG(L_ERROR, "Unknown class \"%s\"", className);
-                return;
-        }
-
-
-    	/* find object in class */
-    	NftPrefsObj *o;
-    	if(!(o = prefs_obj_find_by_ptr(prefs_class_objects(c), obj)))
-	{
-                NFT_LOG(L_ERROR, "Object \"%p\" not found in class \"%s\"", obj, className);
-	    	return;
-        }
-    
-        prefs_obj_free(o);
-}
-
 
 /**
  * create a NftPrefsNode from a previously registered object 
@@ -315,11 +164,6 @@ void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
 		return NULL;
 	}
     
-    	/* register new object */
-    	if(!(nft_prefs_obj_register(p, (const char *) n->name, result)))
-    	{
-		NFT_LOG(L_ERROR, "Failed to register new \"%s\" object", n->name);
-	}
     
         return result;
 }

@@ -70,8 +70,6 @@ struct _NftPrefsClass
         NftPrefsToObjFunc *toObj;
         /** callback to create preferences from the current object state (or NULL) */
         NftPrefsFromObjFunc *fromObj;
-        /** array of registered NftPrefsObjs */
-        NftPrefsObjs objects;
     	/** slot of this class inside its NftPrefsClasses array */
     	NftArraySlot slot;
 };
@@ -81,17 +79,6 @@ struct _NftPrefsClass
 /******************************************************************************/
 /**************************** STATIC FUNCTIONS ********************************/
 /******************************************************************************/
-
-/** helper function for nft_array_foreach_element() */
-static bool _obj_free(void *element, void *userptr)
-{
-	size_t *i = userptr;
-
-    	prefs_obj_free(element);
-    	*i = *i+1;
-
-    	return TRUE;
-}
 
 
 /** finder for nft_array_find_slot() */
@@ -120,16 +107,6 @@ NftResult prefs_class_init_array(NftPrefsClasses *a)
 }
 
 
-/** getter */
-NftPrefsObjs *prefs_class_objects(NftPrefsClass *c)
-{
-	if(!c)
-		NFT_LOG_NULL(NULL);
-    
-    	return &c->objects;
-}
-
-
 /** find class by name */
 NftPrefsClass *prefs_class_find_by_name(NftPrefsClasses *c, const char *name)
 {
@@ -150,19 +127,7 @@ void prefs_class_free(NftPrefs *p, NftPrefsClass *klass)
 {
         if(!klass)
                 return;
-
-
-	/* free all objects */
-	size_t count = 0;
-	nft_array_foreach_element(&klass->objects, _obj_free, &count);
-
-	/* free object array */
-	nft_array_deinit(&klass->objects);
     
-	/* give some info */
-	if(count > 0)
-		NFT_LOG(L_DEBUG, "Deallocated %d stale object(s) when deallocating class \"%s\"", count, klass->name);
-
     	/* free array slot */
     	nft_array_slot_free(prefs_classes(p), klass->slot);
 
@@ -241,12 +206,6 @@ NftResult nft_prefs_class_register(NftPrefs *p, const char *className,
         n->toObj = toObj;
         n->fromObj = fromObj;
 	n->slot = s;
-    
-    	if(!(prefs_obj_init_array(&n->objects)))
-    	{
-		NFT_LOG(L_ERROR, "Failed to initialize object array");
-		goto _pcr_error;
-	}
     	                
         return NFT_SUCCESS;
 
@@ -288,4 +247,3 @@ void nft_prefs_class_unregister(NftPrefs *p, const char *className)
 /**
  * @}
  */
-

@@ -183,7 +183,6 @@ int main(int argc, char *argv[])
                 .people = persons, 
                 .people_count = sizeof(persons)/sizeof(struct Person) 
         };
-        nft_prefs_obj_register(prefs, PEOPLE_NAME, &people);
         
         /* walk all persons in model */
         int i;
@@ -192,10 +191,6 @@ int main(int argc, char *argv[])
                 /* print info */
                 printf("\tperson(name=\"%s\",email=\"%s\", age=\"%d\")\n",
                     persons[i].name, persons[i].email, persons[i].age);
-
-                /* register object */
-                if(!(nft_prefs_obj_register(prefs, PERSON_NAME, &persons[i])))
-                        goto _deinit;
                 
         }
 

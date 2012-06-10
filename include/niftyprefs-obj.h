@@ -62,12 +62,7 @@
 
 
 
-/** array of objects */
-typedef NftArray NftPrefsObjs;
 
-/** a node that holds various properties about an object (e.g. if your object
-    reflects persons, you might have one PrefsObj for Alice and one for Bob) */
-typedef struct _NftPrefsObj NftPrefsObj;
 
 
 
@@ -99,11 +94,11 @@ typedef NftResult (NftPrefsToObjFunc)(NftPrefs *p, void **newObj,
 
 
 
-NftResult       nft_prefs_obj_register(NftPrefs *p, const char *className, void *obj);
-void            nft_prefs_obj_unregister(NftPrefs *p, const char *className, void *obj);
+
 
 void *          nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr);
 NftPrefsNode *  nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *obj, void *userptr);
+
 
 
 #endif /** _NIFTYPREFS_OBJ_H */
