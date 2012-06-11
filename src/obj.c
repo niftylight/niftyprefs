@@ -96,7 +96,7 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *ob
         NftPrefsClass *c;
         if((c = prefs_class_find_by_name(prefs_classes(p), className)) < 0)
         {
-                NFT_LOG(L_ERROR, "Unknown class \"%s\"", className);
+                NFT_LOG(L_ERROR, "Unknown prefs class \"%s\"", className);
                 return NULL;
         }
 
@@ -119,7 +119,7 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *ob
         /* call prefsFromObj() registered for this class */
         if(!prefs_class_fromObj(c)(p, node, obj, userptr))
     	{
-		NFT_LOG(L_ERROR, "fromObj() of class \"%s\" failed.",
+		NFT_LOG(L_ERROR, "prefsFromObj() of class \"%s\" failed.",
 		        className);
                 return NULL;
 	}
@@ -146,7 +146,7 @@ void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
         NftPrefsClass *c;
         if((c = prefs_class_find_by_name(prefs_classes(p), (const char *) n->name)) < 0)
         {
-                NFT_LOG(L_ERROR, "Unknown class \"%s\"", n->name);
+                NFT_LOG(L_ERROR, "Unknown prefs class \"%s\"", n->name);
                 return NULL;
         }
 
@@ -155,7 +155,7 @@ void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
         void *result = NULL;
         if(!(prefs_class_toObj(c)(p, &result, n, userptr)))
         {
-                NFT_LOG(L_ERROR, "toObj() of class \"%s\" function failed",
+                NFT_LOG(L_ERROR, "prefsToObj() of class \"%s\" function failed",
                         n->name);
 	    	return NULL;
         }
@@ -163,7 +163,7 @@ void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
         /* validate */
         if(!(result))
     	{
-                NFT_LOG(L_ERROR, "<%s> toObj() function returned successfully but created NULL object", n->name);
+                NFT_LOG(L_ERROR, "<%s> prefsToObj() function returned successfully but created NULL object", n->name);
 		return NULL;
 	}
     
