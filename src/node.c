@@ -211,6 +211,69 @@ NftResult nft_prefs_node_prop_int_get(NftPrefsNode *n, const char *name, int *va
 
 
 /**
+ * set double property
+ *
+ * @param n node where property should be set
+ * @param name name of property
+ * @param val value of property
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_prop_double_set(NftPrefsNode *n, const char *name, double val)
+{
+        if(!n || !name)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        char *tmp;
+        if(!(tmp = alloca(32)))
+        {
+                NFT_LOG_PERROR("alloca()");
+                return NFT_FAILURE;
+        }
+
+        if(snprintf(tmp, 32, "%lf", val) < 0)
+        {
+                NFT_LOG_PERROR("snprintf()");
+                return NFT_FAILURE;
+        }
+        
+        return nft_prefs_node_prop_string_set(n, name, tmp);
+}
+
+
+/**
+ * get double property
+ *
+ * @param n node to read property from
+ * @param name name of property
+ * @param val space for value of property
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_prop_double_get(NftPrefsNode *n, const char *name, double *val)
+{
+        if(!n || !name || !val)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        char *tmp;
+        if(!(tmp = nft_prefs_node_prop_string_get(n, name)))
+        {
+                NFT_LOG(L_DEBUG, "property \"%s\" not found in <%s>", name, n->name);
+                return NFT_FAILURE;
+        }
+
+	NftResult result = NFT_SUCCESS;
+        if(sscanf(tmp, "%lf", val) != 1)
+        {
+                NFT_LOG(L_ERROR, "sscanf() failed");
+                result = NFT_FAILURE;
+        }
+
+	nft_prefs_free(tmp);
+	
+        return result;    
+}
+
+
+/**
  * create preferences buffer from NftPrefsNode
  * 
  * @param p NftPrefs context

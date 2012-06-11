@@ -139,6 +139,9 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *ob
  */
 void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
 {
+    	if(!p || !n)
+		NFT_LOG_NULL(NULL);
+    
         /* find object class */
         NftPrefsClass *c;
         if((c = prefs_class_find_by_name(prefs_classes(p), (const char *) n->name)) < 0)

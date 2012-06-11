@@ -95,7 +95,7 @@ static NftResult _people_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
                 NFT_LOG_NULL(NFT_FAILURE);
 
         /* "People" object */
-        struct People *people = (struct People *) obj;
+        struct People *people = obj;
 
         
         /* process all persons */
