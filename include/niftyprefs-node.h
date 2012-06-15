@@ -95,6 +95,7 @@ NftResult 	nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *file
 NftPrefsNode *	nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsize);
 NftPrefsNode *	nft_prefs_node_from_file(NftPrefs *p, const char *filename);
 
+NftPrefsNode *	nft_prefs_node_alloc(const char *name);
 void 		nft_prefs_node_free(NftPrefsNode *n);
 
 

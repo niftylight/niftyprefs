@@ -454,6 +454,22 @@ NftPrefsNode *nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsi
 
 
 /**
+ * allocate a new custom NftPrefsNode
+ *
+ * @param name the name of the node
+ * @result freshly created NftPrefsNode
+ * @note use nft_prefs_node_free() if node is not used anymore
+ */
+NftPrefsNode *nft_prefs_node_alloc(const char *name)
+{
+	if(!name)
+		NFT_LOG_NULL(NULL);
+
+    	return xmlNewNode(NULL, BAD_CAST name);
+}
+
+
+/**
  * free resources of a NftPrefsNode
  *
  * @param n NftPrefsNode to free
