@@ -47,7 +47,7 @@
 
 
 /**      
- * @mainpage preferences handling for arbitrary objects
+ * @mainpage <a href="http://wiki.niftylight.de/libniftyprefs">lightweight library to handle preferences for arbitrary (tree) objects using XML</a>
  *
  * <h1>Introduction</h1>
  * The basic idea is to define and manage "classes" for arbitrary (void *)
