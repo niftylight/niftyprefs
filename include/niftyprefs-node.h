@@ -70,6 +70,7 @@
 
 
 #include <libxml/tree.h>
+#include <libxml/xinclude.h>
 #include "nifty-primitives.h"
 
 

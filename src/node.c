@@ -391,6 +391,15 @@ NftPrefsNode *nft_prefs_node_from_file(NftPrefs *p, const char *filename)
                 return NULL;
         }
 
+       	/* parse XInclude stuff */
+        int xinc_res;
+        if((xinc_res = xmlXIncludeProcess(doc)) == -1)
+        {
+                NFT_LOG(L_ERROR, "XInclude parsing failed.");
+                return NFT_FAILURE;
+        }
+        NFT_LOG(L_DEBUG, "%d XInclude substitutions done", xinc_res);
+    
         /* free old doc? */
         if(prefs_doc(p))
         {
@@ -434,6 +443,15 @@ NftPrefsNode *nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsi
                 return NULL;
         }
 
+    	/* parse XInclude stuff */
+        int xinc_res;
+        if((xinc_res = xmlXIncludeProcess(doc)) == -1)
+        {
+                NFT_LOG(L_ERROR, "XInclude parsing failed.");
+                return NFT_FAILURE;
+        }
+        NFT_LOG(L_DEBUG, "%d XInclude substitutions done", xinc_res);
+    
         /* free old doc? */
         if(prefs_doc(p))
                 xmlFreeDoc(prefs_doc(p));
