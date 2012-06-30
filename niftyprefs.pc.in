@@ -6,6 +6,8 @@ includedir=@includedir@
 Name: @PACKAGE@
 Description: @PACKAGE_DESCRIPTION@
 Version: @PACKAGE_VERSION@
-Libs: -L${libdir} -l@PACKAGE@ @niftylog_LIBS@ @xml_LIBS@
+Libs: -L${libdir} -l@PACKAGE@
 Libs.private:
-Cflags: -I@includedir@/lib@PACKAGE@-@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ @niftylog_CFLAGS@ @xml_CFLAGS@
+Requires:
+Requires.private: niftylog libxml-2.0
+Cflags: -I@includedir@/lib@PACKAGE@-@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
