@@ -221,6 +221,10 @@ NftPrefs *nft_prefs_init()
  */
 void nft_prefs_deinit(NftPrefs *p)
 {
+	if(!p)
+		NFT_LOG_NULL();
+
+	
         /* free xmlDoc */
         if(p->doc)
         {
