@@ -94,7 +94,7 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *ob
 
         /* find class */
         NftPrefsClass *c;
-        if((c = prefs_class_find_by_name(prefs_classes(p), className)) < 0)
+        if(!(c = prefs_class_find_by_name(prefs_classes(p), className)))
         {
                 NFT_LOG(L_ERROR, "Unknown prefs class \"%s\"", className);
                 return NULL;
@@ -144,7 +144,7 @@ void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
     
         /* find object class */
         NftPrefsClass *c;
-        if((c = prefs_class_find_by_name(prefs_classes(p), (const char *) n->name)) < 0)
+        if(!(c = prefs_class_find_by_name(prefs_classes(p), (const char *) n->name)))
         {
                 NFT_LOG(L_ERROR, "Unknown prefs class \"%s\"", n->name);
                 return NULL;

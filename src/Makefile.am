@@ -30,7 +30,7 @@ lib_LTLIBRARIES = lib@PACKAGE@.la
 
 # cflags 
 lib@PACKAGE@_la_CFLAGS = \
-        -Wall \
+        -Wall -Wextra -Werror -Wno-unused-parameter \
         $(xml_CFLAGS) \
         $(niftylog_CFLAGS) \
         $(OPT_CFLAGS) \
