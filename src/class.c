@@ -179,6 +179,7 @@ NftResult nft_prefs_class_register(NftPrefs *p, const char *className,
         }
 
     	/** check if class is already registered */
+	NFT_LOG(L_DEBUG, "Checking if another class \"%s\" is already registered...", className);
     	if(prefs_class_find_by_name(prefs_classes(p), className))
 	{
 		NFT_LOG(L_ERROR, "class named \"%s\" already registered", className);
