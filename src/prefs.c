@@ -269,10 +269,10 @@ void nft_prefs_free(void *p)
  */
 const char *nft_prefs_get_filename(NftPrefs *p)
 {
-	if(!p || !p->doc || !p->doc->name)
+	if(!p || !p->doc || !p->doc->URL)
 		return NULL;
 
-	return (const char *) p->doc->name;
+	return (const char *) p->doc->URL;
 }
 
 
