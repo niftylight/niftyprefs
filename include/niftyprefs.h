@@ -123,6 +123,7 @@ NftPrefs *      nft_prefs_init();
 void            nft_prefs_deinit(NftPrefs *prefs);
 void            nft_prefs_free(void *p);
 
+const char *	nft_prefs_get_filename(NftPrefs *p);
 
 
 

@@ -262,7 +262,18 @@ void nft_prefs_free(void *p)
 }
 
 
+/**
+ * get filename of current document (if any)
+ *
+ * @param p NftPrefs context
+ */
+const char *nft_prefs_get_filename(NftPrefs *p)
+{
+	if(!p || !p->doc || !p->doc->name)
+		return NULL;
 
+	return (const char *) p->doc->name;
+}
 
 
 
