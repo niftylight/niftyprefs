@@ -41,7 +41,9 @@ lib@PACKAGE@_la_CFLAGS = \
 lib@PACKAGE@_la_LDFLAGS = \
         -version-info @PACKAGE_API_CURRENT@:@PACKAGE_API_REVISION@:@PACKAGE_API_AGE@ \
         -release @PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@.@PACKAGE_MICRO_VERSION@ \
-        -Wall -no-undefined
+        -Wall -no-undefined \
+        $(xml_LIBS) \
+        $(niftylog_LIBS)
 
 # link in modules from subdirectories
 lib@PACKAGE@_la_LIBADD = $(SUBDIRS) $(xml_LIBS) $(niftylog_LIBS)
