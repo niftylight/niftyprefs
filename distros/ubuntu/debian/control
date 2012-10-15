@@ -1,0 +1,15 @@
+Source: niftyprefs
+Section: libs
+Priority: optional
+Maintainer: Daniel Hiepler <daniel-ubuntu@niftylight.de>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, niftylog, libxml2-dev
+Standards-Version: 3.9.2
+Homepage: http://wiki.niftylight.de/niftyprefs
+#Vcs-Git: git://github.com/niftylight/niftyprefs.git
+#Vcs-Browser: https://github.com/niftylight/niftyprefs.git
+
+Package: niftyprefs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, niftylog, libxml2
+Description: lightweight library to handle preferences
+ lightweight library to handle preferences for arbitrary (tree) objects using XML
