@@ -127,7 +127,8 @@ AC_CONFIG_FILES(
     tests/Makefile \
     include/Makefile \
     include/niftyprefs-version.h \
-    $PACKAGE.pc
+    $PACKAGE.pc \
+    distros/ubuntu/debian/control
 ])
 AC_OUTPUT
 
