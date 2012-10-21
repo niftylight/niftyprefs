@@ -1,11 +1,11 @@
 # libniftyprefs Makefile.am - v0.2 - Daniel Hiepler <daniel@niftylight.de> 
 
-INCLUDE_DIRS = -I../include -I$(top_srcdir)/include
+INCLUDE_DIRS = -I../include -I$(top_srcdir)/include -I.
 
 
 # module-subdirs to include
 SUBDIRS =
-EXTRA_DIST = 
+EXTRA_DIST = obj.h class.h prefs.h
 
 # source-files
 lib@PACKAGE@_la_SOURCES = \

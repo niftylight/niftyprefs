@@ -128,7 +128,7 @@ AC_CONFIG_FILES(
     include/Makefile \
     include/niftyprefs-version.h \
     $PACKAGE.pc \
-    distros/ubuntu/debian/control
+    debian/control.tmpl
 ])
 AC_OUTPUT
 
