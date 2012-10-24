@@ -6,7 +6,7 @@
 # release version
 MAJOR=0
 MINOR=1
-MICRO=0
+MICRO=1
 
 ######################
 # libtool/API version
@@ -14,11 +14,11 @@ MICRO=0
 # updating: http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html#Updating-version-info
 
 # The implementation number of the current interface.
-API_REVISION=0
+API_REVISION=1
 # The most recent interface number that this library implements.
-API_CURRENT=0
-# The difference between the newest and oldest interfaces that this library 
-# implements. In other words, the library implements all the interface numbers 
+API_CURRENT=1
+# The difference between the newest and oldest interfaces that this library
+# implements. In other words, the library implements all the interface numbers
 # in the range from number current - age to current.
 API_AGE=0
 
