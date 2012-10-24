@@ -1,7 +1,7 @@
 /*
  * libniftyprefs - lightweight modelless preferences management library
  * Copyright (C) 2006-2012 Daniel Hiepler <daniel@niftylight.de>
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -85,7 +85,7 @@ static NftResult _people_from_prefs(NftPrefs *p, void **newObj, NftPrefsNode *no
         /* call toObj() of child objects */
         NftPrefsNode *child;
         size_t i = 0;
-        for(child = nft_prefs_node_get_first_child(node); 
+        for(child = nft_prefs_node_get_first_child(node);
             child;
             child = nft_prefs_node_get_next(child))
         {
@@ -102,10 +102,10 @@ static NftResult _people_from_prefs(NftPrefs *p, void **newObj, NftPrefsNode *no
                         return NFT_FAILURE;
                 }
         }
-        
+
         /* save pointer to new object */
         *newObj = &people;
-        
+
         return NFT_SUCCESS;
 }
 
@@ -119,10 +119,26 @@ static NftResult _person_from_prefs(NftPrefs *p, void **newObj, NftPrefsNode *no
         if(i >= sizeof(persons)/sizeof(struct Person))
                 return NFT_FAILURE;
 
-        char *name = nft_prefs_node_prop_string_get(node, "name");
-        char *email = nft_prefs_node_prop_string_get(node, "email");
+        char *name;
+		if(!(name = nft_prefs_node_prop_string_get(node, "name")))
+		{
+				NFT_LOG(L_ERROR, "failed to get property \"name\" from prefs-node");
+				return NFT_FAILURE;
+		}
+
+        char *email;
+		if(!(email = nft_prefs_node_prop_string_get(node, "email")))
+		{
+				NFT_LOG(L_ERROR, "failed to get property \"email\" from prefs-node");
+				return NFT_FAILURE;
+		}
+
         int age;
-        nft_prefs_node_prop_int_get(node, "age", &age);
+        if(!nft_prefs_node_prop_int_get(node, "age", &age))
+		{
+				NFT_LOG(L_ERROR, "failed to get property \"age\" from prefs-node");
+				return NFT_FAILURE;
+		}
 
         strncpy(persons[i].name, name, sizeof(persons[i].name));
         strncpy(persons[i].email, email, sizeof(persons[i].email));
@@ -131,11 +147,11 @@ static NftResult _person_from_prefs(NftPrefs *p, void **newObj, NftPrefsNode *no
         /* free strings */
         nft_prefs_free(name);
         nft_prefs_free(email);
-        
+
         /* save pointer to new object */
         *newObj = &persons[i++];
-        
-                
+
+
         return NFT_SUCCESS;
 }
 
@@ -145,7 +161,7 @@ int main(int argc, char *argv[])
 {
     	/* do preliminary version checks */
     	NFT_PREFS_CHECK_VERSION
-	
+
         /* fail per default */
         int result = EXIT_FAILURE;
 
@@ -153,27 +169,42 @@ int main(int argc, char *argv[])
         /* initialize libniftyprefs */
         NftPrefs *prefs;
         if(!(prefs = nft_prefs_init()))
-                goto _deinit;
+		{
+				NFT_LOG(L_ERROR, "initialize prefs");
+				goto _deinit;
+		}
 
-        
+
         /* register "people" class to niftyprefs */
         if(!(nft_prefs_class_register(prefs, PEOPLE_NAME, &_people_from_prefs, NULL)))
-                goto _deinit;
-        
+		{
+				NFT_LOG(L_ERROR, "failed to register class");
+				goto _deinit;
+		}
+
         /* register "person" class to niftyprefs */
         if(!(nft_prefs_class_register(prefs, PERSON_NAME, &_person_from_prefs, NULL)))
-                goto _deinit;
-        
+        {
+				NFT_LOG(L_ERROR, "failed to register class");
+				goto _deinit;
+		}
+
 
     	/* parse file to prefs node */
     	NftPrefsNode *node;
     	if(!(node = nft_prefs_node_from_file(prefs, "test-prefs.xml")))
-		goto _deinit;
-    
+		{
+				NFT_LOG(L_ERROR, "failed to parse prefs file \"test-prefs.xml\"");
+				goto _deinit;
+		}
+
         /* create object from node */
         struct People *people;
         if(!(people = nft_prefs_obj_from_node(prefs, node, NULL)))
-                goto _deinit;
+        {
+				NFT_LOG(L_ERROR, "failed to create object from prefs node");
+				goto _deinit;
+		}
 
     	/* free node */
     	nft_prefs_node_free(node);
@@ -198,12 +229,14 @@ int main(int argc, char *argv[])
                 NFT_LOG(L_ERROR, "Input from 01_obj-to-prefs.c doesn't match output!");
                 goto _deinit;
         }
-        
-        /* all went fine */   
+
+		/** @todo check xml against DTD */
+
+        /* all went fine */
         result = EXIT_SUCCESS;
-           
-_deinit:       
+
+_deinit:
         nft_prefs_deinit(prefs);
-        
+
         return result;
 }

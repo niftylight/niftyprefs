@@ -1,7 +1,7 @@
 /*
  * libniftyprefs - lightweight modelless preferences management library
  * Copyright (C) 2006-2012 Daniel Hiepler <daniel@niftylight.de>
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -81,7 +81,7 @@ struct People
 
 /******************************************************************************/
 
-/** 
+/**
  * function to generate preferences for a Person object -
  *
  * @param newNode emtpy <class/> node that has to be filled with object properties & attributes
@@ -97,7 +97,7 @@ static NftResult _people_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
         /* "People" object */
         struct People *people = obj;
 
-        
+
         /* process all persons */
         size_t n;
         for(n=0; n < people->people_count; n++)
@@ -110,7 +110,7 @@ static NftResult _people_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
                 /* add person object as child of people object */
                 nft_prefs_node_add_child(newNode, node);
         }
-        
+
         return NFT_SUCCESS;
 }
 
@@ -125,21 +125,21 @@ static NftResult _person_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
         /* get our person object */
         struct Person *person = (struct Person *) obj;
 
-        
+
         /* person name */
         if(!nft_prefs_node_prop_string_set(newNode, "name", person->name))
                 return NFT_FAILURE;
 
-        
+
         /* person email */
         if(!nft_prefs_node_prop_string_set(newNode, "email", person->email))
                 return NFT_FAILURE;
 
-        
+
         /* person age */
         if(!nft_prefs_node_prop_int_set(newNode, "age", person->age))
                 return NFT_FAILURE;
-        
+
 
         /** everything fine - node contains preferences now */
         return NFT_SUCCESS;
@@ -149,13 +149,13 @@ static NftResult _person_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
 /******************************************************************************/
 
 
-/** MINIMAL procedure to create preferences 
+/** MINIMAL procedure to create preferences
     from arbitrary "object" definitions */
 int main(int argc, char *argv[])
 {
     	/* do preliminary version checks */
     	NFT_PREFS_CHECK_VERSION
-	
+
         //~ /* fail per default */
         int result = EXIT_FAILURE;
 
@@ -168,22 +168,22 @@ int main(int argc, char *argv[])
         /* register "people" class to niftyprefs */
         if(!(nft_prefs_class_register(prefs, PEOPLE_NAME, NULL, &_people_to_prefs)))
                 goto _deinit;
-        
+
         /* register "person" class to niftyprefs */
         if(!(nft_prefs_class_register(prefs, PERSON_NAME, NULL, &_person_to_prefs)))
                 goto _deinit;
 
-        
+
         printf("Generating preferences for objects:\n");
 
 
         /* register toplevel object (that holds all other objects) */
-        struct People people = 
-        { 
-                .people = persons, 
-                .people_count = sizeof(persons)/sizeof(struct Person) 
+        struct People people =
+        {
+                .people = persons,
+                .people_count = sizeof(persons)/sizeof(struct Person)
         };
-        
+
         /* walk all persons in model */
         int i;
         for(i=0; i < sizeof(persons)/sizeof(struct Person); i++)
@@ -191,28 +191,37 @@ int main(int argc, char *argv[])
                 /* print info */
                 printf("\tperson(name=\"%s\",email=\"%s\", age=\"%d\")\n",
                     persons[i].name, persons[i].email, persons[i].age);
-                
+
         }
 
-        
+
         /* dump people node */
     	NftPrefsNode *n;
         if(!(n = nft_prefs_obj_to_node(prefs, PEOPLE_NAME, &people, NULL)))
+		{
                 goto _deinit;
+		}
 
     	/* dump node to file */
-    	if(!nft_prefs_node_to_file(prefs, n, "test-prefs.xml"))
-		goto _deinit;
+    	if(!nft_prefs_node_to_file(prefs, n, "test-prefs.xml", true))
+		{
+				goto _deinit;
+		}
+
+		if(!nft_prefs_node_to_file_with_headers(prefs, n, "test-prefs-with-headers.xml", true))
+		{
+				goto _deinit;
+		}
 
     	nft_prefs_node_free(n);
-    
+
         /* all went fine */
         result = EXIT_SUCCESS;
-           
-_deinit:       
+
+_deinit:
         nft_prefs_class_unregister(prefs, PEOPLE_NAME);
         nft_prefs_class_unregister(prefs, PERSON_NAME);
         nft_prefs_deinit(prefs);
-        
+
         return result;
 }
