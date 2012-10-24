@@ -425,7 +425,7 @@ NftResult nft_prefs_node_to_file_with_headers(NftPrefs *p, NftPrefsNode *n, cons
 				}
 		}
 		/* stat succeeded, file exists */
-		else
+		else if(strcmp("-", filename) != 0)
 		{
 				/* remove old file? */
 				if(!overwrite)
@@ -484,7 +484,7 @@ NftResult nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *filen
 				}
 		}
 		/* stat succeeded, file exists */
-		else
+		else if(strcmp("-", filename) != 0)
 		{
 				/* remove old file? */
 				if(!overwrite)
@@ -517,14 +517,22 @@ NftResult nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *filen
 				goto _pntf_exit;
 		}
 
-		/* open file */
+		/* stdout? */
 		int fd;
-		if((fd = open(filename,
-		              O_CREAT | O_WRONLY,
-		              S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP)) == -1)
+		if(strcmp("-", filename) == 0)
 		{
-				NFT_LOG_PERROR("open");
-				goto _pntf_exit;
+				fd = STDOUT_FILENO;
+		}
+		/* open file */
+		else
+		{
+				if((fd = open(filename,
+							  O_CREAT | O_WRONLY,
+							  S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP)) == -1)
+				{
+						NFT_LOG_PERROR("open");
+						goto _pntf_exit;
+				}
 		}
 
 		/* write to file */
@@ -535,7 +543,8 @@ NftResult nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *filen
 				goto _pntf_exit;
 		}
 
-		close(fd);
+		if(fd != STDOUT_FILENO)
+				close(fd);
 
 		r = NFT_SUCCESS;
 
