@@ -49,7 +49,7 @@
 /**
  * @addtogroup prefs_node
  * @{
-		 *
+ *
  */
 
 #include <fcntl.h>
@@ -346,14 +346,13 @@ char *nft_prefs_node_to_buffer_with_headers(NftPrefs *p, NftPrefsNode *n)
 				return NULL;
 		}
 
+		/* set node as root element of temporary doc */
+		xmlDocSetRootElement(d, n);
 
 		/* overall result */
 		char *r = NULL;
 		xmlChar *dump = NULL;
 		int length = 0;
-
-		/* set node as root element of temporary doc */
-		xmlDocSetRootElement(d, n);
 
 		/* dump document to buffer */
 		xmlDocDumpFormatMemoryEnc(d, &dump, &length, "UTF-8", 1);
