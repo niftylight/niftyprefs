@@ -92,9 +92,9 @@ NftResult       	nft_prefs_node_prop_double_set(NftPrefsNode *n, const char *nam
 NftResult       	nft_prefs_node_prop_double_get(NftPrefsNode *n, const char *name, double *val);
 
 char *					nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode *n);
-char *					nft_prefs_node_to_buffer_with_headers(NftPrefs *p, NftPrefsNode *n);
+char *					nft_prefs_node_to_buffer_light(NftPrefs *p, NftPrefsNode *n);
 NftResult 			nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *filename, bool overwrite);
-NftResult 			nft_prefs_node_to_file_with_headers(NftPrefs *p, NftPrefsNode *n, const char *filename, bool overwrite);
+NftResult 			nft_prefs_node_to_file_light(NftPrefs *p, NftPrefsNode *n, const char *filename, bool overwrite);
 NftPrefsNode *	nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsize);
 NftPrefsNode *	nft_prefs_node_from_file(NftPrefs *p, const char *filename);
 

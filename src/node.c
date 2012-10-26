@@ -283,8 +283,9 @@ NftResult nft_prefs_node_prop_double_get(NftPrefsNode *n, const char *name, doub
  * @param p NftPrefs context
  * @param n NftPrefsNode
  * @result string holding xml representation of object (use free() to deallocate)
+ * @note s. @ref nft_prefs_node_to_file_light for description
  */
-char *nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode *n)
+char *nft_prefs_node_to_buffer_light(NftPrefs *p, NftPrefsNode *n)
 {
 		if(!p || !n)
 				NFT_LOG_NULL(NULL);
@@ -332,8 +333,9 @@ _pntb_exit:
  * @param p NftPrefs context
  * @param n NftPrefsNode
  * @result string holding xml representation of object (use free() to deallocate)
+ * @note s. @ref nft_prefs_node_to_file_full for description
  */
-char *nft_prefs_node_to_buffer_with_headers(NftPrefs *p, NftPrefsNode *n)
+char *nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode *n)
 {
 		if(!p || !n)
 				NFT_LOG_NULL(NFT_FAILURE);
@@ -392,12 +394,17 @@ _pntbwh_exit:
 /**
  * create  preferences file with headers from NftPrefsNode and child nodes
  *
+ * This will create the same output as nft_prefs_node_to_file_light() would but
+ * with all encapsulation/headers/footers/... of the underlying prefs mechanism.
+ * e.g. for XML this adds the "<?xml version="1.0" encoding="UTF-8"?>" header.
+ * This is used when one needs a complete configuration (e.g. saved preferences file)
+ *
  * @param p NftPrefs context
  * @param n NftPrefsNode
  * @param filename full path of file to be written
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_to_file_with_headers(NftPrefs *p, NftPrefsNode *n, const char *filename, bool overwrite)
+NftResult nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *filename, bool overwrite)
 {
 		if(!p || !n || !filename)
 				NFT_LOG_NULL(NFT_FAILURE);
@@ -470,12 +477,18 @@ _pntfwh_exit:
 /**
  * create preferences file from NftPrefsNode and child nodes
  *
+ * This will create the same output as nft_prefs_node_to_file() would but
+ * without all encapsulation/headers/footers/... of the underlying prefs mechanism.
+ * e.g. for XML this omits the "<?xml version="1.0" encoding="UTF-8"?>" header.
+ * This is used when one only needs an "incomplete" snippet of a configuration.
+ * e.g. for copy/paste or to use the XInclude feature of XML
+ *
  * @param p NftPrefs context
  * @param n NftPrefsNode
  * @param filename full path of file to be written
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode *n, const char *filename, bool overwrite)
+NftResult nft_prefs_node_to_file_light(NftPrefs *p, NftPrefsNode *n, const char *filename, bool overwrite)
 {
 		if(!p || !n || !filename)
 				NFT_LOG_NULL(NFT_FAILURE);
