@@ -224,14 +224,7 @@ void nft_prefs_deinit(NftPrefs *p)
 	if(!p)
 		NFT_LOG_NULL();
 
-	
-        /* free xmlDoc */
-        if(p->doc)
-        {
-                xmlFreeDoc(p->doc);
-                p->doc = NULL;
-        }
-        
+	       
         /* free all classes */
     	nft_array_foreach_element(&p->classes, _class_free, p);
 
@@ -246,7 +239,7 @@ void nft_prefs_deinit(NftPrefs *p)
         free(p);
         
         /* cleanup XML parser */
-	xmlCleanupParser();
+		xmlCleanupParser();
 }
 
 

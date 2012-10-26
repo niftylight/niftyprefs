@@ -606,14 +606,14 @@ NftPrefsNode *nft_prefs_node_from_file(NftPrefs *p, const char *filename)
 		}
 		NFT_LOG(L_DEBUG, "%d XInclude substitutions done", xinc_res);
 
-		/* free old doc? */
-		if(prefs_doc(p))
-		{
-				xmlFreeDoc(prefs_doc(p));
-		}
+		///* free old doc? */
+		//if(prefs_doc(p))
+		//{
+		//		xmlFreeDoc(prefs_doc(p));
+		//}
 
-		/* save new doc */
-		prefs_doc_set(p,doc);
+		///* save new doc */
+		//prefs_doc_set(p,doc);
 
 		/* get node */
 		xmlNode *node;
@@ -623,6 +623,12 @@ NftPrefsNode *nft_prefs_node_from_file(NftPrefs *p, const char *filename)
 				return NULL;
 		}
 
+		/* unlink node from document */
+		xmlUnlinkNode(node);
+
+		/* free resources of document */
+		xmlFreeDoc(doc);
+	
 		return node;
 }
 
@@ -658,12 +664,12 @@ NftPrefsNode *nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsi
 		}
 		NFT_LOG(L_DEBUG, "%d XInclude substitutions done", xinc_res);
 
-		/* free old doc? */
-		if(prefs_doc(p))
-				xmlFreeDoc(prefs_doc(p));
+		///* free old doc? */
+		//if(prefs_doc(p))
+		//		xmlFreeDoc(prefs_doc(p));
 
-		/* save new doc */
-		prefs_doc_set(p, doc);
+		///* save new doc */
+		//prefs_doc_set(p, doc);
 
 		/* get node */
 		xmlNode *node;
@@ -673,6 +679,12 @@ NftPrefsNode *nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsi
 				return NULL;
 		}
 
+		/* unlink node from document */
+		xmlUnlinkNode(node);
+
+		/* free resources of xml document */
+		xmlFreeDoc(doc);
+	
 		return node;
 }
 
