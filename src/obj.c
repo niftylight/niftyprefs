@@ -110,11 +110,9 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *ob
 
         /* new node */
         NftPrefsNode *node;
-        if(!(node = xmlNewNode(NULL, BAD_CAST className)))
+        if(!(node = nft_prefs_node_alloc(className)))
                 return NULL;
 
-        /* set name of node */
-        xmlNodeSetName(node, BAD_CAST className);
         
         /* call prefsFromObj() registered for this class */
         if(!prefs_class_fromObj(c)(p, node, obj, userptr))
