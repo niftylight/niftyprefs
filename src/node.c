@@ -308,20 +308,21 @@ char *nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode *n)
 		}
 
 		/* allocate buffer */
-		if(!(dump = malloc(xmlBufferLength(buf)+1)))
+		size_t length = xmlBufferLength(buf);
+		if(!(dump = malloc(length+1)))
 		{
 				NFT_LOG_PERROR("malloc()");
 				goto _pntb_exit;
 		}
 
 		/* copy buffer */
-		strncpy(dump, (char *) xmlBufferContent(buf), xmlBufferLength(buf));
-		dump[xmlBufferLength(buf)] = '\0';
+		strncpy(dump, (char *) xmlBufferContent(buf), length);
+		dump[length] = '\0';
 
 _pntb_exit:
-				xmlBufferFree(buf);
+		xmlBufferFree(buf);
 
-				return dump;
+		return dump;
 }
 
 
@@ -378,7 +379,11 @@ _pntbwh_exit:
 
 		/* free temporary xmlDoc */
 		if(d)
-				xmlFreeDoc(d);
+		{
+			/* unlink node from document again */
+			xmlUnlinkNode(n);
+			xmlFreeDoc(d);
+		}
 
 		return r;
 }
@@ -450,11 +455,15 @@ NftResult nft_prefs_node_to_file_with_headers(NftPrefs *p, NftPrefsNode *n, cons
 
 
 _pntfwh_exit:
-				/* free temporary xmlDoc */
-				if(d)
-						xmlFreeDoc(d);
-
-				return r;
+		/* free temporary xmlDoc */
+		if(d)
+		{
+				/* unlink node from document again */
+				xmlUnlinkNode(n);
+				xmlFreeDoc(d);
+		}
+	
+		return r;
 }
 
 
