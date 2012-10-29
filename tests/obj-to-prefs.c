@@ -203,12 +203,12 @@ int main(int argc, char *argv[])
 		}
 
     	/* dump node to file */
-    	if(!nft_prefs_node_to_file(prefs, n, "test-prefs.xml", true))
+    	if(!nft_prefs_node_to_file(n, "test-prefs.xml", true))
 		{
 				goto _deinit;
 		}
 
-		if(!nft_prefs_node_to_file_light(prefs, n, "test-prefs-light.xml", true))
+		if(!nft_prefs_node_to_file_light(n, "test-prefs-light.xml", true))
 		{
 				goto _deinit;
 		}

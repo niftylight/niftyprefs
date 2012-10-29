@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
 
     	/* parse file to prefs node */
     	NftPrefsNode *node;
-    	if(!(node = nft_prefs_node_from_file(prefs, "test-prefs.xml")))
+    	if(!(node = nft_prefs_node_from_file("test-prefs.xml")))
 		{
 				NFT_LOG(L_ERROR, "failed to parse prefs file \"test-prefs.xml\"");
 				goto _deinit;
