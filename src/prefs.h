@@ -49,7 +49,6 @@
 
 
 NftPrefsClasses *	prefs_classes(NftPrefs *p);
-xmlDoc *		prefs_doc(NftPrefs *p);
-void 			prefs_doc_set(NftPrefs *p, xmlDoc *doc);
+
 
 #endif /** _PREFS_H */

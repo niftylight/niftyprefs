@@ -64,8 +64,6 @@
 /** context descriptor */
 struct _NftPrefs
 {
-        /** temporary xmlDoc */
-        xmlDoc *doc;
         /** list of registered PrefsObjClasses */
         NftPrefsClasses classes;
 };
@@ -82,20 +80,6 @@ struct _NftPrefs
 NftPrefsClasses *prefs_classes(NftPrefs *p)
 {
     return &p->classes;
-}
-
-
-/** getter */
-xmlDoc *prefs_doc(NftPrefs *p)
-{
-	return p->doc;
-}
-
-
-/** setter */
-void prefs_doc_set(NftPrefs *p, xmlDoc *doc)
-{
-	p->doc = doc;
 }
 
 
@@ -231,10 +215,6 @@ void nft_prefs_deinit(NftPrefs *p)
     	/* free classes array */
     	nft_array_deinit(&p->classes);
             
-        /* free xmlDoc */
-        if(p->doc)
-                xmlFreeDoc(p->doc);
-
         /* free descriptor */
         free(p);
         
@@ -253,22 +233,6 @@ void nft_prefs_free(void *p)
         if(p)
                 xmlFree(p);
 }
-
-
-/**
- * get filename of current document (if any)
- *
- * @param p NftPrefs context
- */
-const char *nft_prefs_get_filename(NftPrefs *p)
-{
-	if(!p || !p->doc || !p->doc->URL)
-		return NULL;
-
-	return (const char *) p->doc->URL;
-}
-
-
 
 
 
