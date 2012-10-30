@@ -128,7 +128,8 @@ AC_CONFIG_FILES(
     include/Makefile \
     include/niftyprefs-version.h \
     $PACKAGE.pc \
-    debian/control.tmpl
+    debian/control.tmpl \
+    gentoo/dev-libs/niftyprefs/niftyprefs-9999.ebuild
 ])
 AC_OUTPUT
 
