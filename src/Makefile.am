@@ -1,6 +1,6 @@
 # libniftyprefs Makefile.am - v0.2 - Daniel Hiepler <daniel@niftylight.de> 
 
-INCLUDE_DIRS = -I../include -I$(top_srcdir)/include -I.
+INCLUDE_DIRS = -I$(top_srcdir)/include -I$(top_srcdir)/src -I../include -I../src
 
 
 # module-subdirs to include

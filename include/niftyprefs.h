@@ -95,6 +95,7 @@
 #ifndef _NIFTYPREFS_H
 #define _NIFTYPREFS_H
 
+#include <sys/types.h>
 
 
 
