@@ -1,32 +1,65 @@
-
-INCLUDE_DIRS = -I$(top_srcdir)/include
-tests_CFLAGS_PRIV = -Wall $(INCLUDE_DIRS) $(xml_CFLAGS) $(niftylog_CFLAGS) -g -O0
-tests_LDFLAGS_PRIV =
-tests_LDADD_PRIV = ../src/libniftyprefs.la $(xml_LIBS) $(niftylog_LIBS)
+#############
+# libniftyprefs Makefile.am
+# v0.4 - Daniel Hiepler <daniel@niftylight.de>
 
 
+# directories to include
+INCLUDE_DIRS = \
+	-I$(top_srcdir)/include \
+	-I$(top_builddir)/include \
+	-I$(srcdir)
 
-check_PROGRAMS = array api obj-to-prefs prefs-to-obj
+# files to clean on "make distclean"
+DISTCLEANFILES = \
+	test-prefs-light.xml \
+	test-prefs.xml
+
+# custom cflags
+WARN_CFLAGS = -Wall -Wextra -Werror -Wno-unused-parameter
+
+
+TESTCFLAGS = \
+	$(INCLUDE_DIRS) \
+	$(WARN_CFLAGS) \
+	$(xml_CFLAGS) \
+	$(niftylog_CFLAGS)
+
+TESTLDFLAGS = \
+	-Wall -no-undefined
+
+TESTLDADD = \
+	$(top_builddir)/src/libniftyprefs.la \
+	$(xml_LIBS) \
+	$(niftylog_LIBS)
+
+
+
+check_PROGRAMS = \
+		array \
+		api \
+		obj-to-prefs \
+		prefs-to-obj
+
 TESTS = $(check_PROGRAMS)
 
 
 array_SOURCES = array.c
-array_CFLAGS = $(tests_CFLAGS_PRIV)
-array_LDFLAGS = $(tests_LDFLAGS_PRIV)
-array_LDADD = $(tests_LDADD_PRIV)
+array_CFLAGS = $(TESTCFLAGS)
+array_LDFLAGS = $(TESTLDFLAGS)
+array_LDADD = $(TESTLDADD)
 
 
 api_SOURCES = api.c
-api_CFLAGS = $(tests_CFLAGS_PRIV)
-api_LDFLAGS = $(tests_LDFLAGS_PRIV)
-api_LDADD = $(tests_LDADD_PRIV)
+api_CFLAGS = $(TESTCFLAGS)
+api_LDFLAGS = $(TESTLDFLAGS)
+api_LDADD = $(TESTLDADD)
 
 obj_to_prefs_SOURCES = obj-to-prefs.c
-obj_to_prefs_CFLAGS = $(tests_CFLAGS_PRIV)
-obj_to_prefs_LDFLAGS = $(tests_LDFLAGS_PRIV)
-obj_to_prefs_LDADD = $(tests_LDADD_PRIV)
+obj_to_prefs_CFLAGS = $(TESTCFLAGS)
+obj_to_prefs_LDFLAGS = $(TESTLDFLAGS)
+obj_to_prefs_LDADD = $(TESTLDADD)
 
 prefs_to_obj_SOURCES = prefs-to-obj.c
-prefs_to_obj_CFLAGS = $(tests_CFLAGS_PRIV)
-prefs_to_obj_LDFLAGS = $(tests_LDFLAGS_PRIV)
-prefs_to_obj_LDADD = $(tests_LDADD_PRIV)
+prefs_to_obj_CFLAGS = $(TESTCFLAGS)
+prefs_to_obj_LDFLAGS = $(TESTLDFLAGS)
+prefs_to_obj_LDADD = $(TESTLDADD)
