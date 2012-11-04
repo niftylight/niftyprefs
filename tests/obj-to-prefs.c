@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
         };
 
         /* walk all persons in model */
-        int i;
+        unsigned int i;
         for(i=0; i < sizeof(persons)/sizeof(struct Person); i++)
         {
                 /* print info */
