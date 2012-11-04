@@ -308,10 +308,9 @@ NftResult nft_prefs_node_prop_double_get(NftPrefsNode *n, const char *name, doub
 /**
  * create preferences buffer from NftPrefsNode
  *
- * @param p NftPrefs context
  * @param n NftPrefsNode
  * @result string holding xml representation of object (use free() to deallocate)
- * @note s. @ref nft_prefs_node_to_file_light for description
+ * @note s. @ref nft_prefs_node_to_file for description
  */
 char *nft_prefs_node_to_buffer_light(NftPrefsNode *n)
 {
@@ -358,10 +357,9 @@ _pntb_exit:
 /**
  * create preferences buffer with all format specific encapsulation from a NftPrefsNode
  *
- * @param p NftPrefs context
  * @param n NftPrefsNode
  * @result string holding xml representation of object (use free() to deallocate)
- * @note s. @ref nft_prefs_node_to_file_full for description
+ * @note s. @ref nft_prefs_node_to_file for description
  */
 char *nft_prefs_node_to_buffer(NftPrefsNode *n)
 {
@@ -438,9 +436,10 @@ _pntbwh_exit:
  * e.g. for XML this adds the "<?xml version="1.0" encoding="UTF-8"?>" header.
  * This is used when one needs a complete configuration (e.g. saved preferences file)
  *
- * @param p NftPrefs context
  * @param n NftPrefsNode
  * @param filename full path of file to be written
+ * @param overwrite if a file called "filename" already exists, it 
+ * will be overwritten if this is "true", otherwise NFT_FAILURE will be returned 
  * @result NFT_SUCCESS or NFT_FAILURE
  */
 NftResult nft_prefs_node_to_file(NftPrefsNode *n, const char *filename, bool overwrite)
@@ -532,9 +531,10 @@ _pntfwh_exit:
  * This is used when one only needs an "incomplete" snippet of a configuration.
  * e.g. for copy/paste or to use the XInclude feature of XML
  *
- * @param p NftPrefs context
  * @param n NftPrefsNode
  * @param filename full path of file to be written
+ * @param overwrite if a file called "filename" already exists, it 
+ * will be overwritten if this is "true", otherwise NFT_FAILURE will be returned
  * @result NFT_SUCCESS or NFT_FAILURE
  */
 NftResult nft_prefs_node_to_file_light(NftPrefsNode *n, const char *filename, bool overwrite)
@@ -634,7 +634,6 @@ _pntf_exit:
 /**
  * create new NftPrefsNode from preferences file
  *
- * @param p NftPrefs context
  * @param filename full path of file
  * @result newly created NftPrefsNode or NULL
  */
@@ -682,7 +681,6 @@ NftPrefsNode *nft_prefs_node_from_file(const char *filename)
 /**
  * create new NftPrefsNode from preferences buffer
  *
- * @param p NftPrefs context
  * @param buffer XML buffer to parse
  * @param bufsize size of XML buffer
  * @result newly created NftPrefsNode or NULL
@@ -759,7 +757,6 @@ void nft_prefs_node_free(NftPrefsNode *n)
 /**
  * get filename of document this node was parsed from (or NULL)
  *
- * @param p NftPrefs context
  * @result URL of node origin or NULL if unset 
  */
 const char *nft_prefs_node_get_filename(NftPrefsNode *n)
