@@ -17,9 +17,8 @@ KEYWORDS="~amd64 ~x86"
 
 IUSE="debug"
 
-RDEPEND="sys-libs/glibc
-		dev-libs/libxml2
-		dev-libs/niftylog"
+RDEPEND=dev-libs/libxml2
+	dev-libs/niftylog"
 DEPEND="${RDEPEND} 
 		virtual/pkgconfig"
 
