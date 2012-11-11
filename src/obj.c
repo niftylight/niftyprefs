@@ -89,7 +89,7 @@
  */
 NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *obj, void *userptr)
 {
-        if(!p || !className || !obj)
+        if(!p || !className)
                 NFT_LOG_NULL(NULL);
 
         /* find class */
