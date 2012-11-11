@@ -158,14 +158,6 @@ void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
 	    	return NULL;
         }
 
-        /* validate */
-        if(!(result))
-    	{
-                NFT_LOG(L_ERROR, "<%s> prefsToObj() function returned successfully but created NULL object", n->name);
-		return NULL;
-	}
-    
-    
         return result;
 }
 
