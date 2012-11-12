@@ -78,15 +78,16 @@ struct _NftElement
  * @param s NftArraySlot
  * @result TRUE if slot is plausible, FALSE otherwise
  */
-static bool _slot_is_valid(NftArray *a, NftArraySlot s)
+static bool _slot_is_valid(NftArray * a, NftArraySlot s)
 {
         if(!a)
                 NFT_LOG_NULL(FALSE);
 
         if(s >= a->arraysize)
         {
-                NFT_LOG(L_ERROR, "requested slot %d from array \"%s\" that only has %d slots", 
-                                s+1, nft_array_get_name(a), a->arraysize);
+                NFT_LOG(L_ERROR,
+                        "requested slot %d from array \"%s\" that only has %d slots",
+                        s + 1, nft_array_get_name(a), a->arraysize);
                 return FALSE;
         }
 
@@ -108,16 +109,16 @@ static bool _slot_is_valid(NftArray *a, NftArraySlot s)
  * @param elementSize size of one array element in bytes 
  * @result NFT_SUCCESS or NFT_FAILURE 
  */
-NftResult nft_array_init(NftArray *a, size_t elementSize)
+NftResult nft_array_init(NftArray * a, size_t elementSize)
 {
         if(!a)
                 NFT_LOG_NULL(NFT_FAILURE);
-        
+
         memset(a, 0, sizeof(NftArray));
 
-    	a->elementsize = elementSize;
+        a->elementsize = elementSize;
 
-    	return NFT_SUCCESS;
+        return NFT_SUCCESS;
 }
 
 
@@ -126,17 +127,17 @@ NftResult nft_array_init(NftArray *a, size_t elementSize)
  *
  * @param a NftArray descriptor
  */
-void nft_array_deinit(NftArray *a)
+void nft_array_deinit(NftArray * a)
 {
 
         if(!a)
                 NFT_LOG_NULL();
 
         free(a->elements);
-    	free(a->buffer);
+        free(a->buffer);
         a->elements = NULL;
         a->elementcount = 0;
-    	a->elementsize = 0;
+        a->elementsize = 0;
         a->arraysize = 0;
 }
 
@@ -147,12 +148,12 @@ void nft_array_deinit(NftArray *a)
  * @param a NftArray descriptor
  * @param name printable namestring with max. NFT_ARRAY_NAME_MAXLEN 
  */
-void nft_array_set_name(NftArray *a, const char *name)
+void nft_array_set_name(NftArray * a, const char *name)
 {
-	if(!a || !name)
-		NFT_LOG_NULL();
+        if(!a || !name)
+                NFT_LOG_NULL();
 
-    	strncpy(a->name, name, sizeof(a->name));
+        strncpy(a->name, name, sizeof(a->name));
 }
 
 
@@ -162,19 +163,19 @@ void nft_array_set_name(NftArray *a, const char *name)
  * @param a NftArray descriptor
  * @result printable name of array or NULL upon error
  */
-const char *nft_array_get_name(NftArray *a)
+const char *nft_array_get_name(NftArray * a)
 {
-	if(!a)
-		NFT_LOG_NULL(NULL);
+        if(!a)
+                NFT_LOG_NULL(NULL);
 
-    	return a->name[0] ? a->name : ("[unnamed]");
+        return a->name[0] ? a->name : ("[unnamed]");
 }
 
 
 /**
  * NftArray setter
  */
-void nft_array_set_type(NftArray *a, int type)
+void nft_array_set_type(NftArray * a, int type)
 {
         if(!a)
                 NFT_LOG_NULL();
@@ -189,7 +190,7 @@ void nft_array_set_type(NftArray *a, int type)
  * @param a NftArray descriptor
  * @result type of NftArray or -1 upon failure
  */
-int nft_array_get_type(NftArray *a)
+int nft_array_get_type(NftArray * a)
 {
         if(!a)
                 NFT_LOG_NULL(-1);
@@ -205,7 +206,7 @@ int nft_array_get_type(NftArray *a)
  * @param type the type to compare a's type with
  * @result true if "type" and type of NftArray match, false otherwise
  */
-bool nft_array_is_type(NftArray *a, int type)
+bool nft_array_is_type(NftArray * a, int type)
 {
         if(!a)
                 NFT_LOG_NULL(FALSE);
@@ -220,7 +221,7 @@ bool nft_array_is_type(NftArray *a, int type)
  * @param a NftArray descriptor
  * @result amount of elements currently in array or -1 upon error
  */
-ssize_t nft_array_get_elementcount(NftArray *a)
+ssize_t nft_array_get_elementcount(NftArray * a)
 {
         if(!a)
                 NFT_LOG_NULL(-1);
@@ -238,76 +239,74 @@ ssize_t nft_array_get_elementcount(NftArray *a)
  * @result NFT_SUCCESS or NFT_FAILURE 
  * @note Use nft_array_free_slot() if you don't need the slot anymore
  */
-NftResult nft_array_slot_alloc(NftArray *a, NftArraySlot *s)
+NftResult nft_array_slot_alloc(NftArray * a, NftArraySlot * s)
 {
-	if(!a)
+        if(!a)
                 NFT_LOG_NULL(NFT_FAILURE);
 
-        
+
         /* enough space left? */
         if(a->arraysize <= a->elementcount)
         {
                 /* increase element descriptor array by NFT_ARRAY_INC elements */
-                if(!(a->elements = realloc(
-                                          	a->elements, 
-                                           	/* total elements new array can hold */
-                                          	(a->arraysize + NFT_ARRAY_DEFAULT_INC) *
-                                           	/* size of one element descriptor */
-                                          	(sizeof(NftElement))
-                                           )
-                     )
-                  )
+                if(!(a->elements = realloc(a->elements,
+                                           /* total elements new array can hold 
+                                            */
+                                           (a->arraysize +
+                                            NFT_ARRAY_DEFAULT_INC) *
+                                           /* size of one element descriptor */
+                                           (sizeof(NftElement)))))
                 {
                         NFT_LOG_PERROR("realloc()");
                         return NFT_FAILURE;
                 }
 
                 /* increase element buffer by NFT_ARRAY_INC elements */
-	    	if(!(a->buffer = realloc(a->buffer,
-		                         (a->arraysize + NFT_ARRAY_DEFAULT_INC) *
-		                         a->elementsize)))
-	    	{
-			NFT_LOG_PERROR("realloc()");
+                if(!(a->buffer = realloc(a->buffer,
+                                         (a->arraysize +
+                                          NFT_ARRAY_DEFAULT_INC) *
+                                         a->elementsize)))
+                {
+                        NFT_LOG_PERROR("realloc()");
                         return NFT_FAILURE;
-		}
-	    
+                }
+
                 /* clear new memory */
                 memset(&a->elements[a->arraysize],
-                       0, 
-                       NFT_ARRAY_DEFAULT_INC*sizeof(NftElement));
-		memset(&a->buffer[a->elementsize*a->arraysize],
-		       0,
-		       NFT_ARRAY_DEFAULT_INC*a->elementsize);
-                
+                       0, NFT_ARRAY_DEFAULT_INC * sizeof(NftElement));
+                memset(&a->buffer[a->elementsize * a->arraysize],
+                       0, NFT_ARRAY_DEFAULT_INC * a->elementsize);
+
                 /* remember new arraysize */
                 a->arraysize += NFT_ARRAY_DEFAULT_INC;
         }
 
-        
-	/* find free slot in list */
-	NftArraySlot i;
-	for(i=0; i < a->arraysize; i++)
-	{
+
+        /* find free slot in list */
+        NftArraySlot i;
+        for(i = 0; i < a->arraysize; i++)
+        {
                 if(!a->elements[i].occupied)
                 {
-		    	/* set element as occupied */
-			a->elements[i].occupied = TRUE;
+                        /* set element as occupied */
+                        a->elements[i].occupied = TRUE;
 
-			/* another element allocated... */
-			a->elementcount++;
+                        /* another element allocated... */
+                        a->elementcount++;
 
-		    	/* save slot */
+                        /* save slot */
                         *s = i;
-		    
+
                         return NFT_SUCCESS;
                 }
-	}
+        }
 
         /* huh? */
-        NFT_LOG(L_ERROR, "No free slot found in array \"%s\" but buffer was not increased. Something went wrong! Expect fancy stuff.",
+        NFT_LOG(L_ERROR,
+                "No free slot found in array \"%s\" but buffer was not increased. Something went wrong! Expect fancy stuff.",
                 nft_array_get_name(a));
-        
-	return NFT_FAILURE;
+
+        return NFT_FAILURE;
 }
 
 
@@ -317,17 +316,17 @@ NftResult nft_array_slot_alloc(NftArray *a, NftArraySlot *s)
  * @param a NftArray descriptor
  * @param s array slot to free
  */
-void nft_array_slot_free(NftArray *a, NftArraySlot s)
+void nft_array_slot_free(NftArray * a, NftArraySlot s)
 {
-	if(!a)
+        if(!a)
                 NFT_LOG_NULL();
 
         if(!_slot_is_valid(a, s))
                 return;
 
-    	/* clear element */
-    	memset(&a->buffer[a->elementsize*s], 0, a->elementsize);
-    
+        /* clear element */
+        memset(&a->buffer[a->elementsize * s], 0, a->elementsize);
+
         /* mark element as unused */
         a->elements[s].occupied = FALSE;
 
@@ -343,7 +342,7 @@ void nft_array_slot_free(NftArray *a, NftArraySlot s)
  * @param s slot to fetch from
  * @result pointer that was stored at position s in array a or NULL upon error
  */
-void *nft_array_get_element(NftArray *a, NftArraySlot s)
+void *nft_array_get_element(NftArray * a, NftArraySlot s)
 {
         if(!a || !a->elements)
                 NFT_LOG_NULL(NULL);
@@ -351,13 +350,15 @@ void *nft_array_get_element(NftArray *a, NftArraySlot s)
         if(!_slot_is_valid(a, s))
                 return NULL;
 
-    	if(!a->elements[s].occupied)
-    	{
-		NFT_LOG(L_ERROR, "requested unallocated slot \"%d\" from array \"%s\".", s, nft_array_get_name(a));
-		return NULL;
-	}
-    
-        return &a->buffer[a->elementsize*s];
+        if(!a->elements[s].occupied)
+        {
+                NFT_LOG(L_ERROR,
+                        "requested unallocated slot \"%d\" from array \"%s\".",
+                        s, nft_array_get_name(a));
+                return NULL;
+        }
+
+        return &a->buffer[a->elementsize * s];
 }
 
 
@@ -369,27 +370,27 @@ void *nft_array_get_element(NftArray *a, NftArraySlot s)
  *        If it returns FALSE execution stops at the current element.
  * @param userptr arbitrary user pointer
  * @result NFT_SUCCESS if all foreach functions returned TRUE, NFT_FAILURE otherwise
- */ 
-NftResult nft_array_foreach_element(NftArray *a, 
-                                    bool (*foreach)(void *element, 
-                                                    void *userptr), 
+ */
+NftResult nft_array_foreach_element(NftArray * a,
+                                    bool(*foreach) (void *element,
+                                                    void *userptr),
                                     void *userptr)
 {
-	if(!a)
-		NFT_LOG_NULL(NFT_FAILURE);
+        if(!a)
+                NFT_LOG_NULL(NFT_FAILURE);
 
-	NftArraySlot r;
+        NftArraySlot r;
         for(r = 0; r < a->arraysize; r++)
         {
                 /* skip empty element */
                 if(!a->elements[r].occupied)
                         continue;
-	
-	    	if(!(foreach(&a->buffer[a->elementsize*r], userptr)))
-			return NFT_FAILURE;
-	}
 
-    	return NFT_SUCCESS;
+                if(!(foreach(&a->buffer[a->elementsize * r], userptr)))
+                        return NFT_FAILURE;
+        }
+
+        return NFT_SUCCESS;
 }
 
 
@@ -406,13 +407,12 @@ NftResult nft_array_foreach_element(NftArray *a,
  * @result NFT_SUCCESS if element was found an slot has been written into *s, 
  *         NFT_FAILURE upon error
  */
-NftResult nft_array_find_slot(NftArray *a, 
-                              NftArraySlot *s, 
-                              bool (*finder)(void *element, 
-                                             void *criterion, 
-                                             void *userptr), 
-                              void *criterion, 
-                              void *userptr)
+NftResult nft_array_find_slot(NftArray * a,
+                              NftArraySlot * s,
+                              bool(*finder) (void *element,
+                                             void *criterion,
+                                             void *userptr),
+                              void *criterion, void *userptr)
 {
         if(!a || !s)
                 NFT_LOG_NULL(NFT_FAILURE);
@@ -425,7 +425,7 @@ NftResult nft_array_find_slot(NftArray *a,
                         continue;
 
                 /* check if element matches */
-                if(finder(&a->buffer[a->elementsize*r], criterion, userptr))
+                if(finder(&a->buffer[a->elementsize * r], criterion, userptr))
                 {
                         *s = r;
                         return NFT_SUCCESS;

@@ -74,17 +74,17 @@
 /******************************************************************************/
 
 /** set private pointer in a node recursively */
-void _set_private_recursively(NftPrefsNode *node, void *ptr)
+void _set_private_recursively(NftPrefsNode * node, void *ptr)
 {
-	NftPrefsNode *n;
-	for(n = node; n; n = nft_prefs_node_get_next(n))
-	{
-		NftPrefsNode *nc;
-		if((nc = nft_prefs_node_get_first_child(n)))
-					_set_private_recursively(nc, ptr);
+        NftPrefsNode *n;
+        for(n = node; n; n = nft_prefs_node_get_next(n))
+        {
+                NftPrefsNode *nc;
+                if((nc = nft_prefs_node_get_first_child(n)))
+                        _set_private_recursively(nc, ptr);
 
-		n->_private = ptr;
-	}
+                n->_private = ptr;
+        }
 }
 
 /******************************************************************************/
@@ -98,9 +98,9 @@ void _set_private_recursively(NftPrefsNode *node, void *ptr)
  * @param cur child node
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_add_child(NftPrefsNode *parent, NftPrefsNode *cur)
+NftResult nft_prefs_node_add_child(NftPrefsNode * parent, NftPrefsNode * cur)
 {
-		return xmlAddChild(parent, cur) ? NFT_SUCCESS : NFT_FAILURE;
+        return xmlAddChild(parent, cur) ? NFT_SUCCESS : NFT_FAILURE;
 }
 
 
@@ -110,9 +110,9 @@ NftResult nft_prefs_node_add_child(NftPrefsNode *parent, NftPrefsNode *cur)
  * @param n parent node
  * @result child node or NULL
  */
-NftPrefsNode *nft_prefs_node_get_first_child(NftPrefsNode *n)
+NftPrefsNode *nft_prefs_node_get_first_child(NftPrefsNode * n)
 {
-		return xmlFirstElementChild(n);
+        return xmlFirstElementChild(n);
 }
 
 
@@ -122,9 +122,9 @@ NftPrefsNode *nft_prefs_node_get_first_child(NftPrefsNode *n)
  * @param n node from which sibling should be fetched
  * @result sibling node or NULL
  */
-NftPrefsNode *nft_prefs_node_get_next(NftPrefsNode *n)
+NftPrefsNode *nft_prefs_node_get_next(NftPrefsNode * n)
 {
-		return xmlNextElementSibling(n);
+        return xmlNextElementSibling(n);
 }
 
 
@@ -133,12 +133,12 @@ NftPrefsNode *nft_prefs_node_get_next(NftPrefsNode *n)
  *
  * @result classname of this NftPrefsNode or NULL
  */
-const char *nft_prefs_node_get_name(NftPrefsNode *n)
+const char *nft_prefs_node_get_name(NftPrefsNode * n)
 {
-		if(!n)
-				NFT_LOG_NULL(NULL);
+        if(!n)
+                NFT_LOG_NULL(NULL);
 
-		return (const char *) n->name;
+        return (const char *) n->name;
 }
 
 
@@ -148,18 +148,20 @@ const char *nft_prefs_node_get_name(NftPrefsNode *n)
  * @param name name of property
  * @param value string-value of property
  */
-NftResult nft_prefs_node_prop_string_set(NftPrefsNode *n, const char *name, char *value)
+NftResult nft_prefs_node_prop_string_set(NftPrefsNode * n, const char *name,
+                                         char *value)
 {
-		if(!n || !name || !value)
-				NFT_LOG_NULL(NFT_FAILURE);
+        if(!n || !name || !value)
+                NFT_LOG_NULL(NFT_FAILURE);
 
-		if(!xmlSetProp(n, (xmlChar *) name, (xmlChar *) value))
-		{
-				NFT_LOG(L_DEBUG, "Failed to set property \"%s\" = \"%s\"", name, value);
-				return NFT_FAILURE;
-		}
+        if(!xmlSetProp(n, (xmlChar *) name, (xmlChar *) value))
+        {
+                NFT_LOG(L_DEBUG, "Failed to set property \"%s\" = \"%s\"",
+                        name, value);
+                return NFT_FAILURE;
+        }
 
-		return NFT_SUCCESS;
+        return NFT_SUCCESS;
 }
 
 
@@ -170,12 +172,12 @@ NftResult nft_prefs_node_prop_string_set(NftPrefsNode *n, const char *name, char
  * @param name name of property
  * @result string with value or NULL (free using nft_prefs_free())
  */
-char *nft_prefs_node_prop_string_get(NftPrefsNode *n, const char *name)
+char *nft_prefs_node_prop_string_get(NftPrefsNode * n, const char *name)
 {
-		if(!n || !name)
-				NFT_LOG_NULL(NULL);
+        if(!n || !name)
+                NFT_LOG_NULL(NULL);
 
-		return (char *) xmlGetProp(n, BAD_CAST name);
+        return (char *) xmlGetProp(n, BAD_CAST name);
 }
 
 
@@ -187,25 +189,26 @@ char *nft_prefs_node_prop_string_get(NftPrefsNode *n, const char *name)
  * @param val value of property
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_prop_int_set(NftPrefsNode *n, const char *name, int val)
+NftResult nft_prefs_node_prop_int_set(NftPrefsNode * n, const char *name,
+                                      int val)
 {
-		if(!n || !name)
-				NFT_LOG_NULL(NFT_FAILURE);
+        if(!n || !name)
+                NFT_LOG_NULL(NFT_FAILURE);
 
-		char *tmp;
-		if(!(tmp = alloca(32)))
-		{
-				NFT_LOG_PERROR("alloca()");
-				return NFT_FAILURE;
-		}
+        char *tmp;
+        if(!(tmp = alloca(32)))
+        {
+                NFT_LOG_PERROR("alloca()");
+                return NFT_FAILURE;
+        }
 
-		if(snprintf(tmp, 32, "%d", val) < 0)
-		{
-				NFT_LOG_PERROR("snprintf()");
-				return NFT_FAILURE;
-		}
+        if(snprintf(tmp, 32, "%d", val) < 0)
+        {
+                NFT_LOG_PERROR("snprintf()");
+                return NFT_FAILURE;
+        }
 
-		return nft_prefs_node_prop_string_set(n, name, tmp);
+        return nft_prefs_node_prop_string_set(n, name, tmp);
 }
 
 
@@ -217,28 +220,30 @@ NftResult nft_prefs_node_prop_int_set(NftPrefsNode *n, const char *name, int val
  * @param val space for value of property
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_prop_int_get(NftPrefsNode *n, const char *name, int *val)
+NftResult nft_prefs_node_prop_int_get(NftPrefsNode * n, const char *name,
+                                      int *val)
 {
-		if(!n || !name || !val)
-				NFT_LOG_NULL(NFT_FAILURE);
+        if(!n || !name || !val)
+                NFT_LOG_NULL(NFT_FAILURE);
 
-		char *tmp;
-		if(!(tmp = nft_prefs_node_prop_string_get(n, name)))
-		{
-				NFT_LOG(L_DEBUG, "property \"%s\" not found in <%s>", name, n->name);
-				return NFT_FAILURE;
-		}
+        char *tmp;
+        if(!(tmp = nft_prefs_node_prop_string_get(n, name)))
+        {
+                NFT_LOG(L_DEBUG, "property \"%s\" not found in <%s>", name,
+                        n->name);
+                return NFT_FAILURE;
+        }
 
-		NftResult result = NFT_SUCCESS;
-		if(sscanf(tmp, "%d", val) != 1)
-		{
-				NFT_LOG(L_ERROR, "sscanf() failed");
-				result = NFT_FAILURE;
-		}
+        NftResult result = NFT_SUCCESS;
+        if(sscanf(tmp, "%d", val) != 1)
+        {
+                NFT_LOG(L_ERROR, "sscanf() failed");
+                result = NFT_FAILURE;
+        }
 
-		nft_prefs_free(tmp);
+        nft_prefs_free(tmp);
 
-		return result;
+        return result;
 }
 
 
@@ -250,25 +255,26 @@ NftResult nft_prefs_node_prop_int_get(NftPrefsNode *n, const char *name, int *va
  * @param val value of property
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_prop_double_set(NftPrefsNode *n, const char *name, double val)
+NftResult nft_prefs_node_prop_double_set(NftPrefsNode * n, const char *name,
+                                         double val)
 {
-		if(!n || !name)
-				NFT_LOG_NULL(NFT_FAILURE);
+        if(!n || !name)
+                NFT_LOG_NULL(NFT_FAILURE);
 
-		char *tmp;
-		if(!(tmp = alloca(32)))
-		{
-				NFT_LOG_PERROR("alloca()");
-				return NFT_FAILURE;
-		}
+        char *tmp;
+        if(!(tmp = alloca(32)))
+        {
+                NFT_LOG_PERROR("alloca()");
+                return NFT_FAILURE;
+        }
 
-		if(snprintf(tmp, 32, "%lf", val) < 0)
-		{
-				NFT_LOG_PERROR("snprintf()");
-				return NFT_FAILURE;
-		}
+        if(snprintf(tmp, 32, "%lf", val) < 0)
+        {
+                NFT_LOG_PERROR("snprintf()");
+                return NFT_FAILURE;
+        }
 
-		return nft_prefs_node_prop_string_set(n, name, tmp);
+        return nft_prefs_node_prop_string_set(n, name, tmp);
 }
 
 
@@ -280,28 +286,30 @@ NftResult nft_prefs_node_prop_double_set(NftPrefsNode *n, const char *name, doub
  * @param val space for value of property
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_prop_double_get(NftPrefsNode *n, const char *name, double *val)
+NftResult nft_prefs_node_prop_double_get(NftPrefsNode * n, const char *name,
+                                         double *val)
 {
-		if(!n || !name || !val)
-				NFT_LOG_NULL(NFT_FAILURE);
+        if(!n || !name || !val)
+                NFT_LOG_NULL(NFT_FAILURE);
 
-		char *tmp;
-		if(!(tmp = nft_prefs_node_prop_string_get(n, name)))
-		{
-				NFT_LOG(L_DEBUG, "property \"%s\" not found in <%s>", name, n->name);
-				return NFT_FAILURE;
-		}
+        char *tmp;
+        if(!(tmp = nft_prefs_node_prop_string_get(n, name)))
+        {
+                NFT_LOG(L_DEBUG, "property \"%s\" not found in <%s>", name,
+                        n->name);
+                return NFT_FAILURE;
+        }
 
-		NftResult result = NFT_SUCCESS;
-		if(sscanf(tmp, "%lf", val) != 1)
-		{
-				NFT_LOG(L_ERROR, "sscanf() failed");
-				result = NFT_FAILURE;
-		}
+        NftResult result = NFT_SUCCESS;
+        if(sscanf(tmp, "%lf", val) != 1)
+        {
+                NFT_LOG(L_ERROR, "sscanf() failed");
+                result = NFT_FAILURE;
+        }
 
-		nft_prefs_free(tmp);
+        nft_prefs_free(tmp);
 
-		return result;
+        return result;
 }
 
 
@@ -312,45 +320,45 @@ NftResult nft_prefs_node_prop_double_get(NftPrefsNode *n, const char *name, doub
  * @result string holding xml representation of object (use free() to deallocate)
  * @note s. @ref nft_prefs_node_to_file for description
  */
-char *nft_prefs_node_to_buffer_light(NftPrefsNode *n)
+char *nft_prefs_node_to_buffer_light(NftPrefsNode * n)
 {
-		if(!n)
-				NFT_LOG_NULL(NULL);
+        if(!n)
+                NFT_LOG_NULL(NULL);
 
-		/* result pointer (xml dump) */
-		char *dump = NULL;
+        /* result pointer (xml dump) */
+        char *dump = NULL;
 
-		/* create buffer */
-		xmlBufferPtr buf;
-		if(!(buf = xmlBufferCreate()))
-		{
-				NFT_LOG(L_ERROR, "failed to xmlBufferCreate()");
-				return NULL;
-		}
+        /* create buffer */
+        xmlBufferPtr buf;
+        if(!(buf = xmlBufferCreate()))
+        {
+                NFT_LOG(L_ERROR, "failed to xmlBufferCreate()");
+                return NULL;
+        }
 
-		/* dump node */
-		if(xmlNodeDump(buf, n->_private, n, 0, TRUE) < 0)
-		{
-				NFT_LOG(L_ERROR, "xmlNodeDump() failed");
-				goto _pntb_exit;
-		}
+        /* dump node */
+        if(xmlNodeDump(buf, n->_private, n, 0, TRUE) < 0)
+        {
+                NFT_LOG(L_ERROR, "xmlNodeDump() failed");
+                goto _pntb_exit;
+        }
 
-		/* allocate buffer */
-		size_t length = xmlBufferLength(buf);
-		if(!(dump = malloc(length+1)))
-		{
-				NFT_LOG_PERROR("malloc()");
-				goto _pntb_exit;
-		}
+        /* allocate buffer */
+        size_t length = xmlBufferLength(buf);
+        if(!(dump = malloc(length + 1)))
+        {
+                NFT_LOG_PERROR("malloc()");
+                goto _pntb_exit;
+        }
 
-		/* copy buffer */
-		strncpy(dump, (char *) xmlBufferContent(buf), length);
-		dump[length] = '\0';
+        /* copy buffer */
+        strncpy(dump, (char *) xmlBufferContent(buf), length);
+        dump[length] = '\0';
 
 _pntb_exit:
-		xmlBufferFree(buf);
+        xmlBufferFree(buf);
 
-		return dump;
+        return dump;
 }
 
 
@@ -361,70 +369,70 @@ _pntb_exit:
  * @result string holding xml representation of object (use free() to deallocate)
  * @note s. @ref nft_prefs_node_to_file for description
  */
-char *nft_prefs_node_to_buffer(NftPrefsNode *n)
+char *nft_prefs_node_to_buffer(NftPrefsNode * n)
 {
-		if(!n)
-				NFT_LOG_NULL(NFT_FAILURE);
+        if(!n)
+                NFT_LOG_NULL(NFT_FAILURE);
 
-		/* create copy of node */
-		NftPrefsNode *copy;
-		if(!(copy = xmlCopyNode(n, 1)))
-				return NULL;
-		
-		/* create temp xmlDoc */
-		xmlDoc *d = NULL;
-		if(!(d = xmlNewDoc(BAD_CAST "1.0")))
-		{
-				NFT_LOG(L_ERROR, "Failed to create new XML doc");
-				xmlFreeNode(copy);
-				return NULL;
-		}
+        /* create copy of node */
+        NftPrefsNode *copy;
+        if(!(copy = xmlCopyNode(n, 1)))
+                return NULL;
 
-		/* set node as root element of temporary doc */
-		xmlDocSetRootElement(d, copy);
+        /* create temp xmlDoc */
+        xmlDoc *d = NULL;
+        if(!(d = xmlNewDoc(BAD_CAST "1.0")))
+        {
+                NFT_LOG(L_ERROR, "Failed to create new XML doc");
+                xmlFreeNode(copy);
+                return NULL;
+        }
 
-		/* overall result */
-		char *r = NULL;
-		xmlChar *dump = NULL;
-		int length = 0;
+        /* set node as root element of temporary doc */
+        xmlDocSetRootElement(d, copy);
 
-		/* dump document to buffer */
-		xmlDocDumpFormatMemoryEnc(d, &dump, &length, "UTF-8", 1);
-		if(!dump || length <= 0)
-		{
-				NFT_LOG(L_ERROR, "Failed to dump XML file");
-				goto _pntbwh_exit;
-		}
+        /* overall result */
+        char *r = NULL;
+        xmlChar *dump = NULL;
+        int length = 0;
 
-		if(!(r = malloc(length+1)))
-		{
-				NFT_LOG_PERROR("malloc");
-				goto _pntbwh_exit;
-		}
+        /* dump document to buffer */
+        xmlDocDumpFormatMemoryEnc(d, &dump, &length, "UTF-8", 1);
+        if(!dump || length <= 0)
+        {
+                NFT_LOG(L_ERROR, "Failed to dump XML file");
+                goto _pntbwh_exit;
+        }
 
-		memcpy(r, dump, length);
-		r[length] = '\0';
+        if(!(r = malloc(length + 1)))
+        {
+                NFT_LOG_PERROR("malloc");
+                goto _pntbwh_exit;
+        }
+
+        memcpy(r, dump, length);
+        r[length] = '\0';
 
 _pntbwh_exit:
-		/* free node */
-		if(copy)
-		{
-				/* unlink node from document again */
-				xmlUnlinkNode(copy);
-				xmlFreeNode(copy);
-		}
-		
-		/* free xml buffer */
-		if(dump)
-			xmlFree(dump);
+        /* free node */
+        if(copy)
+        {
+                /* unlink node from document again */
+                xmlUnlinkNode(copy);
+                xmlFreeNode(copy);
+        }
 
-		/* free temporary xmlDoc */
-		if(d)
-		{
-			xmlFreeDoc(d);
-		}
+        /* free xml buffer */
+        if(dump)
+                xmlFree(dump);
 
-		return r;
+        /* free temporary xmlDoc */
+        if(d)
+        {
+                xmlFreeDoc(d);
+        }
+
+        return r;
 }
 
 
@@ -442,83 +450,88 @@ _pntbwh_exit:
  * will be overwritten if this is "true", otherwise NFT_FAILURE will be returned 
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_to_file(NftPrefsNode *n, const char *filename, bool overwrite)
+NftResult nft_prefs_node_to_file(NftPrefsNode * n, const char *filename,
+                                 bool overwrite)
 {
-		if(!n || !filename)
-				NFT_LOG_NULL(NFT_FAILURE);
+        if(!n || !filename)
+                NFT_LOG_NULL(NFT_FAILURE);
 
-		/* create copy of node */
-		NftPrefsNode *copy;
-		if(!(copy = xmlCopyNode(n, 1)))
-				return NFT_FAILURE;
-		
-		/* create temp xmlDoc */
-		xmlDoc *d = NULL;
-		if(!(d = xmlNewDoc(BAD_CAST "1.0")))
-		{
-				NFT_LOG(L_ERROR, "Failed to create new XML doc");
-				xmlFreeNode(copy);
-				return NFT_FAILURE;
-		}
+        /* create copy of node */
+        NftPrefsNode *copy;
+        if(!(copy = xmlCopyNode(n, 1)))
+                return NFT_FAILURE;
 
-		/* overall result */
-		NftResult r = NFT_FAILURE;
+        /* create temp xmlDoc */
+        xmlDoc *d = NULL;
+        if(!(d = xmlNewDoc(BAD_CAST "1.0")))
+        {
+                NFT_LOG(L_ERROR, "Failed to create new XML doc");
+                xmlFreeNode(copy);
+                return NFT_FAILURE;
+        }
 
-		/* set node as root element of temporary doc */
-		xmlDocSetRootElement(d, copy);
+        /* overall result */
+        NftResult r = NFT_FAILURE;
 
-		/* file already existing? */
-		struct stat sts;
-		if(stat(filename, &sts) == -1)
-		{
-				/* continue if stat error was caused because file doesn't exist */
-				if(errno != ENOENT)
-				{
-						NFT_LOG(L_ERROR, "Failed to access \"%s\" - %s", filename, strerror(errno));
-						goto _pntfwh_exit;
-				}
-		}
-		/* stat succeeded, file exists */
-		else if(strcmp("-", filename) != 0)
-		{
-				/* remove old file? */
-				if(!overwrite)
-						goto _pntfwh_exit;
+        /* set node as root element of temporary doc */
+        xmlDocSetRootElement(d, copy);
 
-				/* delete existing file */
-				if(unlink(filename) == -1)
-				{
-						NFT_LOG(L_ERROR, "Failed to remove old version of \"%s\" - %s", filename, strerror(errno));
-						goto _pntfwh_exit;
-				}
-		}
+        /* file already existing? */
+        struct stat sts;
+        if(stat(filename, &sts) == -1)
+        {
+                /* continue if stat error was caused because file doesn't exist 
+                 */
+                if(errno != ENOENT)
+                {
+                        NFT_LOG(L_ERROR, "Failed to access \"%s\" - %s",
+                                filename, strerror(errno));
+                        goto _pntfwh_exit;
+                }
+        }
+        /* stat succeeded, file exists */
+        else if(strcmp("-", filename) != 0)
+        {
+                /* remove old file? */
+                if(!overwrite)
+                        goto _pntfwh_exit;
 
-		/* write document to file */
-		if(xmlSaveFormatFileEnc(filename, d, "UTF-8", 1) < 0)
-		{
-				NFT_LOG(L_ERROR, "Failed to save XML file \"%s\"", filename);
-				goto _pntfwh_exit;
-		}
+                /* delete existing file */
+                if(unlink(filename) == -1)
+                {
+                        NFT_LOG(L_ERROR,
+                                "Failed to remove old version of \"%s\" - %s",
+                                filename, strerror(errno));
+                        goto _pntfwh_exit;
+                }
+        }
 
-		/* successfully written file */
-		r = NFT_SUCCESS;
+        /* write document to file */
+        if(xmlSaveFormatFileEnc(filename, d, "UTF-8", 1) < 0)
+        {
+                NFT_LOG(L_ERROR, "Failed to save XML file \"%s\"", filename);
+                goto _pntfwh_exit;
+        }
+
+        /* successfully written file */
+        r = NFT_SUCCESS;
 
 
 _pntfwh_exit:
-		if(copy)
-		{
-				/* unlink node from document again */
-				xmlUnlinkNode(copy);
-				xmlFreeNode(copy);
-		}
-		
-		/* free temporary xmlDoc */
-		if(d)
-		{
-				xmlFreeDoc(d);
-		}
-	
-		return r;
+        if(copy)
+        {
+                /* unlink node from document again */
+                xmlUnlinkNode(copy);
+                xmlFreeNode(copy);
+        }
+
+        /* free temporary xmlDoc */
+        if(d)
+        {
+                xmlFreeDoc(d);
+        }
+
+        return r;
 }
 
 
@@ -537,97 +550,101 @@ _pntfwh_exit:
  * will be overwritten if this is "true", otherwise NFT_FAILURE will be returned
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_to_file_light(NftPrefsNode *n, const char *filename, bool overwrite)
+NftResult nft_prefs_node_to_file_light(NftPrefsNode * n, const char *filename,
+                                       bool overwrite)
 {
-		if(!n || !filename)
-				NFT_LOG_NULL(NFT_FAILURE);
+        if(!n || !filename)
+                NFT_LOG_NULL(NFT_FAILURE);
 
-		/* file already existing? */
-		struct stat sts;
-		if(stat(filename, &sts) == -1)
-		{
-				/* continue if stat error was caused because file doesn't exist */
-				if(errno != ENOENT)
-				{
-						NFT_LOG(L_ERROR, "Failed to access \"%s\" - %s", filename, strerror(errno));
-						return NFT_FAILURE;
-				}
-		}
-		/* stat succeeded, file exists */
-		else if(strcmp("-", filename) != 0)
-		{
-				/* remove old file? */
-				if(!overwrite)
-						return NFT_FAILURE;
+        /* file already existing? */
+        struct stat sts;
+        if(stat(filename, &sts) == -1)
+        {
+                /* continue if stat error was caused because file doesn't exist 
+                 */
+                if(errno != ENOENT)
+                {
+                        NFT_LOG(L_ERROR, "Failed to access \"%s\" - %s",
+                                filename, strerror(errno));
+                        return NFT_FAILURE;
+                }
+        }
+        /* stat succeeded, file exists */
+        else if(strcmp("-", filename) != 0)
+        {
+                /* remove old file? */
+                if(!overwrite)
+                        return NFT_FAILURE;
 
-				/* delete existing file */
-				if(unlink(filename) == -1)
-				{
-						NFT_LOG(L_ERROR, "Failed to remove old version of \"%s\" - %s", filename, strerror(errno));
-						return NFT_FAILURE;
-				}
-		}
+                /* delete existing file */
+                if(unlink(filename) == -1)
+                {
+                        NFT_LOG(L_ERROR,
+                                "Failed to remove old version of \"%s\" - %s",
+                                filename, strerror(errno));
+                        return NFT_FAILURE;
+                }
+        }
 
-		/* overall result */
-		NftResult r = NFT_FAILURE;
+        /* overall result */
+        NftResult r = NFT_FAILURE;
 
 
-		/* create buffer */
-		xmlBufferPtr buf;
-		if(!(buf = xmlBufferCreate()))
-		{
-				NFT_LOG(L_ERROR, "failed to xmlBufferCreate()");
-				return NFT_FAILURE;
-		}
+        /* create buffer */
+        xmlBufferPtr buf;
+        if(!(buf = xmlBufferCreate()))
+        {
+                NFT_LOG(L_ERROR, "failed to xmlBufferCreate()");
+                return NFT_FAILURE;
+        }
 
-		/* dump node */
-		if(xmlNodeDump(buf, n->_private, n, 0, TRUE) < 0)
-		{
-				NFT_LOG(L_ERROR, "xmlNodeDump() failed");
-				goto _pntf_exit;
-		}
+        /* dump node */
+        if(xmlNodeDump(buf, n->_private, n, 0, TRUE) < 0)
+        {
+                NFT_LOG(L_ERROR, "xmlNodeDump() failed");
+                goto _pntf_exit;
+        }
 
-		/* stdout? */
-		int fd;
-		if(strcmp("-", filename) == 0)
-		{
-				fd = STDOUT_FILENO;
-		}
-		/* open file */
-		else
-		{
+        /* stdout? */
+        int fd;
+        if(strcmp("-", filename) == 0)
+        {
+                fd = STDOUT_FILENO;
+        }
+        /* open file */
+        else
+        {
 #ifdef WIN32
-				if((fd = open(filename,
-							  O_CREAT | O_WRONLY,
-							  S_IRUSR | S_IWUSR)) == -1)
+                if((fd = open(filename,
+                              O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR)) == -1)
 #else
-				if((fd = open(filename,
-							  O_CREAT | O_WRONLY,
-							  S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP)) == -1)
+                if((fd = open(filename,
+                              O_CREAT | O_WRONLY,
+                              S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP)) == -1)
 #endif
-				{
-						NFT_LOG_PERROR("open");
-						goto _pntf_exit;
-				}
-		}
+                {
+                        NFT_LOG_PERROR("open");
+                        goto _pntf_exit;
+                }
+        }
 
-		/* write to file */
-		ssize_t length = xmlBufferLength(buf);
-		if(write(fd, (char *) xmlBufferContent(buf), length) != length)
-		{
-				NFT_LOG_PERROR("write");
-				goto _pntf_exit;
-		}
+        /* write to file */
+        ssize_t length = xmlBufferLength(buf);
+        if(write(fd, (char *) xmlBufferContent(buf), length) != length)
+        {
+                NFT_LOG_PERROR("write");
+                goto _pntf_exit;
+        }
 
-		if(fd != STDOUT_FILENO)
-				close(fd);
+        if(fd != STDOUT_FILENO)
+                close(fd);
 
-		r = NFT_SUCCESS;
+        r = NFT_SUCCESS;
 
 _pntf_exit:
-		xmlBufferFree(buf);
+        xmlBufferFree(buf);
 
-		return r;
+        return r;
 }
 
 
@@ -639,42 +656,42 @@ _pntf_exit:
  */
 NftPrefsNode *nft_prefs_node_from_file(const char *filename)
 {
-		if(!filename)
-				NFT_LOG_NULL(NULL);
+        if(!filename)
+                NFT_LOG_NULL(NULL);
 
 
-		/* parse XML */
-		xmlDocPtr doc;
-		if(!(doc = xmlReadFile(filename, NULL, 0)))
-		{
-				NFT_LOG(L_ERROR, "Failed to xmlReadFile(\"%s\")", filename);
-				return NULL;
-		}
+        /* parse XML */
+        xmlDocPtr doc;
+        if(!(doc = xmlReadFile(filename, NULL, 0)))
+        {
+                NFT_LOG(L_ERROR, "Failed to xmlReadFile(\"%s\")", filename);
+                return NULL;
+        }
 
-		/* parse XInclude stuff */
-		int xinc_res;
-		if((xinc_res = xmlXIncludeProcess(doc)) == -1)
-		{
-				NFT_LOG(L_ERROR, "XInclude parsing failed.");
-				return NFT_FAILURE;
-		}
-		NFT_LOG(L_DEBUG, "%d XInclude substitutions done", xinc_res);
+        /* parse XInclude stuff */
+        int xinc_res;
+        if((xinc_res = xmlXIncludeProcess(doc)) == -1)
+        {
+                NFT_LOG(L_ERROR, "XInclude parsing failed.");
+                return NFT_FAILURE;
+        }
+        NFT_LOG(L_DEBUG, "%d XInclude substitutions done", xinc_res);
 
-		
-		/* get node */
-		xmlNode *node;
-		if(!(node = xmlDocGetRootElement(doc)))
-		{
-				NFT_LOG(L_ERROR, "No root element found in XML");
-				/* free resources of document */
-				xmlFreeDoc(doc);
-				return NULL;
-		}
 
-		/* save document in node & all child nodes */
-		_set_private_recursively(node, doc);
-		
-		return node;
+        /* get node */
+        xmlNode *node;
+        if(!(node = xmlDocGetRootElement(doc)))
+        {
+                NFT_LOG(L_ERROR, "No root element found in XML");
+                /* free resources of document */
+                xmlFreeDoc(doc);
+                return NULL;
+        }
+
+        /* save document in node & all child nodes */
+        _set_private_recursively(node, doc);
+
+        return node;
 }
 
 
@@ -687,39 +704,39 @@ NftPrefsNode *nft_prefs_node_from_file(const char *filename)
  */
 NftPrefsNode *nft_prefs_node_from_buffer(char *buffer, size_t bufsize)
 {
-		if(!buffer)
-				NFT_LOG_NULL(NULL);
+        if(!buffer)
+                NFT_LOG_NULL(NULL);
 
 
-		/* parse XML */
-		xmlDocPtr doc;
-		if(!(doc = xmlReadMemory(buffer, bufsize, NULL, NULL, 0)))
-		{
-				NFT_LOG(L_ERROR, "Failed to xmlReadMemory()");
-				return NULL;
-		}
+        /* parse XML */
+        xmlDocPtr doc;
+        if(!(doc = xmlReadMemory(buffer, bufsize, NULL, NULL, 0)))
+        {
+                NFT_LOG(L_ERROR, "Failed to xmlReadMemory()");
+                return NULL;
+        }
 
-		/* parse XInclude stuff */
-		int xinc_res;
-		if((xinc_res = xmlXIncludeProcess(doc)) == -1)
-		{
-				NFT_LOG(L_ERROR, "XInclude parsing failed.");
-				return NFT_FAILURE;
-		}
-		NFT_LOG(L_DEBUG, "%d XInclude substitutions done", xinc_res);
+        /* parse XInclude stuff */
+        int xinc_res;
+        if((xinc_res = xmlXIncludeProcess(doc)) == -1)
+        {
+                NFT_LOG(L_ERROR, "XInclude parsing failed.");
+                return NFT_FAILURE;
+        }
+        NFT_LOG(L_DEBUG, "%d XInclude substitutions done", xinc_res);
 
-		/* get node */
-		xmlNode *node;
-		if(!(node = xmlDocGetRootElement(doc)))
-		{
-				NFT_LOG(L_ERROR, "No root element found in XML");
-				return NULL;
-		}
+        /* get node */
+        xmlNode *node;
+        if(!(node = xmlDocGetRootElement(doc)))
+        {
+                NFT_LOG(L_ERROR, "No root element found in XML");
+                return NULL;
+        }
 
-		/* save document in node & all child nodes */
-		_set_private_recursively(node, doc);
-		
-		return node;
+        /* save document in node & all child nodes */
+        _set_private_recursively(node, doc);
+
+        return node;
 }
 
 
@@ -732,10 +749,10 @@ NftPrefsNode *nft_prefs_node_from_buffer(char *buffer, size_t bufsize)
 		 */
 NftPrefsNode *nft_prefs_node_alloc(const char *name)
 {
-		if(!name)
-				NFT_LOG_NULL(NULL);
+        if(!name)
+                NFT_LOG_NULL(NULL);
 
-		return xmlNewNode(NULL, BAD_CAST name);
+        return xmlNewNode(NULL, BAD_CAST name);
 }
 
 
@@ -744,13 +761,13 @@ NftPrefsNode *nft_prefs_node_alloc(const char *name)
  *
  * @param n NftPrefsNode to free
  */
-void nft_prefs_node_free(NftPrefsNode *n)
+void nft_prefs_node_free(NftPrefsNode * n)
 {
-		if(!n)
-				NFT_LOG_NULL();
+        if(!n)
+                NFT_LOG_NULL();
 
-		xmlUnlinkNode(n);
-		xmlFreeNode(n);
+        xmlUnlinkNode(n);
+        xmlFreeNode(n);
 }
 
 
@@ -759,14 +776,14 @@ void nft_prefs_node_free(NftPrefsNode *n)
  *
  * @result URL of node origin or NULL if unset 
  */
-const char *nft_prefs_node_get_filename(NftPrefsNode *n)
+const char *nft_prefs_node_get_filename(NftPrefsNode * n)
 {
-	if(!n || !n->_private)
-		NFT_LOG_NULL(NULL);
+        if(!n || !n->_private)
+                NFT_LOG_NULL(NULL);
 
-	xmlDoc *doc = n->_private;
-		
-	return (const char *) doc->URL;
+        xmlDoc *doc = n->_private;
+
+        return (const char *) doc->URL;
 }
 
 

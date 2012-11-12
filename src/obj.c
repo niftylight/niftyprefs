@@ -87,7 +87,8 @@
  * @result newly created NftPrefsNode or NULL
  * @note you should only need to use that from inside a NftPrefsFromObjFunc where it will be freed
  */
-NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *obj, void *userptr)
+NftPrefsNode *nft_prefs_obj_to_node(NftPrefs * p, const char *className,
+                                    void *obj, void *userptr)
 {
         if(!p || !className)
                 NFT_LOG_NULL(NULL);
@@ -100,28 +101,27 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *ob
                 return NULL;
         }
 
-        
-        /* find object descriptor */
-        /*NftPrefsObjSlot os;
-        if((os = _obj_find_by_ptr(c, obj)) < 0)
-                return NULL;
 
-        NftPrefsObj *o = _obj_get(c, os);*/
+        /* find object descriptor */
+        /* NftPrefsObjSlot os; if((os = _obj_find_by_ptr(c, obj)) < 0) return
+         * NULL;
+         * 
+         * NftPrefsObj *o = _obj_get(c, os); */
 
         /* new node */
         NftPrefsNode *node;
         if(!(node = nft_prefs_node_alloc(className)))
                 return NULL;
 
-        
+
         /* call prefsFromObj() registered for this class */
-        if(!prefs_class_fromObj(c)(p, node, obj, userptr))
-    	{
-		NFT_LOG(L_ERROR, "prefsFromObj() of class \"%s\" failed.",
-		        className);
+        if(!prefs_class_fromObj(c) (p, node, obj, userptr))
+        {
+                NFT_LOG(L_ERROR, "prefsFromObj() of class \"%s\" failed.",
+                        className);
                 return NULL;
-	}
-    
+        }
+
         return node;
 }
 
@@ -135,27 +135,31 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *ob
  * @result newly created object or NULL
  * @note you should only need to use that from inside a NftPrefsToObjFunc where it will be freed
  */
-void *nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr)
+void *nft_prefs_obj_from_node(NftPrefs * p, NftPrefsNode * n, void *userptr)
 {
-    	if(!p || !n)
-		NFT_LOG_NULL(NULL);
-    
+        if(!p || !n)
+                NFT_LOG_NULL(NULL);
+
         /* find object class */
         NftPrefsClass *c;
-        if(!(c = prefs_class_find_by_name(prefs_classes(p), (const char *) n->name)))
+        if(!
+           (c =
+            prefs_class_find_by_name(prefs_classes(p),
+                                     (const char *) n->name)))
         {
                 NFT_LOG(L_ERROR, "Unknown prefs class \"%s\"", n->name);
                 return NULL;
         }
 
-        
+
         /* create object from prefs */
         void *result = NULL;
-        if(!(prefs_class_toObj(c)(p, &result, n, userptr)))
+        if(!(prefs_class_toObj(c) (p, &result, n, userptr)))
         {
-                NFT_LOG(L_ERROR, "prefsToObj() of class \"%s\" function failed",
+                NFT_LOG(L_ERROR,
+                        "prefsToObj() of class \"%s\" function failed",
                         n->name);
-	    	return NULL;
+                return NULL;
         }
 
         return result;

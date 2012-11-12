@@ -100,7 +100,7 @@
 
 
 /** a context holding a list of PrefsClasses and PrefsNodes - acquired by nft_prefs_init() */
-typedef struct _NftPrefs NftPrefs;
+typedef struct _NftPrefs        NftPrefs;
 
 
 #include "nifty-primitives.h"
@@ -120,9 +120,9 @@ typedef struct _NftPrefs NftPrefs;
 
 
 
-NftPrefs *      nft_prefs_init();
-void            nft_prefs_deinit(NftPrefs *prefs);
-void            nft_prefs_free(void *p);
+NftPrefs                       *nft_prefs_init();
+void                            nft_prefs_deinit(NftPrefs * prefs);
+void                            nft_prefs_free(void *p);
 
 
 

@@ -75,33 +75,33 @@
 
 
 /** wrapper type for one xmlNode */
-typedef xmlNode NftPrefsNode;
+typedef xmlNode                 NftPrefsNode;
 
 
 
-NftResult       	nft_prefs_node_add_child(NftPrefsNode *parent, NftPrefsNode *cur);
-NftPrefsNode *	nft_prefs_node_get_first_child(NftPrefsNode *n);
-NftPrefsNode * nft_prefs_node_get_next(NftPrefsNode *n);
-const char *		nft_prefs_node_get_name(NftPrefsNode *n);
-const char *	nft_prefs_node_get_filename(NftPrefsNode *p);
+NftResult                       nft_prefs_node_add_child(NftPrefsNode * parent, NftPrefsNode * cur);
+NftPrefsNode                   *nft_prefs_node_get_first_child(NftPrefsNode * n);
+NftPrefsNode                   *nft_prefs_node_get_next(NftPrefsNode * n);
+const char                     *nft_prefs_node_get_name(NftPrefsNode * n);
+const char                     *nft_prefs_node_get_filename(NftPrefsNode * p);
 
-NftResult       	nft_prefs_node_prop_string_set(NftPrefsNode *n, const char *name, char *value);
-char *          		nft_prefs_node_prop_string_get(NftPrefsNode *n, const char *name);
-NftResult       	nft_prefs_node_prop_int_set(NftPrefsNode *n, const char *name, int val);
-NftResult       	nft_prefs_node_prop_int_get(NftPrefsNode *n, const char *name, int *val);
-NftResult       	nft_prefs_node_prop_double_set(NftPrefsNode *n, const char *name, double val);
-NftResult       	nft_prefs_node_prop_double_get(NftPrefsNode *n, const char *name, double *val);
+NftResult                       nft_prefs_node_prop_string_set(NftPrefsNode * n, const char *name, char *value);
+char                           *nft_prefs_node_prop_string_get(NftPrefsNode * n, const char *name);
+NftResult                       nft_prefs_node_prop_int_set(NftPrefsNode * n, const char *name, int val);
+NftResult                       nft_prefs_node_prop_int_get(NftPrefsNode * n, const char *name, int *val);
+NftResult                       nft_prefs_node_prop_double_set(NftPrefsNode * n, const char *name, double val);
+NftResult                       nft_prefs_node_prop_double_get(NftPrefsNode * n, const char *name, double *val);
 
-char *					nft_prefs_node_to_buffer(NftPrefsNode *n);
-char *					nft_prefs_node_to_buffer_light(NftPrefsNode *n);
-NftResult 			nft_prefs_node_to_file(NftPrefsNode *n, const char *filename, bool overwrite);
-NftResult 			nft_prefs_node_to_file_light(NftPrefsNode *n, const char *filename, bool overwrite);
-NftPrefsNode *	nft_prefs_node_from_buffer(char *buffer, size_t bufsize);
-NftPrefsNode *	nft_prefs_node_from_file(const char *filename);
+char                           *nft_prefs_node_to_buffer(NftPrefsNode * n);
+char                           *nft_prefs_node_to_buffer_light(NftPrefsNode * n);
+NftResult                       nft_prefs_node_to_file(NftPrefsNode * n, const char *filename, bool overwrite);
+NftResult                       nft_prefs_node_to_file_light(NftPrefsNode * n, const char *filename, bool overwrite);
+NftPrefsNode                   *nft_prefs_node_from_buffer(char *buffer, size_t bufsize);
+NftPrefsNode                   *nft_prefs_node_from_file(const char *filename);
 
 
-NftPrefsNode *	nft_prefs_node_alloc(const char *name);
-void 					nft_prefs_node_free(NftPrefsNode *n);
+NftPrefsNode                   *nft_prefs_node_alloc(const char *name);
+void                            nft_prefs_node_free(NftPrefsNode * n);
 
 
 #endif /** _NIFTYPREFS_NODE_H */

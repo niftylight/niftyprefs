@@ -76,10 +76,10 @@ struct _NftPrefs
 /**************************** PRIVATE FUNCTIONS *******************************/
 /******************************************************************************/
 
-/** getter */ 
-NftPrefsClasses *prefs_classes(NftPrefs *p)
+/** getter */
+NftPrefsClasses *prefs_classes(NftPrefs * p)
 {
-    return &p->classes;
+        return &p->classes;
 }
 
 
@@ -89,60 +89,61 @@ NftPrefsClasses *prefs_classes(NftPrefs *p)
 /******************************************************************************/
 
 /** libxml error handler */
-static void _xml_error_handler(void *ctx, const char * msg, ...)
+static void _xml_error_handler(void *ctx, const char *msg, ...)
 {
-	xmlError *err;
-	if(!(err = xmlGetLastError()))
-	{
-		NFT_LOG(L_WARNING, "libxml2 error trigger but no xmlGetLastError()");
-		return;
-	}
+        xmlError *err;
+        if(!(err = xmlGetLastError()))
+        {
+                NFT_LOG(L_WARNING,
+                        "libxml2 error trigger but no xmlGetLastError()");
+                return;
+        }
 
-	/* convert libxml error-level to loglevel */
-	NftLoglevel level = L_NOISY;
-	switch(err->level)
-	{
-		case XML_ERR_NONE:
-		{
-			level = L_DEBUG;
-			break;
-		}
+        /* convert libxml error-level to loglevel */
+        NftLoglevel level = L_NOISY;
+        switch (err->level)
+        {
+                case XML_ERR_NONE:
+                {
+                        level = L_DEBUG;
+                        break;
+                }
 
-		case XML_ERR_WARNING:
-		{
-			level = L_WARNING;
-			break;
-		}
+                case XML_ERR_WARNING:
+                {
+                        level = L_WARNING;
+                        break;
+                }
 
-		case XML_ERR_ERROR:
-		{
-			level = L_ERROR;
-			break;
-		}
+                case XML_ERR_ERROR:
+                {
+                        level = L_ERROR;
+                        break;
+                }
 
-		case XML_ERR_FATAL:
-		{
-			level = L_ERROR;
-			break;
-		}
-	};
-		
-	va_list args;
-	va_start(args, msg);
+                case XML_ERR_FATAL:
+                {
+                        level = L_ERROR;
+                        break;
+                }
+        };
 
-	nft_log_va(level, err->file, "libxml2", err->line, msg, args);
-	
-	va_end(args);
+        va_list args;
+        va_start(args, msg);
+
+        nft_log_va(level, err->file, "libxml2", err->line, msg, args);
+
+        va_end(args);
 }
 
 
 /** helper for nft_array_foreach_element() */
 bool _class_free(void *element, void *userptr)
 {
-    	NftPrefs *p = userptr;
-    
-	prefs_class_free(p, (NftPrefsClass *) element);
-    	return TRUE;
+        NftPrefs *p = userptr;
+
+        prefs_class_free(p, (NftPrefsClass *) element);
+        return TRUE;
 }
 
 
@@ -162,15 +163,14 @@ bool _class_free(void *element, void *userptr)
  */
 NftPrefs *nft_prefs_init()
 {
-        
-        /*
+
+        /* 
          * this initializes the library and check potential ABI mismatches
          * between the version it was compiled for and the actual shared
          * library used.
          */
         NFT_PREFS_CHECK_VERSION
-                
-        xmlSetBufferAllocationScheme(XML_BUFFER_ALLOC_DOUBLEIT);
+                xmlSetBufferAllocationScheme(XML_BUFFER_ALLOC_DOUBLEIT);
 
         /* register error-logging function */
         xmlSetGenericErrorFunc(NULL, _xml_error_handler);
@@ -187,12 +187,12 @@ NftPrefs *nft_prefs_init()
         }
 
         if(!prefs_class_init_array(&p->classes))
-    	{
-		NFT_LOG(L_ERROR, "Failed to init class array");
-		free(p);
-		return NULL;
-	}
-    
+        {
+                NFT_LOG(L_ERROR, "Failed to init class array");
+                free(p);
+                return NULL;
+        }
+
         return p;
 }
 
@@ -203,23 +203,23 @@ NftPrefs *nft_prefs_init()
  *
  * @param p NftPrefs context
  */
-void nft_prefs_deinit(NftPrefs *p)
+void nft_prefs_deinit(NftPrefs * p)
 {
-	if(!p)
-		NFT_LOG_NULL();
+        if(!p)
+                NFT_LOG_NULL();
 
-	       
+
         /* free all classes */
-    	nft_array_foreach_element(&p->classes, _class_free, p);
+        nft_array_foreach_element(&p->classes, _class_free, p);
 
-    	/* free classes array */
-    	nft_array_deinit(&p->classes);
-            
+        /* free classes array */
+        nft_array_deinit(&p->classes);
+
         /* free descriptor */
         free(p);
-        
+
         /* cleanup XML parser */
-		xmlCleanupParser();
+        xmlCleanupParser();
 }
 
 

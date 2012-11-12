@@ -76,8 +76,7 @@
  * @param userptr arbitrary pointer defined upon registering the object class
  * @result NFT_SUCCESS or NFT_FAILURE (processing will be aborted upon failure)
  */
-typedef NftResult (NftPrefsFromObjFunc)(NftPrefs *p, NftPrefsNode *newNode, 
-                                        void *obj, void *userptr);
+typedef                         NftResult(NftPrefsFromObjFunc) (NftPrefs * p, NftPrefsNode * newNode, void *obj, void *userptr);
 
 
 /** 
@@ -89,15 +88,14 @@ typedef NftResult (NftPrefsFromObjFunc)(NftPrefs *p, NftPrefsNode *newNode,
  * @param userptr arbitrary pointer defined upon registering the object class
  * @result NFT_SUCCESS or NFT_FAILURE (processing will be aborted upon failure)
  */
-typedef NftResult (NftPrefsToObjFunc)(NftPrefs *p, void **newObj, 
-                                      NftPrefsNode *node, void *userptr);
+typedef                         NftResult(NftPrefsToObjFunc) (NftPrefs * p, void **newObj, NftPrefsNode * node, void *userptr);
 
 
 
 
 
-void *          nft_prefs_obj_from_node(NftPrefs *p, NftPrefsNode *n, void *userptr);
-NftPrefsNode *  nft_prefs_obj_to_node(NftPrefs *p, const char *className, void *obj, void *userptr);
+void                           *nft_prefs_obj_from_node(NftPrefs * p, NftPrefsNode * n, void *userptr);
+NftPrefsNode                   *nft_prefs_obj_to_node(NftPrefs * p, const char *className, void *obj, void *userptr);
 
 
 
