@@ -104,9 +104,7 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs * p, const char *className,
 
         /* find object descriptor */
         /* NftPrefsObjSlot os; if((os = _obj_find_by_ptr(c, obj)) < 0) return
-         * NULL;
-         * 
-         * NftPrefsObj *o = _obj_get(c, os); */
+         * NULL; NftPrefsObj *o = _obj_get(c, os); */
 
         /* new node */
         NftPrefsNode *node;

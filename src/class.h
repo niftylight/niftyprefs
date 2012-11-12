@@ -48,11 +48,11 @@
 #include "niftyprefs-class.h"
 
 
-NftResult 		prefs_class_init_array(NftArray *a);
-void 			prefs_class_free(NftPrefs *p, NftPrefsClass *klass);
-NftPrefsClass *		prefs_class_find_by_name(NftPrefsClasses *c, const char *name);
-NftPrefsFromObjFunc *	prefs_class_fromObj(NftPrefsClass *c);
-NftPrefsToObjFunc *	prefs_class_toObj(NftPrefsClass *c);
+NftResult                       prefs_class_init_array(NftArray * a);
+void                            prefs_class_free(NftPrefs * p, NftPrefsClass * klass);
+NftPrefsClass                  *prefs_class_find_by_name(NftPrefsClasses * c, const char *name);
+NftPrefsFromObjFunc            *prefs_class_fromObj(NftPrefsClass * c);
+NftPrefsToObjFunc              *prefs_class_toObj(NftPrefsClass * c);
 
 
 #endif /** _CLASS_H */
