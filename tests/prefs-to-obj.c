@@ -56,6 +56,7 @@ struct Person
         char name[256];
         char email[256];
         int age;
+		bool alive;
 }persons[PEOPLECOUNT];
 
 /* our toplevel object */
@@ -140,10 +141,18 @@ static NftResult _person_from_prefs(NftPrefs *p, void **newObj, NftPrefsNode *no
 				return NFT_FAILURE;
 		}
 
+		bool alive;
+		if(!nft_prefs_node_prop_boolean_get(node, "alive", &alive))
+		{
+				NFT_LOG(L_ERROR, "failed to get property \"alive\" from prefs-node");
+				return NFT_FAILURE;
+		}
+		
         strncpy(persons[i].name, name, sizeof(persons[i].name));
         strncpy(persons[i].email, email, sizeof(persons[i].email));
         persons[i].age = age;
-
+		persons[i].alive = alive;
+		
         /* free strings */
         nft_prefs_free(name);
         nft_prefs_free(email);
@@ -214,17 +223,22 @@ int main(int argc, char *argv[])
         for(n=0; n < people->people_count; n++)
         {
                 /* print info */
-                printf("\tperson(name=\"%s\",email=\"%s\", age=\"%d\")\n",
-                    people->people[n]->name, people->people[n]->email, people->people[n]->age);
+                printf("\tperson(name=\"%s\",email=\"%s\", age=\"%d\", vitality=\"%s\")\n",
+                    	people->people[n]->name, 
+                       	people->people[n]->email, 
+                       	people->people[n]->age,
+                       	people->people[n]->alive ? "alive" : "dead");
         }
 
         /* we should get what we put in */
         if((strcmp(people->people[0]->name, "Bob") != 0) ||
            (strcmp(people->people[0]->email, "bob@example.com") != 0) ||
            (people->people[0]->age != 30) ||
+           (people->people[0]->alive != true) ||
            (strcmp(people->people[1]->name, "Alice") != 0) ||
            (strcmp(people->people[1]->email, "alice@example.com") != 0) ||
-           (people->people[1]->age != 30))
+           (people->people[1]->age != 30) ||
+           (people->people[1]->alive != false))
         {
                 NFT_LOG(L_ERROR, "Input from 01_obj-to-prefs.c doesn't match output!");
                 goto _deinit;

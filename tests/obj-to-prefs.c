@@ -53,6 +53,7 @@ struct Person
     char name[256];
     char email[256];
     int age;
+	bool alive;
 };
 
 /* printable name of "object" */
@@ -66,8 +67,18 @@ struct Person
 /* some example data */
 struct Person persons[] =
 {
-        { .name = "Bob"   , .email = "bob@example.com", .age = 30  },
-        { .name = "Alice" , .email = "alice@example.com", .age = 30 },
+        { 
+				.name = "Bob", 
+				.email = "bob@example.com", 
+				.age = 30, 
+				.alive = true  
+		},
+        { 
+				.name = "Alice" ,
+				.email = "alice@example.com", 
+				.age = 30, 
+				.alive = false 
+		},
 };
 
 /* our toplevel object */
@@ -140,7 +151,10 @@ static NftResult _person_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
         if(!nft_prefs_node_prop_int_set(newNode, "age", person->age))
                 return NFT_FAILURE;
 
-
+		/* person vitality */
+		if(!nft_prefs_node_prop_boolean_set(newNode, "alive", person->alive))
+				return NFT_FAILURE;
+		
         /** everything fine - node contains preferences now */
         return NFT_SUCCESS;
 }

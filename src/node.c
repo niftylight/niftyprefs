@@ -312,6 +312,75 @@ NftResult nft_prefs_node_prop_double_get(NftPrefsNode * n, const char *name,
         return result;
 }
 
+/**
+ * set boolean property
+ *
+ * @param n node where property should be set
+ * @param name name of property
+ * @param val value of property
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_prop_boolean_set(NftPrefsNode * n, const char *name, bool val)
+{
+        if(!n || !name)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        char *tmp;
+        if(!(tmp = alloca(16)))
+        {
+                NFT_LOG_PERROR("alloca()");
+                return NFT_FAILURE;
+        }
+
+        if(snprintf(tmp, 16, "%s", val ? "true" : "false") < 0)
+        {
+                NFT_LOG_PERROR("snprintf()");
+                return NFT_FAILURE;
+        }
+
+        return nft_prefs_node_prop_string_set(n, name, tmp);
+}
+
+
+/**
+ * get boolean property
+ *
+ * @param n node to read property from
+ * @param name name of property
+ * @param val space for value of property
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_prop_boolean_get(NftPrefsNode * n, const char *name, bool *val)
+{
+        if(!n || !name || !val)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        xmlChar *tmp;
+        if(!(tmp = (xmlChar *) nft_prefs_node_prop_string_get(n, name)))
+        {
+                NFT_LOG(L_DEBUG, "property \"%s\" not found in <%s>", name,
+                        n->name);
+                return NFT_FAILURE;
+        }
+
+		if(xmlStrcasecmp(tmp, BAD_CAST "true") == 0 ||
+		   xmlStrcasecmp(tmp, BAD_CAST "yes") == 0 ||
+		   xmlStrcasecmp(tmp, BAD_CAST "on") == 0 ||
+		   xmlStrcasecmp(tmp, BAD_CAST "enable") == 0 ||
+		   xmlStrcasecmp(tmp, BAD_CAST "1") == 0)
+		{
+			*val = true;
+		}
+		else
+		{
+			*val = false;
+		}
+		
+        nft_prefs_free(tmp);
+
+        return NFT_SUCCESS;
+}
+
 
 /**
  * create preferences buffer from NftPrefsNode
