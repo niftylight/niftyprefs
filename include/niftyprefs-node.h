@@ -92,7 +92,7 @@ NftResult                       nft_prefs_node_prop_int_get(NftPrefsNode * n, co
 NftResult                       nft_prefs_node_prop_double_set(NftPrefsNode * n, const char *name, double val);
 NftResult                       nft_prefs_node_prop_double_get(NftPrefsNode * n, const char *name, double *val);
 NftResult                       nft_prefs_node_prop_boolean_set(NftPrefsNode * n, const char *name, bool val);
-NftResult                       nft_prefs_node_prop_boolean_get(NftPrefsNode * n, const char *name, bool *val);
+NftResult                       nft_prefs_node_prop_boolean_get(NftPrefsNode * n, const char *name, bool * val);
 
 char                           *nft_prefs_node_to_buffer(NftPrefsNode * n);
 char                           *nft_prefs_node_to_buffer_light(NftPrefsNode * n);

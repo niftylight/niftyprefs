@@ -320,7 +320,8 @@ NftResult nft_prefs_node_prop_double_get(NftPrefsNode * n, const char *name,
  * @param val value of property
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_prop_boolean_set(NftPrefsNode * n, const char *name, bool val)
+NftResult nft_prefs_node_prop_boolean_set(NftPrefsNode * n, const char *name,
+                                          bool val)
 {
         if(!n || !name)
                 NFT_LOG_NULL(NFT_FAILURE);
@@ -350,7 +351,8 @@ NftResult nft_prefs_node_prop_boolean_set(NftPrefsNode * n, const char *name, bo
  * @param val space for value of property
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_prop_boolean_get(NftPrefsNode * n, const char *name, bool *val)
+NftResult nft_prefs_node_prop_boolean_get(NftPrefsNode * n, const char *name,
+                                          bool * val)
 {
         if(!n || !name || !val)
                 NFT_LOG_NULL(NFT_FAILURE);
@@ -363,19 +365,19 @@ NftResult nft_prefs_node_prop_boolean_get(NftPrefsNode * n, const char *name, bo
                 return NFT_FAILURE;
         }
 
-		if(xmlStrcasecmp(tmp, BAD_CAST "true") == 0 ||
-		   xmlStrcasecmp(tmp, BAD_CAST "yes") == 0 ||
-		   xmlStrcasecmp(tmp, BAD_CAST "on") == 0 ||
-		   xmlStrcasecmp(tmp, BAD_CAST "enable") == 0 ||
-		   xmlStrcasecmp(tmp, BAD_CAST "1") == 0)
-		{
-			*val = true;
-		}
-		else
-		{
-			*val = false;
-		}
-		
+        if(xmlStrcasecmp(tmp, BAD_CAST "true") == 0 ||
+           xmlStrcasecmp(tmp, BAD_CAST "yes") == 0 ||
+           xmlStrcasecmp(tmp, BAD_CAST "on") == 0 ||
+           xmlStrcasecmp(tmp, BAD_CAST "enable") == 0 ||
+           xmlStrcasecmp(tmp, BAD_CAST "1") == 0)
+        {
+                *val = true;
+        }
+        else
+        {
+                *val = false;
+        }
+
         nft_prefs_free(tmp);
 
         return NFT_SUCCESS;
