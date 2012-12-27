@@ -3,6 +3,9 @@
 # v0.4 - Daniel Hiepler <daniel@niftylight.de>
 
 
+EXTRA_DIST = \
+	tests.env
+
 # directories to include
 INCLUDE_DIRS = \
 	-I$(top_srcdir)/include \
@@ -41,7 +44,7 @@ check_PROGRAMS = \
 		prefs-to-obj
 
 TESTS = $(check_PROGRAMS)
-
+TESTS_ENVIRONMENT = $(srcdir)/tests.env
 
 array_SOURCES = array.c
 array_CFLAGS = $(TESTCFLAGS)

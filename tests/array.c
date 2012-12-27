@@ -55,9 +55,9 @@ static bool _finder(void *element, void *criterion, void *userptr)
 	/** current array element */
 	int *e = element;
 	/** search criterion */
-	int c = (int) criterion;
+	int *c = (int *) criterion;
     
-    	return (*e == c);
+    	return (*e == *c);
 }
 
 
@@ -135,7 +135,8 @@ int main(int argc, char *argv[])
     
         /* find an element */
     	NftArraySlot slot;
-        if(!(nft_array_find_slot(&a, &slot, _finder, (void *) 512, NULL)))
+        int foo = 512;
+        if(!(nft_array_find_slot(&a, &slot, _finder, (void *) &foo, NULL)))
         {
                 NFT_LOG(L_ERROR, "Couldn't find element although I should have...");
                 goto _deinit;
