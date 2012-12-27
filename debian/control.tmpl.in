@@ -11,7 +11,7 @@ Homepage: @PACKAGE_URL@
 Package: @PACKAGE_NAME@-dev
 Section: libdevel
 Architecture: any
-Depends: ${misc:Depends}, @PACKAGE_NAME@@PACKAGE_API_REVISION@ (= ${binary:Version})
+Depends: ${misc:Depends}, @PACKAGE_NAME@@PACKAGE_API_REVISION@ (= ${binary:Version}), libniftylog-dev, libxml2-dev
 Description: @PACKAGE_NAME@ library headers
  This package contains development headers for @PACKAGE_NAME@ -
  @PACKAGE_DESCRIPTION_LONG@
@@ -19,6 +19,6 @@ Description: @PACKAGE_NAME@ library headers
 Package: @PACKAGE_NAME@@PACKAGE_API_REVISION@
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libniftylog1, libxml2
 Description: @PACKAGE_DESCRIPTION@
  @PACKAGE_DESCRIPTION_LONG@
