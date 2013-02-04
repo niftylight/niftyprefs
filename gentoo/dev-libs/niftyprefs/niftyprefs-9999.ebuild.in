@@ -39,7 +39,7 @@ src_configure()
 	    $(use_enable debug)
 }
 
-src_install() 
+src_install()
 {
 	emake DESTDIR="${D}" install || die
 
