@@ -235,7 +235,7 @@ NftResult nft_prefs_node_prop_int_get(NftPrefsNode * n, const char *name,
         }
 
         NftResult result = NFT_SUCCESS;
-        if(sscanf(tmp, "%d", val) != 1)
+        if(sscanf(tmp, "%64d", val) != 1)
         {
                 NFT_LOG(L_ERROR, "sscanf() failed");
                 result = NFT_FAILURE;
@@ -301,7 +301,7 @@ NftResult nft_prefs_node_prop_double_get(NftPrefsNode * n, const char *name,
         }
 
         NftResult result = NFT_SUCCESS;
-        if(sscanf(tmp, "%lf", val) != 1)
+        if(sscanf(tmp, "%128lf", val) != 1)
         {
                 NFT_LOG(L_ERROR, "sscanf() failed");
                 result = NFT_FAILURE;
