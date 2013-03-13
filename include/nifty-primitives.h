@@ -57,17 +57,6 @@
 
 
 /** @todo remove this preprocessor macro & use clean structure instead */
-#ifndef FALSE
-/* boolean definition */
-#define FALSE (0)
-#endif
-/** @todo remove this preprocessor macro & use clean structure instead */
-#ifndef TRUE
-/* boolean definition */
-#define TRUE (!FALSE)
-#endif
-
-/** @todo remove this preprocessor macro & use clean structure instead */
 #ifndef NFT_RESULT_DEFINED
 #define NFT_RESULT_DEFINED
 /** type for returning failure-status */
