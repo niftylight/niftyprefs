@@ -408,7 +408,7 @@ char *nft_prefs_node_to_buffer_light(NftPrefsNode * n)
         }
 
         /* dump node */
-        if(xmlNodeDump(buf, n->_private, n, 0, TRUE) < 0)
+        if(xmlNodeDump(buf, n->_private, n, 0, true) < 0)
         {
                 NFT_LOG(L_ERROR, "xmlNodeDump() failed");
                 goto _pntb_exit;
@@ -670,7 +670,7 @@ NftResult nft_prefs_node_to_file_light(NftPrefsNode * n, const char *filename,
         }
 
         /* dump node */
-        if(xmlNodeDump(buf, n->_private, n, 0, TRUE) < 0)
+        if(xmlNodeDump(buf, n->_private, n, 0, true) < 0)
         {
                 NFT_LOG(L_ERROR, "xmlNodeDump() failed");
                 goto _pntf_exit;

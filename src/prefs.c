@@ -143,7 +143,7 @@ bool _class_free(void *element, void *userptr)
         NftPrefs *p = userptr;
 
         prefs_class_free(p, (NftPrefsClass *) element);
-        return TRUE;
+        return true;
 }
 
 

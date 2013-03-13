@@ -85,7 +85,7 @@ struct _NftPrefsClass
 static bool _class_find_by_name(void *element, void *criterion, void *userptr)
 {
         if(!element || !criterion)
-                NFT_LOG_NULL(FALSE);
+                NFT_LOG_NULL(false);
 
 
         NftPrefsClass *c = element;

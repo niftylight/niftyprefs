@@ -76,22 +76,22 @@ struct _NftElement
  *
  * @param a NftArray descriptor
  * @param s NftArraySlot
- * @result TRUE if slot is plausible, FALSE otherwise
+ * @result true if slot is plausible, false otherwise
  */
 static bool _slot_is_valid(NftArray * a, NftArraySlot s)
 {
         if(!a)
-                NFT_LOG_NULL(FALSE);
+                NFT_LOG_NULL(false);
 
         if(s >= a->arraysize)
         {
                 NFT_LOG(L_ERROR,
                         "requested slot %d from array \"%s\" that only has %d slots",
                         s + 1, nft_array_get_name(a), a->arraysize);
-                return FALSE;
+                return false;
         }
 
-        return TRUE;
+        return true;
 }
 
 
@@ -209,7 +209,7 @@ int nft_array_get_type(NftArray * a)
 bool nft_array_is_type(NftArray * a, int type)
 {
         if(!a)
-                NFT_LOG_NULL(FALSE);
+                NFT_LOG_NULL(false);
 
         return (a->type == type);
 }
@@ -289,7 +289,7 @@ NftResult nft_array_slot_alloc(NftArray * a, NftArraySlot * s)
                 if(!a->elements[i].occupied)
                 {
                         /* set element as occupied */
-                        a->elements[i].occupied = TRUE;
+                        a->elements[i].occupied = true;
 
                         /* another element allocated... */
                         a->elementcount++;
@@ -328,7 +328,7 @@ void nft_array_slot_free(NftArray * a, NftArraySlot s)
         memset(&a->buffer[a->elementsize * s], 0, a->elementsize);
 
         /* mark element as unused */
-        a->elements[s].occupied = FALSE;
+        a->elements[s].occupied = false;
 
         /* remove one element from array */
         a->elementcount--;
@@ -367,9 +367,9 @@ void *nft_array_get_element(NftArray * a, NftArraySlot s)
  *
  * @param a NftArray descriptor
  * @param foreach function that gets called for each element. 
- *        If it returns FALSE execution stops at the current element.
+ *        If it returns false execution stops at the current element.
  * @param userptr arbitrary user pointer
- * @result NFT_SUCCESS if all foreach functions returned TRUE, NFT_FAILURE otherwise
+ * @result NFT_SUCCESS if all foreach functions returned true, NFT_FAILURE otherwise
  */
 NftResult nft_array_foreach_element(NftArray * a,
                                     bool(*foreach) (void *element,
@@ -401,7 +401,7 @@ NftResult nft_array_foreach_element(NftArray * a,
  * @param a NftArray descriptor
  * @param s pointer where slot of found element will be written to
  * @param finder Function to check if an element matches the criterion 
- *        and then returns TRUE and FALSE otherwise
+ *        and then returns true and false otherwise
  * @param criterion the criterion that's passed to the finder function
  * @param userptr arbitrary user pointer 
  * @result NFT_SUCCESS if element was found an slot has been written into *s, 

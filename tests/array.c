@@ -71,10 +71,10 @@ static bool _element_validator(void *element, void *userptr)
     	{
 		NFT_LOG(L_ERROR, "Element didn't have expected content. Got %d, expected %d.", 
 		        *n, current);
-		return FALSE;
+		return false;
 	}
     
-    	return TRUE;
+    	return true;
 }
 
 
