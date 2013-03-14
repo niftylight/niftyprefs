@@ -60,29 +60,30 @@
 
 
 /**
- * check the compiled lib-version against the include one.
- * This will throw a warning if code was linked against different version than
- * currently installed
- * @note don't call this directly. Use the NFT_SETTINGS_CHECK_VERSION
- * macro
+ * used to check binary compatibility of niftyled dependencies
  *
- * @param version the library version number
+ * @note don't call this directly, use the NFT_PREFS_CHECK_VERSION macro
+ * @result NFT_SUCCESS if all checks were passed, NFT_FAILURE otherwise
  */
-void nft_prefs_version_check(const char *version)
+NftResult nft_prefs_version_check(const char *version)
 {
         /* welcome */
         NFT_LOG(L_INFO, "%s v%s - %s", PACKAGE_NAME, NFT_PREFS_LONG_VERSION, PACKAGE_URL);
 
         /* check version of dependencies */
-        NFT_LOG_CHECK_VERSION
+        if(!NFT_LOG_CHECK_VERSION)
+		return NFT_FAILURE;
+
 	LIBXML_TEST_VERSION
 
         if(strcmp(version, NFT_PREFS_GIT_VERSION) == 0)
-                return;
+                return NFT_SUCCESS;
         
         
         NFT_LOG(L_WARNING, "%s compiled against version %s but currently installed is %s.",
                 PACKAGE_NAME, version, NFT_PREFS_GIT_VERSION);        
+
+	return NFT_FAILURE;
 }
 
 
