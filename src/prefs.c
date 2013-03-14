@@ -159,7 +159,7 @@ bool _class_free(void *element, void *userptr)
 /**
  * initialize libniftyprefs - call this once before doing any other API call
  *
- * @result NFT_SUCCESS or NFT_FAILURE
+ * @result new NftPrefs descriptor or NULL upon failure
  */
 NftPrefs *nft_prefs_init()
 {
