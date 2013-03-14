@@ -170,9 +170,9 @@ NftPrefs *nft_prefs_init()
          * library used.
          */
         if(!NFT_PREFS_CHECK_VERSION)
-		return NULL;
-	
-	xmlSetBufferAllocationScheme(XML_BUFFER_ALLOC_DOUBLEIT);
+                return NULL;
+
+        xmlSetBufferAllocationScheme(XML_BUFFER_ALLOC_DOUBLEIT);
 
         /* register error-logging function */
         xmlSetGenericErrorFunc(NULL, _xml_error_handler);

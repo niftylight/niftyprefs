@@ -68,32 +68,32 @@
 NftResult nft_prefs_version_check(const char *version)
 {
         /* welcome */
-        NFT_LOG(L_INFO, "%s v%s - %s", PACKAGE_NAME, NFT_PREFS_LONG_VERSION, PACKAGE_URL);
+        NFT_LOG(L_INFO, "%s v%s - %s", PACKAGE_NAME, NFT_PREFS_LONG_VERSION,
+                PACKAGE_URL);
 
         /* check version of dependencies */
         if(!NFT_LOG_CHECK_VERSION)
-		return NFT_FAILURE;
+                return NFT_FAILURE;
 
-	LIBXML_TEST_VERSION
-
-        if(strcmp(version, NFT_PREFS_GIT_VERSION) == 0)
+        LIBXML_TEST_VERSION if(strcmp(version, NFT_PREFS_GIT_VERSION) == 0)
                 return NFT_SUCCESS;
-        
-        
-        NFT_LOG(L_WARNING, "%s compiled against version %s but currently installed is %s.",
-                PACKAGE_NAME, version, NFT_PREFS_GIT_VERSION);        
 
-	return NFT_FAILURE;
+
+        NFT_LOG(L_WARNING,
+                "%s compiled against version %s but currently installed is %s.",
+                PACKAGE_NAME, version, NFT_PREFS_GIT_VERSION);
+
+        return NFT_FAILURE;
 }
 
 
 /** 
  * return string holding GIT version. This is done to always reflect the correct
  * version by supplying the current git version via the -D compiler option
- */ 
+ */
 const char *nft_prefs_version_git()
 {
-	return ("@PACKAGE_GIT_VERSION@");
+        return ("@PACKAGE_GIT_VERSION@");
 }
 
 
@@ -102,11 +102,11 @@ const char *nft_prefs_version_git()
  */
 const char *nft_prefs_version_long()
 {
-	static char tmp[128];
-    	snprintf(tmp, sizeof(tmp), "%s-%s", 
-	         "@PACKAGE_VERSION@", NFT_PREFS_GIT_VERSION);
+        static char tmp[128];
+        snprintf(tmp, sizeof(tmp), "%s-%s",
+                 "@PACKAGE_VERSION@", NFT_PREFS_GIT_VERSION);
 
-    	return tmp;
+        return tmp;
 }
 
 
