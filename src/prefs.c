@@ -169,8 +169,10 @@ NftPrefs *nft_prefs_init()
          * between the version it was compiled for and the actual shared
          * library used.
          */
-        NFT_PREFS_CHECK_VERSION
-                xmlSetBufferAllocationScheme(XML_BUFFER_ALLOC_DOUBLEIT);
+        if(!NFT_PREFS_CHECK_VERSION)
+		return NULL;
+	
+	xmlSetBufferAllocationScheme(XML_BUFFER_ALLOC_DOUBLEIT);
 
         /* register error-logging function */
         xmlSetGenericErrorFunc(NULL, _xml_error_handler);
