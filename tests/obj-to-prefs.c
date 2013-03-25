@@ -50,10 +50,10 @@
 /* one "object" */
 struct Person
 {
-    char name[256];
-    char email[256];
-    int age;
-	bool alive;
+        char name[256];
+        char email[256];
+        int age;
+        bool alive;
 };
 
 /* printable name of "object" */
@@ -65,20 +65,17 @@ struct Person
 
 
 /* some example data */
-struct Person persons[] =
-{
-        { 
-				.name = "Bob", 
-				.email = "bob@example.com", 
-				.age = 30, 
-				.alive = true  
-		},
-        { 
-				.name = "Alice" ,
-				.email = "alice@example.com", 
-				.age = 30, 
-				.alive = false 
-		},
+struct Person persons[] = {
+        {
+         .name = "Bob",
+         .email = "bob@example.com",
+         .age = 30,
+         .alive = true},
+        {
+         .name = "Alice",
+         .email = "alice@example.com",
+         .age = 30,
+         .alive = false},
 };
 
 /* our toplevel object */
@@ -100,7 +97,8 @@ struct People
  * @param userptr arbitrary user pointer (or NULL)
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-static NftResult _people_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj, void *userptr)
+static NftResult _people_to_prefs(NftPrefs * p, NftPrefsNode * newNode,
+                                  void *obj, void *userptr)
 {
         if(!p || !newNode || !obj)
                 NFT_LOG_NULL(NFT_FAILURE);
@@ -111,11 +109,14 @@ static NftResult _people_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
 
         /* process all persons */
         size_t n;
-        for(n=0; n < people->people_count; n++)
+        for(n = 0; n < people->people_count; n++)
         {
                 /* generate prefs node for each person */
                 NftPrefsNode *node;
-                if(!(node = nft_prefs_obj_to_node(p, PERSON_NAME, &people->people[n], NULL)))
+                if(!
+                   (node =
+                    nft_prefs_obj_to_node(p, PERSON_NAME, &people->people[n],
+                                          NULL)))
                         return NFT_FAILURE;
 
                 /* add person object as child of people object */
@@ -127,7 +128,8 @@ static NftResult _people_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
 
 
 /** function to generate preferences for a Person object */
-static NftResult _person_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj, void *userptr)
+static NftResult _person_to_prefs(NftPrefs * p, NftPrefsNode * newNode,
+                                  void *obj, void *userptr)
 {
         /* NULL object means failure -> exit early */
         if(!p || !newNode || !obj)
@@ -151,10 +153,10 @@ static NftResult _person_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
         if(!nft_prefs_node_prop_int_set(newNode, "age", person->age))
                 return NFT_FAILURE;
 
-		/* person vitality */
-		if(!nft_prefs_node_prop_boolean_set(newNode, "alive", person->alive))
-				return NFT_FAILURE;
-		
+        /* person vitality */
+        if(!nft_prefs_node_prop_boolean_set(newNode, "alive", person->alive))
+                return NFT_FAILURE;
+
         /** everything fine - node contains preferences now */
         return NFT_SUCCESS;
 }
@@ -167,11 +169,11 @@ static NftResult _person_to_prefs(NftPrefs *p, NftPrefsNode *newNode, void *obj,
     from arbitrary "object" definitions */
 int main(int argc, char *argv[])
 {
-    	/* do preliminary version checks */
-    	if(!NFT_PREFS_CHECK_VERSION)
-    		return EXIT_FAILURE;
+        /* do preliminary version checks */
+        if(!NFT_PREFS_CHECK_VERSION)
+                return EXIT_FAILURE;
 
-        //~ /* fail per default */
+        // ~ /* fail per default */
         int result = EXIT_FAILURE;
 
 
@@ -181,11 +183,15 @@ int main(int argc, char *argv[])
                 goto _deinit;
 
         /* register "people" class to niftyprefs */
-        if(!(nft_prefs_class_register(prefs, PEOPLE_NAME, NULL, &_people_to_prefs)))
+        if(!
+           (nft_prefs_class_register
+            (prefs, PEOPLE_NAME, NULL, &_people_to_prefs)))
                 goto _deinit;
 
         /* register "person" class to niftyprefs */
-        if(!(nft_prefs_class_register(prefs, PERSON_NAME, NULL, &_person_to_prefs)))
+        if(!
+           (nft_prefs_class_register
+            (prefs, PERSON_NAME, NULL, &_person_to_prefs)))
                 goto _deinit;
 
 
@@ -193,42 +199,41 @@ int main(int argc, char *argv[])
 
 
         /* register toplevel object (that holds all other objects) */
-        struct People people =
-        {
+        struct People people = {
                 .people = persons,
-                .people_count = sizeof(persons)/sizeof(struct Person)
+                .people_count = sizeof(persons) / sizeof(struct Person)
         };
 
         /* walk all persons in model */
         unsigned int i;
-        for(i=0; i < sizeof(persons)/sizeof(struct Person); i++)
+        for(i = 0; i < sizeof(persons) / sizeof(struct Person); i++)
         {
                 /* print info */
                 printf("\tperson(name=\"%s\",email=\"%s\", age=\"%d\")\n",
-                    persons[i].name, persons[i].email, persons[i].age);
+                       persons[i].name, persons[i].email, persons[i].age);
 
         }
 
 
         /* dump people node */
-    	NftPrefsNode *n;
+        NftPrefsNode *n;
         if(!(n = nft_prefs_obj_to_node(prefs, PEOPLE_NAME, &people, NULL)))
-		{
+        {
                 goto _deinit;
-		}
+        }
 
-    	/* dump node to file */
-    	if(!nft_prefs_node_to_file(n, "test-prefs.xml", true))
-		{
-				goto _deinit;
-		}
+        /* dump node to file */
+        if(!nft_prefs_node_to_file(n, "test-prefs.xml", true))
+        {
+                goto _deinit;
+        }
 
-		if(!nft_prefs_node_to_file_light(n, "test-prefs-light.xml", true))
-		{
-				goto _deinit;
-		}
+        if(!nft_prefs_node_to_file_light(n, "test-prefs-light.xml", true))
+        {
+                goto _deinit;
+        }
 
-    	nft_prefs_node_free(n);
+        nft_prefs_node_free(n);
 
         /* all went fine */
         result = EXIT_SUCCESS;

@@ -53,10 +53,10 @@
 int main(int argc, char *argv[])
 {
 
-    	/* do preliminary version checks */
-    	if(!NFT_PREFS_CHECK_VERSION)
-    	    return EXIT_FAILURE;
-	
+        /* do preliminary version checks */
+        if(!NFT_PREFS_CHECK_VERSION)
+                return EXIT_FAILURE;
+
         int res = EXIT_FAILURE;
         NftPrefs *p;
         if(!(p = nft_prefs_init()))
@@ -68,54 +68,55 @@ int main(int argc, char *argv[])
         {
                 int n;
                 char *name;
-        }objs[OBJNUM];
+        } objs[OBJNUM];
 
         int i;
-        for(i=0; i < OBJNUM; i++)
+        for(i = 0; i < OBJNUM; i++)
         {
                 objs[i].n = i;
                 objs[i].name = "foobar";
         }
-        
+
         /* register a bunch of classes */
-        for(i=0; i < OBJNUM; i++)
+        for(i = 0; i < OBJNUM; i++)
         {
                 char cName[64];
-                snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
+                snprintf(cName, sizeof(cName), "%s.%d", objs[i].name,
+                         objs[i].n);
                 NFT_LOG(L_DEBUG, "Registering class %d (%s)", i, cName);
                 if(!(nft_prefs_class_register(p, cName, NULL, NULL)))
                         goto _deinit;
         }
-        
-        //~ for(i=0; i < 1024; i++)
-        //~ {
-                //~ char cName[64];
-                //~ snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
-                //~ NFT_LOG(L_DEBUG, "Registering object %d", i);
-                //~ if(!nft_prefs_obj_register(p, cName, &objs[i]))
-                        //~ goto _deinit;
-        //~ }
-        
-        //~ for(i=0; i < 1024; i++)
-        //~ {
-                //~ char cName[64];
-                //~ snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
-                //~ NFT_LOG(L_DEBUG, "Unregistering object %d", i);
-                //~ nft_prefs_obj_unregister(p, cName, &objs[i]);
-        //~ }
-        
-        //~ for(i=0; i < 1024; i++)
-        //~ {
-                //~ char cName[64];
-                //~ snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
-                //~ NFT_LOG(L_DEBUG, "Unregistering class %d", i);
-                //~ nft_prefs_class_unregister(p, cName);
-        //~ }
-        
+
+        // ~ for(i=0; i < 1024; i++)
+        // ~ {
+        // ~ char cName[64];
+        // ~ snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
+        // ~ NFT_LOG(L_DEBUG, "Registering object %d", i);
+        // ~ if(!nft_prefs_obj_register(p, cName, &objs[i]))
+        // ~ goto _deinit;
+        // ~ }
+
+        // ~ for(i=0; i < 1024; i++)
+        // ~ {
+        // ~ char cName[64];
+        // ~ snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
+        // ~ NFT_LOG(L_DEBUG, "Unregistering object %d", i);
+        // ~ nft_prefs_obj_unregister(p, cName, &objs[i]);
+        // ~ }
+
+        // ~ for(i=0; i < 1024; i++)
+        // ~ {
+        // ~ char cName[64];
+        // ~ snprintf(cName, sizeof(cName), "%s.%d", objs[i].name, objs[i].n);
+        // ~ NFT_LOG(L_DEBUG, "Unregistering class %d", i);
+        // ~ nft_prefs_class_unregister(p, cName);
+        // ~ }
+
         res = EXIT_SUCCESS;
-        
+
 _deinit:
         nft_prefs_deinit(p);
-        
+
         return res;
 }
