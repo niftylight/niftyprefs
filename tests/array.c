@@ -83,7 +83,8 @@ int main(int argc, char *argv[])
 {
 
     	/* do preliminary version checks */
-    	NFT_PREFS_CHECK_VERSION
+    	if(!NFT_PREFS_CHECK_VERSION)
+    	    return EXIT_FAILURE;
 	
         int r = EXIT_FAILURE;
 
