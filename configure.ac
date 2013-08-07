@@ -61,6 +61,13 @@ if test -z "${PKG_CONFIG}"; then
   	AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/ or check your distribution.])
 fi
 
+AC_CHECK_PROGS([DOXYGEN], [doxygen])
+if test -z "$DOXYGEN"; then 
+  AC_MSG_WARN([Doxygen not found - continuing without Doxygen support])
+fi
+AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
+
+
 
 # --------------------------------
 #    checks for libraries
@@ -140,7 +147,6 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES(
 [
-    Doxyfile \
     Makefile \
     src/Makefile \
     src/version.c \
@@ -148,6 +154,8 @@ AC_CONFIG_FILES(
     include/Makefile \
     include/niftyprefs-version.h \
     $PACKAGE.pc \
+    doc/Doxyfile \
+    doc/Makefile \
     debian/control.tmpl \
     gentoo/dev-libs/niftyprefs/niftyprefs-9999.ebuild
 ])

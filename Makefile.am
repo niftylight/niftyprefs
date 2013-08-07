@@ -10,6 +10,11 @@ ACLOCAL_AMFLAGS = -I m4
 # subdirs to build
 SUBDIRS = src include tests
 
+# build documentation ?
+if HAVE_DOXYGEN
+    SUBDIRS += doc
+endif
+
 
 # files to include in archive
 EXTRA_DIST = \
@@ -20,9 +25,7 @@ EXTRA_DIST = \
 
 # files to clean on "make distclean"
 DISTCLEANFILES = \
-	$(PACKAGE).pc \
-    -r doc/html \
-	Doxyfile
+	$(PACKAGE).pc
 
 # files to clean on "make maintainer-clean"
 MAINTAINERCLEANFILES = \
