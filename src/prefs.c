@@ -77,7 +77,7 @@ struct _NftPrefs
 /******************************************************************************/
 
 /** getter */
-NftPrefsClasses *prefs_classes(NftPrefs * p)
+NftPrefsClasses *_prefs_classes(NftPrefs * p)
 {
         return &p->classes;
 }
@@ -138,11 +138,11 @@ static void _xml_error_handler(void *ctx, const char *msg, ...)
 
 
 /** helper for nft_array_foreach_element() */
-bool _class_free(void *element, void *userptr)
+static bool _class_free(void *element, void *userptr)
 {
         NftPrefs *p = userptr;
 
-        prefs_class_free(p, (NftPrefsClass *) element);
+        _prefs_class_free(p, (NftPrefsClass *) element);
         return true;
 }
 
@@ -188,7 +188,7 @@ NftPrefs *nft_prefs_init()
                 return NULL;
         }
 
-        if(!prefs_class_init_array(&p->classes))
+        if(!_prefs_class_init_array(&p->classes))
         {
                 NFT_LOG(L_ERROR, "Failed to init class array");
                 free(p);

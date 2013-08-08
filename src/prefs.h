@@ -48,7 +48,7 @@
 #include "niftyprefs.h"
 
 
-NftPrefsClasses                *prefs_classes(NftPrefs * p);
+NftPrefsClasses                *_prefs_classes(NftPrefs * p);
 
 
 #endif /** _PREFS_H */
