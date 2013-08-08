@@ -60,11 +60,11 @@
  * <h1>Usage</h1>
  * In every case call:
  *  - nft_prefs_init() before doing anything
- *  - nft_prefs_class_register("OBJ-KLASS-NAME") for every object-class, before using the class 
+ *  - nft_prefs_class_register() for every object-class, before using the class 
  *    with any of nft_prefs_*()
  *  - ...
  *  - nft_prefs_class_unregister() when a class is not used anymore
- *  - nft_prefs_exit() when no nft_prefs_*() needs to be called anymore
+ *  - nft_prefs_deinit() when no nft_prefs_*() needs to be called anymore
  *
  *
  * Use case 1: Generate preferences from existing object
@@ -86,7 +86,8 @@
  *  - create object:
  *    foo = nft_prefs_obj_from_node(prefsNode, "OBJ-KLASS-NAME");
  *
- *
+ * For detailed examples, see sources in the "tests" subdirectory.
+ * 
  * @defgroup prefs niftyprefs
  * @brief abstract preference handling for arbitrary objects.
  * @{
