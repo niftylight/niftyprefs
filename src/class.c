@@ -179,7 +179,7 @@ NftResult nft_prefs_class_register(NftPrefs * p, const char *className,
                 return NFT_FAILURE;
         }
 
-        /** check if class is already registered */
+        /* check if class is already registered */
         NFT_LOG(L_DEBUG,
                 "Checking if another class \"%s\" is already registered...",
                 className);
@@ -190,7 +190,7 @@ NftResult nft_prefs_class_register(NftPrefs * p, const char *className,
                 return NFT_FAILURE;
         }
 
-        /** allocate new slot in class array */
+        /* allocate new slot in class array */
         NftArraySlot s;
         if(!(nft_array_slot_alloc(_prefs_classes(p), &s)))
         {
