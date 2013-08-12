@@ -15,4 +15,4 @@ binary-arch:
 	dh_strip --dbg-package=@PACKAGE_NAME@@PACKAGE_API_REVISION@-dbg
 
 %:
-	dh $@ 
+	dh $@ --with autotools-dev
