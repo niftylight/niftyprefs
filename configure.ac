@@ -178,5 +178,5 @@ Configure report:
 \tSystem CFLAGS...............:  ${CFLAGS}
 \tSystem CXXFLAGS.............:  ${CXXFLAGS}
 \tSystem LDFLAGS..............:  ${LDFLAGS}
-\t\tBuilding documentation......:  "
+\tBuilding documentation......:  "
 if test -n "${DOXYGEN}" ; then echo "yes" ; else echo "no" ; fi
