@@ -62,8 +62,8 @@ if test -z "${PKG_CONFIG}"; then
 fi
 
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
-if test -z "$DOXYGEN"; then 
-  AC_MSG_WARN([Doxygen not found - continuing without Doxygen support])
+if test -n "$DOXYGEN"; then 
+        AC_CONFIG_FILES([debian/docbase])
 fi
 AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
 
@@ -157,12 +157,13 @@ AC_CONFIG_FILES(
     doc/Doxyfile \
     doc/Makefile \
     debian/control.tmpl \
+    debian/rules.tmpl \
     gentoo/dev-libs/niftyprefs/niftyprefs-9999.ebuild
 ])
 AC_OUTPUT
 
 
-echo -e "
+echo -ne "
 Configure report:
 
 \tPackage.....................:  ${PACKAGE_STRING}
@@ -177,4 +178,5 @@ Configure report:
 \tSystem CFLAGS...............:  ${CFLAGS}
 \tSystem CXXFLAGS.............:  ${CXXFLAGS}
 \tSystem LDFLAGS..............:  ${LDFLAGS}
-"
+\t\tBuilding documentation......:  "
+if test -n "${DOXYGEN}" ; then echo "yes" ; else echo "no" ; fi

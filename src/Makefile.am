@@ -15,7 +15,10 @@ INCLUDE_DIRS = \
 
 
 # extra files to include in distribution
-EXTRA_DIST = obj.h class.h prefs.h
+EXTRA_DIST = \
+	obj.h \
+	class.h \
+	prefs.h
 
 
 # source-files

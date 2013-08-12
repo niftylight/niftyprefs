@@ -3,16 +3,24 @@
 # v0.4 - Daniel Hiepler <daniel@niftylight.de>
 
 
+htmldir = \
+        $(docdir)/html
+
+html_DATA = \
+        html/*
+
 DISTCLEANFILES = \
-	Doxyfile
+        Doxyfile
 
 CLEANFILES = \
-	doxyfile.stamp \
-	-r html
+        doxyfile.stamp \
+        -r html
 
 
-doxyfile.stamp:
+html/*:
 	$(DOXYGEN) Doxyfile
+
+doxyfile.stamp: html/*
 	echo stamp > doxyfile.stamp
 
 all-local: doxyfile.stamp

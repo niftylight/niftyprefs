@@ -1,0 +1,8 @@
+Document: @PACKAGE@
+Title: @PACKAGE_DESCRIPTION@
+Author: Daniel Hiepler
+Abstract: Doxygen generated manual for @PACKAGE_STRING@ (@PACKAGE_GIT_VERSION@)
+Section: System/Monitoring
+Format: HTML
+Index: /usr/share/doc/@PACKAGE@/html/index.html
+Files: /usr/share/doc/@PACKAGE@/html/*.html
