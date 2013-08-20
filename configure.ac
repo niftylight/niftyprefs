@@ -148,18 +148,19 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES(
 [
-    Makefile \
-    src/Makefile \
-    src/version.c \
-    tests/Makefile \
-    include/Makefile \
-    include/niftyprefs-version.h \
-    $PACKAGE.pc \
-    doc/Doxyfile \
-    doc/Makefile \
-    debian/control.tmpl \
-    debian/rules.tmpl \
-    debian/changelog \
+    Makefile
+    src/Makefile
+    src/version.c
+    tests/Makefile
+    include/Makefile
+    include/niftyprefs-version.h
+    $PACKAGE.pc
+    doc/Doxyfile
+    doc/Makefile
+    debian/control.tmpl
+    debian/rules.tmpl
+    debian/changelog
+    debian/watch
     gentoo/dev-libs/niftyprefs/niftyprefs-9999.ebuild
 ])
 AC_OUTPUT

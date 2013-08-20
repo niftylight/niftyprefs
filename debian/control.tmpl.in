@@ -1,8 +1,8 @@
-Source: @PACKAGE_NAME@
+Source: @PACKAGE_NAME@@PACKAGE_API_REVISION@
 Priority: optional
 Maintainer: Daniel Hiepler <daniel-ubuntu@niftylight.de>
-Build-Depends: debhelper (>= 9), autotools-dev, libniftylog-dev, libxml2-dev
-Standards-Version: 3.9.3
+Build-Depends: debhelper (>= 9), autotools-dev, libniftylog-dev, libc6-dev, libxml2-dev
+Standards-Version: 3.9.4
 Section: libs
 Homepage: @PACKAGE_URL@
 #Vcs-Git: git://github.com/niftylight/niftyprefs.git
@@ -18,17 +18,17 @@ Description: @PACKAGE_NAME@ library headers
  This package contains development headers for @PACKAGE_NAME@ -
  @PACKAGE_DESCRIPTION_LONG@
 
-Package: @PACKAGE_NAME@-dbg
-Section: libdevel
+Package: @PACKAGE_NAME@@PACKAGE_API_REVISION@-dbg
+Priority: extra
+Section: debug
 Architecture: any
-Depends: @PACKAGE_NAME@ (= ${source:Version})
+Pre-Depends: ${misc:Pre-Depends}
+Depends: @PACKAGE_NAME@ (= ${binary:Version}), ${misc:Depends}
 Description: @PACKAGE_NAME@ debugging symbols
  This package contains debugging symbols for @PACKAGE_NAME@ -
  @PACKAGE_DESCRIPTION_LONG@
 
-
-Package: @PACKAGE_NAME@
-Section: libs
+Package: @PACKAGE_NAME@@PACKAGE_API_REVISION@
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}, libniftylog (= 0.1.3) , libxml2
