@@ -13,8 +13,8 @@ Homepage: @PACKAGE_URL@
 Package: @PACKAGE_NAME@-dev
 Section: libdevel
 Architecture: any
-Depends: ${misc:Depends}, @PACKAGE_NAME@ (= ${binary:Version}), libniftylog-dev, libxml2-dev
-Description: @PACKAGE_NAME@ library headers
+Depends: ${misc:Depends}, @PACKAGE_NAME@@PACKAGE_API_REVISION@ (= ${binary:Version}), libniftylog-dev, libxml2-dev
+Description: @PACKAGE@ library headers
  This package contains development headers for @PACKAGE_NAME@ -
  @PACKAGE_DESCRIPTION_LONG@
 
@@ -23,7 +23,7 @@ Priority: extra
 Section: debug
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
-Depends: @PACKAGE_NAME@ (= ${binary:Version}), ${misc:Depends}
+Depends: @PACKAGE_NAME@@PACKAGE_API_REVISION@ (= ${binary:Version}), ${misc:Depends}
 Description: @PACKAGE_NAME@ debugging symbols
  This package contains debugging symbols for @PACKAGE_NAME@ -
  @PACKAGE_DESCRIPTION_LONG@
