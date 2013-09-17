@@ -1,4 +1,16 @@
-niftyprefs for Debian
----------------------
+niftyprefs (Debian package)
+===========================
 
-niftyprefs debian package. More information at http://wiki.niftylight.de/libniftyprefs
+lightweight library to handle preferences for arbitrary (tree) objects using
+XML. Needs libxml and libniftylog.
+
+
+
+------------------------------------------------------------------------------
+
+Project page:	http://wiki.niftylight.de/libniftyprefs  
+Sourcecode:	http://github.com/niftylight/niftyprefs  
+Issue tracker:	http://github.com/niftylight/niftyprefs/issues  
+Mailinglist:	niftyled@googlegroups.com  
+IRC chat:	irc://irc.freenode.net/niftylight   
+
