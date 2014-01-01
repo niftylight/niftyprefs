@@ -843,11 +843,11 @@ void nft_prefs_node_free(NftPrefsNode * n)
 
 
 /**
- * get filename of document this node was parsed from (or NULL)
+ * get URI of document this node was parsed from (or NULL)
  *
- * @result URL of node origin or NULL if unset 
+ * @result URI of node origin or NULL if unset 
  */
-const char *nft_prefs_node_get_filename(NftPrefsNode * n)
+const char *nft_prefs_node_get_uri(NftPrefsNode * n)
 {
         if(!n || !n->_private)
                 NFT_LOG_NULL(NULL);

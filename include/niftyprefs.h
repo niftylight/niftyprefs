@@ -50,18 +50,30 @@
  * @mainpage <a href="http://wiki.niftylight.de/libniftyprefs">lightweight library to handle preferences for arbitrary (tree) objects using XML</a>
  *
  * <h1>Introduction</h1>
- * The basic idea is to define and manage "classes" for arbitrary (void *)
- * pointers (encapsuled in "objects") in a comfortable way. 
- * So you simply can:
- * - "snapshot" the state of an object for saving it in a preferences definition 
- * - create an object from a previously created "snapshot"
- *
- *
+ * The basic idea is to define and manage "classes" to store arbitrary
+ * pointers which are encapsuled in "objects". The class model of an
+ * application could look like this: 
+ * 
+ * - Person
+ *  -  age
+ *  -  name 
+ *  
+ * By having a class "Person" that stores age and name.
+ * 
+ * niftyprefs converts information of any class object
+ * to the prefered representation (e.g. XML) and back.
+ * This way you can "snapshot" the state of one or more objects
+ * to store that into some machine readable way.
+ * You can also create one or more objects from any previously
+ * stored information. 
+ * This is done by registering the corresponding handler functions.
+ * 
  * <h1>Usage</h1>
  * In every case call:
  *  - nft_prefs_init() before doing anything
- *  - nft_prefs_class_register() for every object-class, before using the class 
- *    with any of nft_prefs_*()
+ *  - nft_prefs_class_register() for every object-class, 
+ *     before using the class 
+ *     with any of nft_prefs_*()
  *  - ...
  *  - nft_prefs_class_unregister() when a class is not used anymore
  *  - nft_prefs_deinit() when no nft_prefs_*() needs to be called anymore
