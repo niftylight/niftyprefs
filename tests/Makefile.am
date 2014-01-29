@@ -44,7 +44,7 @@ check_PROGRAMS = \
 		prefs-to-obj
 
 TESTS = $(check_PROGRAMS)
-TESTS_ENVIRONMENT = $(srcdir)/tests.env
+AM_TESTS_ENVIRONMENT = $(srcdir)/tests.env;
 
 array_SOURCES = array.c
 array_CFLAGS = $(TESTCFLAGS)
