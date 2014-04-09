@@ -77,6 +77,8 @@
 /**************************** API FUNCTIONS ***********************************/
 /******************************************************************************/
 
+
+
 /**
  * add current node as child of parent node
  *
@@ -86,6 +88,9 @@
  */
 NftResult nft_prefs_node_add_child(NftPrefsNode * parent, NftPrefsNode * cur)
 {
+		if(!parent)
+				NFT_LOG_NULL(NFT_FAILURE);
+
         return xmlAddChild(parent, cur) ? NFT_SUCCESS : NFT_FAILURE;
 }
 
@@ -98,6 +103,9 @@ NftResult nft_prefs_node_add_child(NftPrefsNode * parent, NftPrefsNode * cur)
  */
 NftPrefsNode *nft_prefs_node_get_first_child(NftPrefsNode * n)
 {
+		if(!n)
+				NFT_LOG_NULL(NULL);
+
         return xmlFirstElementChild(n);
 }
 
@@ -614,9 +622,7 @@ void nft_prefs_node_free(NftPrefsNode * n)
 const char *nft_prefs_node_get_uri(NftPrefsNode * n)
 {
         if(!n)
-		{
                 NFT_LOG_NULL(NULL);
-		}
 
 		if(!n->doc)
 		{
