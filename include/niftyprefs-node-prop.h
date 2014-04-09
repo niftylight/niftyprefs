@@ -76,4 +76,5 @@ NftResult                       nft_prefs_node_prop_boolean_get(NftPrefsNode * n
 
 /**
  * @}
+ * @}
  */
