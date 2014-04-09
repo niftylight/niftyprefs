@@ -95,7 +95,7 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs * p, const char *className,
 
         /* find class */
         NftPrefsClass *c;
-        if(!(c = _prefs_class_find_by_name(_prefs_classes(p), className)))
+        if(!(c = _class_find_by_name(_prefs_classes(p), className)))
         {
                 NFT_LOG(L_ERROR, "Unknown prefs class \"%s\"", className);
                 return NULL;
@@ -113,7 +113,7 @@ NftPrefsNode *nft_prefs_obj_to_node(NftPrefs * p, const char *className,
 
 
         /* call prefsFromObj() registered for this class */
-        if(!_prefs_class_fromObj(c) (p, node, obj, userptr))
+        if(!_class_fromObj(c) (p, node, obj, userptr))
         {
                 NFT_LOG(L_ERROR, "prefsFromObj() of class \"%s\" failed.",
                         className);
@@ -142,7 +142,7 @@ void *nft_prefs_obj_from_node(NftPrefs * p, NftPrefsNode * n, void *userptr)
         NftPrefsClass *c;
         if(!
            (c =
-            _prefs_class_find_by_name(_prefs_classes(p),
+            _class_find_by_name(_prefs_classes(p),
                                      (const char *) n->name)))
         {
                 NFT_LOG(L_ERROR, "Unknown prefs class \"%s\"", n->name);
@@ -152,7 +152,7 @@ void *nft_prefs_obj_from_node(NftPrefs * p, NftPrefsNode * n, void *userptr)
 
         /* create object from prefs */
         void *result = NULL;
-        if(!(_prefs_class_toObj(c) (p, &result, n, userptr)))
+        if(!(_class_toObj(c) (p, &result, n, userptr)))
         {
                 NFT_LOG(L_ERROR,
                         "prefsToObj() of class \"%s\" function failed",

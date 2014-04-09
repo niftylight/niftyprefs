@@ -126,11 +126,11 @@ static void _xml_error_handler(void *ctx, const char *msg, ...)
 
 
 /** helper for nft_array_foreach_element() */
-static bool _class_free(void *element, void *userptr)
+static bool _class_free_helper(void *element, void *userptr)
 {
         NftPrefs *p = userptr;
 
-        _prefs_class_free(p, (NftPrefsClass *) element);
+        _class_free(p, (NftPrefsClass *) element);
         return true;
 }
 
@@ -185,7 +185,7 @@ NftPrefs *nft_prefs_init()
                 return NULL;
         }
 
-        if(!_prefs_class_init_array(&p->classes))
+        if(!_class_init_array(&p->classes))
         {
                 NFT_LOG(L_ERROR, "Failed to init class array");
                 free(p);
@@ -209,7 +209,7 @@ void nft_prefs_deinit(NftPrefs * p)
 
 
         /* free all classes */
-        nft_array_foreach_element(&p->classes, _class_free, p);
+        nft_array_foreach_element(&p->classes, _class_free_helper, p);
 
         /* free classes array */
         nft_array_deinit(&p->classes);
