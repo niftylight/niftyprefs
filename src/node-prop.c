@@ -97,6 +97,7 @@ NftResult nft_prefs_node_prop_unset(NftPrefsNode * n, const char *name)
  * @param n node where property should be set
  * @param name name of property
  * @param value string-value of property
+ * @result NFT_SUCCESS or NFT_FAILURE 
  */
 NftResult nft_prefs_node_prop_string_set(NftPrefsNode * n, const char *name,
                                          char *value)
@@ -120,7 +121,8 @@ NftResult nft_prefs_node_prop_string_set(NftPrefsNode * n, const char *name,
  *
  * @param n NftPrefsNode to get string property from
  * @param name name of property
- * @result string with value or NULL (free using nft_prefs_free())
+ * @result string with value or NULL 
+ * @note free result using nft_prefs_free()
  */
 char *nft_prefs_node_prop_string_get(NftPrefsNode * n, const char *name)
 {
