@@ -44,8 +44,6 @@
 
 /**
  * @file node.c
- *
- * @todo fix xmlDoc memory leak - free when last node is freed
  */
 
 /**
@@ -614,8 +612,20 @@ void nft_prefs_node_free(NftPrefsNode * n)
         if(!n)
                 NFT_LOG_NULL();
 
+        /* save document for later */
+        xmlDoc *doc = n->doc;
+
+        /* unlink node from doc */
         xmlUnlinkNode(n);
+
+        /* free node */
         xmlFreeNode(n);
+
+        /* check if node was the last in doc */
+        if(doc && !doc->children)
+        {
+                xmlFreeDoc(doc);
+        }
 }
 
 
