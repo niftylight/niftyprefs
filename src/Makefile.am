@@ -26,6 +26,7 @@ lib@PACKAGE@_la_SOURCES = \
 	obj.c \
 	class.c \
 	node.c \
+	node-prop.c \
 	version.c \
 	array.c \
 	prefs.c

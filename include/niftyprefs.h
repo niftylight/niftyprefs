@@ -120,6 +120,7 @@ typedef struct _NftPrefs        NftPrefs;
 #include "nifty-array.h"
 #include "niftyprefs-version.h"
 #include "niftyprefs-node.h"
+#include "niftyprefs-node-prop.h"
 #include "niftyprefs-obj.h"
 #include "niftyprefs-class.h"
 

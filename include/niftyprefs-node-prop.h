@@ -43,64 +43,36 @@
 
 
 /**
- * @file niftyprefs-node.h
+ * @file niftyprefs-node-prop.h
  */
 
 /**
- * @addtogroup prefs_obj
+ * @addtogroup prefs_node
  * @{
- * @defgroup prefs_node NftPrefsNode
- * @brief simple API to NftPrefsNodes.
- * "nodes" are used to represent the preferences of one object. They can
- * hold various properties.
- * NftPrefsNode is a kind of "meta-type" used to describe an (unexisting) object.
- * Basically a NftPrefsNode is the last abstraction for one object before the
- * actual preference representation is written. And the other way, if a preference
- * representation is parsed it will be converted into NftPrefsNode(s) first.
- *
- * Currently this is just a wrapper to libxml2 but can be abstracted to any
- * other container format that supports trees & all needed properties.
- *
+ * @defgroup prefs_node_prop NftPrefsNode properties
+ * @brief API to handle properties of NftPrefsNode 
  * @{
  */
 
 
-#ifndef _NIFTYPREFS_NODE_H
-#define _NIFTYPREFS_NODE_H
-
-
-#include <libxml/tree.h>
-#include <libxml/xinclude.h>
-#include "nifty-primitives.h"
-
-
-/** wrapper type for one xmlNode */
-typedef xmlNode                 NftPrefsNode;
+#ifndef _NIFTYPREFS_NODE_PROP_H
+#define _NIFTYPREFS_NODE_PROP_H
 
 
 
-NftResult                       nft_prefs_node_add_child(NftPrefsNode * parent, NftPrefsNode * cur);
-NftPrefsNode                   *nft_prefs_node_get_first_child(NftPrefsNode * n);
-NftPrefsNode                   *nft_prefs_node_get_next(NftPrefsNode * n);
-const char                     *nft_prefs_node_get_name(NftPrefsNode * n);
-const char                     *nft_prefs_node_get_uri(NftPrefsNode * p);
+NftResult                       nft_prefs_node_prop_string_set(NftPrefsNode * n, const char *name, char *value);
+char                          * nft_prefs_node_prop_string_get(NftPrefsNode * n, const char *name);
+NftResult                       nft_prefs_node_prop_int_set(NftPrefsNode * n, const char *name, int val);
+NftResult                       nft_prefs_node_prop_int_get(NftPrefsNode * n, const char *name, int *val);
+NftResult                       nft_prefs_node_prop_double_set(NftPrefsNode * n, const char *name, double val);
+NftResult                       nft_prefs_node_prop_double_get(NftPrefsNode * n, const char *name, double *val);
+NftResult                       nft_prefs_node_prop_boolean_set(NftPrefsNode * n, const char *name, bool val);
+NftResult                       nft_prefs_node_prop_boolean_get(NftPrefsNode * n, const char *name, bool * val);
 
 
-char                           *nft_prefs_node_to_buffer(NftPrefsNode * n);
-char                           *nft_prefs_node_to_buffer_light(NftPrefsNode * n);
-NftResult                       nft_prefs_node_to_file(NftPrefsNode * n, const char *filename, bool overwrite);
-NftResult                       nft_prefs_node_to_file_light(NftPrefsNode * n, const char *filename, bool overwrite);
-NftPrefsNode                   *nft_prefs_node_from_buffer(char *buffer, size_t bufsize);
-NftPrefsNode                   *nft_prefs_node_from_file(const char *filename);
 
-
-NftPrefsNode                   *nft_prefs_node_alloc(const char *name);
-void                            nft_prefs_node_free(NftPrefsNode * n);
-
-
-#endif /** _NIFTYPREFS_NODE_H */
+#endif /** _NIFTYPREFS_NODE_PROP_H */
 
 /**
- * @}
  * @}
  */
