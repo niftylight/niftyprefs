@@ -45,7 +45,7 @@
 /**
  * @file node.c
  *
- * @todo fix xmlDocs memory leaked when saved in xmlNode->_private (free when last node is freed)
+ * @todo fix xmlDoc memory leak - free when last node is freed
  */
 
 /**
@@ -66,26 +66,12 @@
 
 
 /******************************************************************************/
-/**************************** PRIVATE FUNCTIONS *******************************/
-/******************************************************************************/
-
-/******************************************************************************/
 /**************************** STATIC FUNCTIONS ********************************/
 /******************************************************************************/
 
-/** set private pointer in a node recursively */
-void _set_private_recursively(NftPrefsNode * node, void *ptr)
-{
-        NftPrefsNode *n;
-        for(n = node; n; n = nft_prefs_node_get_next(n))
-        {
-                NftPrefsNode *nc;
-                if((nc = nft_prefs_node_get_first_child(n)))
-                        _set_private_recursively(nc, ptr);
-
-                n->_private = ptr;
-        }
-}
+/******************************************************************************/
+/**************************** PRIVATE FUNCTIONS *******************************/
+/******************************************************************************/
 
 /******************************************************************************/
 /**************************** API FUNCTIONS ***********************************/
@@ -192,7 +178,7 @@ char *nft_prefs_node_to_buffer_light(NftPrefsNode * n)
         }
 
         /* dump node */
-        if(xmlNodeDump(buf, n->_private, n, 0, true) < 0)
+        if(xmlNodeDump(buf, n->doc, n, 0, true) < 0)
         {
                 NFT_LOG(L_ERROR, "xmlNodeDump() failed");
                 goto _pntb_exit;
@@ -454,7 +440,7 @@ NftResult nft_prefs_node_to_file_light(NftPrefsNode * n, const char *filename,
         }
 
         /* dump node */
-        if(xmlNodeDump(buf, n->_private, n, 0, true) < 0)
+        if(xmlNodeDump(buf, n->doc, n, 0, true) < 0)
         {
                 NFT_LOG(L_ERROR, "xmlNodeDump() failed");
                 goto _pntf_exit;
@@ -543,9 +529,6 @@ NftPrefsNode *nft_prefs_node_from_file(const char *filename)
                 return NULL;
         }
 
-        /* save document in node & all child nodes */
-        _set_private_recursively(node, doc);
-
         return node;
 }
 
@@ -587,9 +570,6 @@ NftPrefsNode *nft_prefs_node_from_buffer(char *buffer, size_t bufsize)
                 NFT_LOG(L_ERROR, "No root element found in XML");
                 return NULL;
         }
-
-        /* save document in node & all child nodes */
-        _set_private_recursively(node, doc);
 
         return node;
 }
@@ -633,12 +613,19 @@ void nft_prefs_node_free(NftPrefsNode * n)
  */
 const char *nft_prefs_node_get_uri(NftPrefsNode * n)
 {
-        if(!n || !n->_private)
+        if(!n)
+		{
                 NFT_LOG_NULL(NULL);
+		}
 
-        xmlDoc *doc = n->_private;
-
-        return (const char *) doc->URL;
+		if(!n->doc)
+		{
+				NFT_LOG(L_DEBUG, "node \"%s\" has no uri set.",
+				        nft_prefs_node_get_name(n));
+				return NULL;
+		}
+	
+        return (const char *) n->doc->URL;
 }
 
 
