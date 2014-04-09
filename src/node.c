@@ -129,6 +129,32 @@ NftPrefsNode *nft_prefs_node_get_next(NftPrefsNode * n)
 
 
 /**
+ * get next sibling of a node with a certain name
+ *
+ * @param n node from which sibling should be fetched
+ * @param name name of sibling node
+ * @result sibling node or NULL
+ */
+NftPrefsNode *nft_prefs_node_get_next_with_name(NftPrefsNode * n, const char *name)
+{
+		if(!n || !name)
+				NFT_LOG_NULL(NULL);
+
+		for(NftPrefsNode *sibling = nft_prefs_node_get_next(n);
+		    sibling;
+		    sibling = nft_prefs_node_get_next(sibling))
+		{
+				if(strcmp(nft_prefs_node_get_name(sibling), name) == 0)
+				{
+						return sibling;
+				}
+		}
+
+		return NULL;
+}
+
+
+/**
  * get name of this NftPrefsNode
  *
  * @result classname of this NftPrefsNode or NULL

@@ -82,6 +82,7 @@ typedef xmlNode                 NftPrefsNode;
 NftResult                       nft_prefs_node_add_child(NftPrefsNode * parent, NftPrefsNode * cur);
 NftPrefsNode                   *nft_prefs_node_get_first_child(NftPrefsNode * n);
 NftPrefsNode                   *nft_prefs_node_get_next(NftPrefsNode * n);
+NftPrefsNode *                  nft_prefs_node_get_next_with_name(NftPrefsNode * n, const char *name);
 const char                     *nft_prefs_node_get_name(NftPrefsNode * n);
 const char                     *nft_prefs_node_get_uri(NftPrefsNode * p);
 
