@@ -163,7 +163,10 @@ const char *nft_prefs_node_get_name(NftPrefsNode * n)
 
 
 /**
- * create preferences buffer from NftPrefsNode
+ * create preferences minimal buffer from NftPrefsNode - compared to
+ * nft_prefs_node_to_buffer, this doesn't include any encapsulation or headers.
+ * Just the bare information contained in the node. This should be used to
+ * export single nodes, e.g. for copying them to a clipboard 
  *
  * @param n NftPrefsNode
  * @result string holding xml representation of object (use free() to deallocate)
@@ -212,8 +215,9 @@ _pntb_exit:
 
 
 /**
- * create preferences buffer with all format specific encapsulation from a NftPrefsNode
- *
+ * create preferences buffer with all format specific encapsulation from a 
+ * NftPrefsNode. This is used when one needs a complete configuration.
+ * 
  * @param n NftPrefsNode
  * @result string holding xml representation of object (use free() to deallocate)
  * @note s. @ref nft_prefs_node_to_file for description
@@ -291,8 +295,9 @@ _pntbwh_exit:
  * This will create the same output as nft_prefs_node_to_file_light() would but
  * with all encapsulation/headers/footers/... of the underlying prefs mechanism.
  * e.g. for XML this adds the "<?xml version="1.0" encoding="UTF-8"?>" header.
- * This is used when one needs a complete configuration (e.g. saved preferences file)
- *
+ * This is used when one needs a complete configuration (e.g. saved preferences 
+ * file)
+ * 
  * @param n NftPrefsNode
  * @param filename full path of file to be written
  * @param overwrite if a file called "filename" already exists, it 
@@ -392,7 +397,7 @@ _pntfwh_exit:
  * e.g. for XML this omits the "<?xml version="1.0" encoding="UTF-8"?>" header.
  * This is used when one only needs an "incomplete" snippet of a configuration.
  * e.g. for copy/paste or to use the XInclude feature of XML
- *
+ * 
  * @param n NftPrefsNode
  * @param filename full path of file to be written
  * @param overwrite if a file called "filename" already exists, it 
