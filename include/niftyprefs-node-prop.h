@@ -60,6 +60,7 @@
 
 
 
+NftResult                       nft_prefs_node_prop_unset(NftPrefsNode * n, const char *name);
 NftResult                       nft_prefs_node_prop_string_set(NftPrefsNode * n, const char *name, char *value);
 char                          * nft_prefs_node_prop_string_get(NftPrefsNode * n, const char *name);
 NftResult                       nft_prefs_node_prop_int_set(NftPrefsNode * n, const char *name, int val);

@@ -69,6 +69,30 @@
 /******************************************************************************/
 
 /**
+ * remove a property of a node
+ *
+ * @param n node the property should be removed from
+ * @param name name of the property
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_prop_unset(NftPrefsNode * n, const char *name)
+{
+	if(!n || !name)
+			NFT_LOG_NULL(NFT_FAILURE);
+
+	if(xmlUnsetProp(n, BAD_CAST name) != 0)
+	{
+			NFT_LOG(L_ERROR, "Failed to unset property \"%s\" from node \"%s\"",
+			        name, nft_prefs_node_get_name(n));
+
+			return NFT_FAILURE;
+	}
+
+	return NFT_SUCCESS;
+}
+
+
+/**
  * set string property of a node
  * @param n node where property should be set
  * @param name name of property
