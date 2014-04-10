@@ -147,14 +147,8 @@ NftResult nft_prefs_node_prop_int_set(NftPrefsNode * n, const char *name,
         if(!n || !name)
                 NFT_LOG_NULL(NFT_FAILURE);
 
-        char *tmp;
-        if(!(tmp = alloca(32)))
-        {
-                NFT_LOG_PERROR("alloca()");
-                return NFT_FAILURE;
-        }
-
-        if(snprintf(tmp, 32, "%d", val) < 0)
+        char tmp[32];
+        if(snprintf(tmp, sizeof(tmp), "%d", val) < 0)
         {
                 NFT_LOG_PERROR("snprintf()");
                 return NFT_FAILURE;
@@ -213,14 +207,8 @@ NftResult nft_prefs_node_prop_double_set(NftPrefsNode * n, const char *name,
         if(!n || !name)
                 NFT_LOG_NULL(NFT_FAILURE);
 
-        char *tmp;
-        if(!(tmp = alloca(32)))
-        {
-                NFT_LOG_PERROR("alloca()");
-                return NFT_FAILURE;
-        }
-
-        if(snprintf(tmp, 32, "%lf", val) < 0)
+        char tmp[32];
+        if(snprintf(tmp, sizeof(tmp), "%lf", val) < 0)
         {
                 NFT_LOG_PERROR("snprintf()");
                 return NFT_FAILURE;
@@ -278,14 +266,8 @@ NftResult nft_prefs_node_prop_boolean_set(NftPrefsNode * n, const char *name,
         if(!n || !name)
                 NFT_LOG_NULL(NFT_FAILURE);
 
-        char *tmp;
-        if(!(tmp = alloca(16)))
-        {
-                NFT_LOG_PERROR("alloca()");
-                return NFT_FAILURE;
-        }
-
-        if(snprintf(tmp, 16, "%s", val ? "true" : "false") < 0)
+        char tmp[16];
+        if(snprintf(tmp, sizeof(tmp), "%s", val ? "true" : "false") < 0)
         {
                 NFT_LOG_PERROR("snprintf()");
                 return NFT_FAILURE;
