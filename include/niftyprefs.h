@@ -121,6 +121,7 @@ typedef struct _NftPrefs        NftPrefs;
 #include "niftyprefs-version.h"
 #include "niftyprefs-node.h"
 #include "niftyprefs-node-prop.h"
+#include "niftyprefs-updater.h"
 #include "niftyprefs-obj.h"
 #include "niftyprefs-class.h"
 
@@ -134,7 +135,7 @@ typedef struct _NftPrefs        NftPrefs;
 
 
 
-NftPrefs                       *nft_prefs_init();
+NftPrefs                       *nft_prefs_init(unsigned int version);
 void                            nft_prefs_deinit(NftPrefs * prefs);
 void                            nft_prefs_free(void *p);
 

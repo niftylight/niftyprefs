@@ -60,6 +60,7 @@
 #include <niftylog.h>
 #include "prefs.h"
 #include "class.h"
+#include "updater.h"
 
 
 
@@ -111,7 +112,7 @@ NftPrefsNode *nft_prefs_node_get_first_child(NftPrefsNode * n)
 /**
  * get next sibling of a node
  *
- * @param n node from which sibling should be fetched
+ * @param n NftPrefsNode from which sibling should be fetched
  * @result sibling node or NULL
  */
 NftPrefsNode *nft_prefs_node_get_next(NftPrefsNode * n)
@@ -123,7 +124,7 @@ NftPrefsNode *nft_prefs_node_get_next(NftPrefsNode * n)
 /**
  * get next sibling of a node with a certain name
  *
- * @param n node from which sibling should be fetched
+ * @param n NftPrefsNode from which sibling should be fetched
  * @param name name of sibling node
  * @result sibling node or NULL
  */
@@ -149,6 +150,7 @@ NftPrefsNode *nft_prefs_node_get_next_with_name(NftPrefsNode * n, const char *na
 /**
  * get name of this NftPrefsNode
  *
+ * @param n NftPrefsNode to get name from
  * @result classname of this NftPrefsNode or NULL
  */
 const char *nft_prefs_node_get_name(NftPrefsNode * n)
@@ -166,17 +168,26 @@ const char *nft_prefs_node_get_name(NftPrefsNode * n)
  * Just the bare information contained in the node. This should be used to
  * export single nodes, e.g. for copying them to a clipboard 
  *
+ * @param p NftPrefs context  
  * @param n NftPrefsNode
  * @result string holding xml representation of object (use free() to deallocate)
  * @note s. @ref nft_prefs_node_to_file for description
  */
-char *nft_prefs_node_to_buffer_minimal(NftPrefsNode * n)
+char *nft_prefs_node_to_buffer_minimal(NftPrefs *p, NftPrefsNode * n)
 {
         if(!n)
                 NFT_LOG_NULL(NULL);
 
         /* result pointer (xml dump) */
         char *dump = NULL;
+
+        /* add prefs version to node */
+        if(!(_updater_node_add_version(p, n)))
+        {
+                NFT_LOG(L_ERROR, "failed to add version to node \"%s\"",
+                        nft_prefs_node_get_name(n));
+                return NULL;
+        }
 
         /* create buffer */
         xmlBufferPtr buf;
@@ -215,15 +226,24 @@ _pntb_exit:
 /**
  * create preferences buffer with all format specific encapsulation from a 
  * NftPrefsNode. This is used when one needs a complete configuration.
- * 
+ *
+ * @param p NftPrefs context
  * @param n NftPrefsNode
  * @result string holding xml representation of object (use free() to deallocate)
  * @note s. @ref nft_prefs_node_to_file for description
  */
-char *nft_prefs_node_to_buffer(NftPrefsNode * n)
+char *nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode * n)
 {
         if(!n)
                 NFT_LOG_NULL(NFT_FAILURE);
+
+        /* add prefs version to node */
+        if(!(_updater_node_add_version(p, n)))
+        {
+                NFT_LOG(L_ERROR, "failed to add version to node \"%s\"",
+                        nft_prefs_node_get_name(n));
+                return NULL;
+        }
 
         /* create copy of node */
         NftPrefsNode *copy;
@@ -295,18 +315,27 @@ _pntbwh_exit:
  * e.g. for XML this adds the "<?xml version="1.0" encoding="UTF-8"?>" header.
  * This is used when one needs a complete configuration (e.g. saved preferences 
  * file)
- * 
+ *
+ * @param p NftPrefs context
  * @param n NftPrefsNode
  * @param filename full path of file to be written
  * @param overwrite if a file called "filename" already exists, it 
  * will be overwritten if this is "true", otherwise NFT_FAILURE will be returned 
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_to_file(NftPrefsNode * n, const char *filename,
+NftResult nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode * n, const char *filename,
                                  bool overwrite)
 {
         if(!n || !filename)
                 NFT_LOG_NULL(NFT_FAILURE);
+
+        /* add prefs version to node */
+        if(!(_updater_node_add_version(p, n)))
+        {
+                NFT_LOG(L_ERROR, "failed to add version to node \"%s\"",
+                        nft_prefs_node_get_name(n));
+                return NFT_FAILURE;
+        }
 
         /* create copy of node */
         NftPrefsNode *copy;
@@ -396,13 +425,14 @@ _pntfwh_exit:
  * This is used when one only needs an "incomplete" snippet of a configuration.
  * e.g. for copy/paste or to use the XInclude feature of XML
  * 
+ * @param p NftPrefs context
  * @param n NftPrefsNode
  * @param filename full path of file to be written
  * @param overwrite if a file called "filename" already exists, it 
  * will be overwritten if this is "true", otherwise NFT_FAILURE will be returned
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_to_file_minimal(NftPrefsNode * n, const char *filename,
+NftResult nft_prefs_node_to_file_minimal(NftPrefs *p, NftPrefsNode * n, const char *filename,
                                        bool overwrite)
 {
         if(!n || !filename)
@@ -441,13 +471,20 @@ NftResult nft_prefs_node_to_file_minimal(NftPrefsNode * n, const char *filename,
         /* overall result */
         NftResult r = NFT_FAILURE;
 
+        /* add prefs version to node */
+        if(!(_updater_node_add_version(p, n)))
+        {
+                NFT_LOG(L_ERROR, "failed to add version to node \"%s\"",
+                        nft_prefs_node_get_name(n));
+                return r;
+        }
 
         /* create buffer */
         xmlBufferPtr buf;
         if(!(buf = xmlBufferCreate()))
         {
                 NFT_LOG(L_ERROR, "failed to xmlBufferCreate()");
-                return NFT_FAILURE;
+                return r;
         }
 
         /* dump node */
@@ -503,10 +540,11 @@ _pntf_exit:
 /**
  * create new NftPrefsNode from preferences file
  *
+ * @param p NftPrefs context
  * @param filename full path of file
  * @result newly created NftPrefsNode or NULL
  */
-NftPrefsNode *nft_prefs_node_from_file(const char *filename)
+NftPrefsNode *nft_prefs_node_from_file(NftPrefs *p, const char *filename)
 {
         if(!filename)
                 NFT_LOG_NULL(NULL);
@@ -525,7 +563,7 @@ NftPrefsNode *nft_prefs_node_from_file(const char *filename)
         if((xinc_res = xmlXIncludeProcess(doc)) == -1)
         {
                 NFT_LOG(L_ERROR, "XInclude parsing failed.");
-                return NFT_FAILURE;
+                goto _npnff_error;
         }
         NFT_LOG(L_DEBUG, "%d XInclude substitutions done", xinc_res);
 
@@ -535,23 +573,36 @@ NftPrefsNode *nft_prefs_node_from_file(const char *filename)
         if(!(node = xmlDocGetRootElement(doc)))
         {
                 NFT_LOG(L_ERROR, "No root element found in XML");
-                /* free resources of document */
-                xmlFreeDoc(doc);
-                return NULL;
+                goto _npnff_error;
         }
 
+		/* update node */
+		if(!_updater_node_process(p, node))
+		{
+				NFT_LOG(L_ERROR, "Preference update failed for node \"%s\". This is a fatal bug. Aborting.",
+				        nft_prefs_node_get_name(node));
+				goto _npnff_error;
+		}
+
+		/* return node */
         return node;
+
+
+_npnff_error:
+		xmlFreeDoc(doc);
+        return NULL;
 }
 
 
 /**
  * create new NftPrefsNode from preferences buffer
  *
+ * @param p NftPrefs context
  * @param buffer XML buffer to parse
  * @param bufsize size of XML buffer
  * @result newly created NftPrefsNode or NULL
  */
-NftPrefsNode *nft_prefs_node_from_buffer(char *buffer, size_t bufsize)
+NftPrefsNode *nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsize)
 {
         if(!buffer)
                 NFT_LOG_NULL(NULL);
@@ -570,7 +621,7 @@ NftPrefsNode *nft_prefs_node_from_buffer(char *buffer, size_t bufsize)
         if((xinc_res = xmlXIncludeProcess(doc)) == -1)
         {
                 NFT_LOG(L_ERROR, "XInclude parsing failed.");
-                return NFT_FAILURE;
+                goto _npnfb_error;
         }
         NFT_LOG(L_DEBUG, "%d XInclude substitutions done", xinc_res);
 
@@ -579,10 +630,22 @@ NftPrefsNode *nft_prefs_node_from_buffer(char *buffer, size_t bufsize)
         if(!(node = xmlDocGetRootElement(doc)))
         {
                 NFT_LOG(L_ERROR, "No root element found in XML");
-                return NULL;
+                goto _npnfb_error;
+        }
+
+        /* update node */
+        if(!_updater_node_process(p, node))
+        {
+                NFT_LOG(L_ERROR, "Preference update failed for node \"%s\". This is a fatal bug. Aborting.",
+                        nft_prefs_node_get_name(node));
+                goto _npnfb_error;
         }
 
         return node;
+
+_npnfb_error:
+        xmlFreeDoc(doc);
+        return NULL;
 }
 
 

@@ -173,13 +173,13 @@ int main(int argc, char *argv[])
         if(!NFT_PREFS_CHECK_VERSION)
                 return EXIT_FAILURE;
 
-        // ~ /* fail per default */
+        /* fail per default */
         int result = EXIT_FAILURE;
 
 
         /* initialize libniftyprefs */
         NftPrefs *prefs = NULL;
-        if(!(prefs = nft_prefs_init()))
+        if(!(prefs = nft_prefs_init(0)))
                 goto _deinit;
 
         /* register "people" class to niftyprefs */
@@ -223,12 +223,12 @@ int main(int argc, char *argv[])
         }
 
         /* dump node to file */
-        if(!nft_prefs_node_to_file(n, "test-prefs.xml", true))
+        if(!nft_prefs_node_to_file(prefs, n, "test-prefs.xml", true))
         {
                 goto _deinit;
         }
 
-        if(!nft_prefs_node_to_file_minimal(n, "test-prefs-light.xml", true))
+        if(!nft_prefs_node_to_file_minimal(prefs, n, "test-prefs-light.xml", true))
         {
                 goto _deinit;
         }

@@ -43,63 +43,52 @@
 
 
 /**
- * @file niftyprefs-node.h
+ * @file niftyprefs-updater.h
  */
 
 /**
- * @addtogroup prefs_obj
+ * @addtogroup prefs_node
  * @{
- * @defgroup prefs_node NftPrefsNode
- * @brief simple API to NftPrefsNodes.
- * "nodes" are used to represent the preferences of one object. They can
- * hold various properties.
- * NftPrefsNode is a kind of "meta-type" used to describe an (unexisting) object.
- * Basically a NftPrefsNode is the last abstraction for one object before the
- * actual preference representation is written. And the other way, if a preference
- * representation is parsed it will be converted into NftPrefsNode(s) first.
- *
- * Currently this is just a wrapper to libxml2 but can be abstracted to any
- * other container format that supports trees & all needed properties.
- *
+ * @defgroup prefs_updater NftPrefsUpdater
+ * @brief API to handle updaters that update preferences from one version to
+ * another
  * @{
  */
 
+#ifndef _NIFTYPREFS_UPDATER_H
+#define _NIFTYPREFS_UPDATER_H
 
-#ifndef _NIFTYPREFS_NODE_H
-#define _NIFTYPREFS_NODE_H
-
-
-#include <libxml/tree.h>
-#include <libxml/xinclude.h>
 #include "nifty-primitives.h"
-
-
-/** wrapper type for one xmlNode */
-typedef xmlNode                 NftPrefsNode;
+#include "niftyprefs.h"
 
 
 
-NftResult                       nft_prefs_node_add_child(NftPrefsNode * parent, NftPrefsNode * cur);
-NftPrefsNode                   *nft_prefs_node_get_first_child(NftPrefsNode * n);
-NftPrefsNode                   *nft_prefs_node_get_next(NftPrefsNode * n);
-NftPrefsNode *                  nft_prefs_node_get_next_with_name(NftPrefsNode * n, const char *name);
-const char                     *nft_prefs_node_get_name(NftPrefsNode * n);
-const char                     *nft_prefs_node_get_uri(NftPrefsNode * p);
+
+/** array of updaters */
+typedef NftArray     NftPrefsUpdaters;
+
+/** updater descriptor */
+typedef              struct _NftPrefsUpdater NftPrefsUpdater;
 
 
-char                           *nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode * n);
-char                           *nft_prefs_node_to_buffer_minimal(NftPrefs *p, NftPrefsNode * n);
-NftResult                       nft_prefs_node_to_file(NftPrefs *p, NftPrefsNode * n, const char *filename, bool overwrite);
-NftResult                       nft_prefs_node_to_file_minimal(NftPrefs *p, NftPrefsNode * n, const char *filename, bool overwrite);
-NftPrefsNode                   *nft_prefs_node_from_buffer(NftPrefs *p, char *buffer, size_t bufsize);
-NftPrefsNode                   *nft_prefs_node_from_file(NftPrefs *p, const char *filename);
+/**
+ * function that updates a node
+ *
+ * @param node the node that is beeing updated
+ * @param version current version of this node. Updater should update to version+1
+ * @param userptr arbitrary pointer
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+typedef              NftResult(NftPrefsUpdaterFunc)(NftPrefsNode *node, unsigned int version, void *userptr);
 
 
-NftPrefsNode                   *nft_prefs_node_alloc(const char *name);
-void                            nft_prefs_node_free(NftPrefsNode * n);
 
 
-#endif /** _NIFTYPREFS_NODE_H */
+NftResult            nft_prefs_updater_register(NftPrefs *p, NftPrefsUpdaterFunc *updater, const char *className, unsigned int version, void *userptr);
+
+
+#endif /** _NIFTYPREFS_UPDATER_H */
+
 
 /**
  * @}

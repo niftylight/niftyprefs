@@ -1,7 +1,7 @@
 /*
  * libniftyprefs - lightweight modelless preferences management library
  * Copyright (C) 2006-2013 Daniel Hiepler <daniel@niftylight.de>
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -41,15 +41,18 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef _PREFS_H
-#define _PREFS_H
+#ifndef _UPDATER_H
+#define _UPDATER_H
 
 
 #include "niftyprefs.h"
 
 
-NftPrefsClasses *               _prefs_classes(NftPrefs * p);
-unsigned int                    _prefs_get_version(NftPrefs * p);
+
+NftResult  _updater_init_array(NftPrefsUpdaters * a);
+NftResult  _updater_node_process(NftPrefs *p, NftPrefsNode *node);
+NftResult  _updater_node_add_version(NftPrefs *p, NftPrefsNode *node);
+void       _updater_node_remove_version(NftPrefsNode *node);
 
 
-#endif /** _PREFS_H */
+#endif /** _UPDATER_H */

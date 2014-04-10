@@ -55,6 +55,7 @@
 
 #include <niftylog.h>
 #include "class.h"
+#include "updater.h"
 #include "obj.h"
 #include "prefs.h"
 
@@ -72,6 +73,8 @@ struct _NftPrefsClass
         NftPrefsFromObjFunc *fromObj;
         /** slot of this class inside its NftPrefsClasses array */
         NftArraySlot slot;
+        /** updaters of this class another */
+        NftPrefsUpdaters updaters;
 };
 
 
@@ -129,6 +132,9 @@ void _class_free(NftPrefs * p, NftPrefsClass * klass)
         if(!klass)
                 return;
 
+        /* free updater array */
+        nft_array_deinit(&klass->updaters);
+
         /* free array slot */
         nft_array_slot_free(_prefs_classes(p), klass->slot);
 
@@ -150,6 +156,13 @@ NftPrefsFromObjFunc *_class_fromObj(NftPrefsClass * c)
 NftPrefsToObjFunc *_class_toObj(NftPrefsClass * c)
 {
         return c->toObj;
+}
+
+
+/** getter */
+NftPrefsUpdaters *_class_updaters(NftPrefsClass * c)
+{
+        return &c->updaters;
 }
 
 
@@ -196,7 +209,7 @@ NftResult nft_prefs_class_register(NftPrefs * p, const char *className,
         NftArraySlot s;
         if(!(nft_array_slot_alloc(_prefs_classes(p), &s)))
         {
-                NFT_LOG(L_ERROR, "Failed to allocate new slot");
+                NFT_LOG(L_ERROR, "Failed to allocate new array slot");
                 return NFT_FAILURE;
         }
 
@@ -204,7 +217,14 @@ NftResult nft_prefs_class_register(NftPrefs * p, const char *className,
         NftPrefsClass *n;
         if(!(n = nft_array_get_element(_prefs_classes(p), s)))
         {
-                NFT_LOG(L_ERROR, "Failed to get element from array");
+                NFT_LOG(L_ERROR, "Failed to get element from array slot");
+                goto _pcr_error;
+        }
+
+        /* allocate new array for updater functions */
+        if(!_updater_init_array(&n->updaters))
+        {
+                NFT_LOG(L_ERROR, "Failed to init updater array");
                 goto _pcr_error;
         }
 

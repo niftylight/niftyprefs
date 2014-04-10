@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
         int res = EXIT_FAILURE;
         NftPrefs *p;
-        if(!(p = nft_prefs_init()))
+        if(!(p = nft_prefs_init(0)))
                 goto _deinit;
 
 

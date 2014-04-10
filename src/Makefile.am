@@ -18,6 +18,7 @@ INCLUDE_DIRS = \
 EXTRA_DIST = \
 	obj.h \
 	class.h \
+	updater.h \
 	prefs.h
 
 
@@ -27,6 +28,7 @@ lib@PACKAGE@_la_SOURCES = \
 	class.c \
 	node.c \
 	node-prop.c \
+	updater.c \
 	version.c \
 	array.c \
 	prefs.c

@@ -41,7 +41,8 @@ check_PROGRAMS = \
 		array \
 		api \
 		obj-to-prefs \
-		prefs-to-obj
+		prefs-to-obj \
+		update
 
 TESTS = $(check_PROGRAMS)
 AM_TESTS_ENVIRONMENT = $(srcdir)/tests.env;
@@ -66,3 +67,8 @@ prefs_to_obj_SOURCES = prefs-to-obj.c
 prefs_to_obj_CFLAGS = $(TESTCFLAGS)
 prefs_to_obj_LDFLAGS = $(TESTLDFLAGS)
 prefs_to_obj_LDADD = $(TESTLDADD)
+
+update_SOURCES = update.c
+update_CFLAGS = $(TESTCFLAGS)
+update_LDFLAGS = $(TESTLDFLAGS)
+update_LDADD = $(TESTLDADD)

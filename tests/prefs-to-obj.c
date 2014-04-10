@@ -47,6 +47,7 @@
 #include <niftyprefs.h>
 
 
+/* amount of example persons */
 #define PEOPLECOUNT 2
 
 
@@ -175,7 +176,7 @@ static NftResult _person_from_prefs(NftPrefs * p, void **newObj,
 }
 
 
-//~ /** create object from preferences definition */
+/** create object from preferences definition */
 int main(int argc, char *argv[])
 {
         /* do preliminary version checks */
@@ -188,7 +189,7 @@ int main(int argc, char *argv[])
 
         /* initialize libniftyprefs */
         NftPrefs *prefs;
-        if(!(prefs = nft_prefs_init()))
+        if(!(prefs = nft_prefs_init(0)))
         {
                 NFT_LOG(L_ERROR, "initialize prefs");
                 goto _deinit;
@@ -216,7 +217,7 @@ int main(int argc, char *argv[])
 
         /* parse file to prefs node */
         NftPrefsNode *node;
-        if(!(node = nft_prefs_node_from_file("test-prefs.xml")))
+        if(!(node = nft_prefs_node_from_file(prefs, "test-prefs.xml")))
         {
                 NFT_LOG(L_ERROR,
                         "failed to parse prefs file \"test-prefs.xml\"");
@@ -253,7 +254,7 @@ int main(int argc, char *argv[])
            (people->people[1]->alive != false))
         {
                 NFT_LOG(L_ERROR,
-                        "Input from 01_obj-to-prefs.c doesn't match output!");
+                        "Input from obj-to-prefs.c doesn't match output!");
                 goto _deinit;
         }
 

@@ -53,6 +53,6 @@ void                            _class_free(NftPrefs * p, NftPrefsClass * klass)
 NftPrefsClass                  *_class_find_by_name(NftPrefsClasses * c, const char *name);
 NftPrefsFromObjFunc            *_class_fromObj(NftPrefsClass * c);
 NftPrefsToObjFunc              *_class_toObj(NftPrefsClass * c);
-
+NftPrefsUpdaters *              _class_updaters(NftPrefsClass * c);
 
 #endif /** _CLASS_H */

@@ -66,6 +66,11 @@ struct _NftPrefs
 {
         /** list of registered PrefsObjClasses */
         NftPrefsClasses classes;
+        /** version of this context. This is an unsigned integer to
+            differ between preference versions.
+            - older versions should always be < than newer versions.
+            - versions should increase in steps of 1 */
+        unsigned int version;
 };
 
 
@@ -147,6 +152,13 @@ NftPrefsClasses *_prefs_classes(NftPrefs * p)
 }
 
 
+/** getter */
+unsigned int _prefs_get_version(NftPrefs * p)
+{
+        return p->version;
+}
+
+
 
 /******************************************************************************/
 /**************************** API FUNCTIONS ***********************************/
@@ -158,7 +170,7 @@ NftPrefsClasses *_prefs_classes(NftPrefs * p)
  *
  * @result new NftPrefs descriptor or NULL upon failure
  */
-NftPrefs *nft_prefs_init()
+NftPrefs *nft_prefs_init(unsigned int version)
 {
 
         /* 
@@ -185,6 +197,10 @@ NftPrefs *nft_prefs_init()
                 return NULL;
         }
 
+        /* save version */
+        p->version = version;
+
+        /* allocate array to store classes that will be registered */
         if(!_class_init_array(&p->classes))
         {
                 NFT_LOG(L_ERROR, "Failed to init class array");
