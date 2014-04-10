@@ -88,9 +88,9 @@ const char                     *nft_prefs_node_get_uri(NftPrefsNode * p);
 
 
 char                           *nft_prefs_node_to_buffer(NftPrefsNode * n);
-char                           *nft_prefs_node_to_buffer_light(NftPrefsNode * n);
+char                           *nft_prefs_node_to_buffer_minimal(NftPrefsNode * n);
 NftResult                       nft_prefs_node_to_file(NftPrefsNode * n, const char *filename, bool overwrite);
-NftResult                       nft_prefs_node_to_file_light(NftPrefsNode * n, const char *filename, bool overwrite);
+NftResult                       nft_prefs_node_to_file_minimal(NftPrefsNode * n, const char *filename, bool overwrite);
 NftPrefsNode                   *nft_prefs_node_from_buffer(char *buffer, size_t bufsize);
 NftPrefsNode                   *nft_prefs_node_from_file(const char *filename);
 

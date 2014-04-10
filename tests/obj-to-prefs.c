@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
                 goto _deinit;
         }
 
-        if(!nft_prefs_node_to_file_light(n, "test-prefs-light.xml", true))
+        if(!nft_prefs_node_to_file_minimal(n, "test-prefs-light.xml", true))
         {
                 goto _deinit;
         }

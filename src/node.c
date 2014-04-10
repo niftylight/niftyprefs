@@ -170,7 +170,7 @@ const char *nft_prefs_node_get_name(NftPrefsNode * n)
  * @result string holding xml representation of object (use free() to deallocate)
  * @note s. @ref nft_prefs_node_to_file for description
  */
-char *nft_prefs_node_to_buffer_light(NftPrefsNode * n)
+char *nft_prefs_node_to_buffer_minimal(NftPrefsNode * n)
 {
         if(!n)
                 NFT_LOG_NULL(NULL);
@@ -290,7 +290,7 @@ _pntbwh_exit:
 /**
  * create  preferences file with headers from NftPrefsNode and child nodes
  *
- * This will create the same output as nft_prefs_node_to_file_light() would but
+ * This will create the same output as nft_prefs_node_to_file_minimal() would but
  * with all encapsulation/headers/footers/... of the underlying prefs mechanism.
  * e.g. for XML this adds the "<?xml version="1.0" encoding="UTF-8"?>" header.
  * This is used when one needs a complete configuration (e.g. saved preferences 
@@ -402,7 +402,7 @@ _pntfwh_exit:
  * will be overwritten if this is "true", otherwise NFT_FAILURE will be returned
  * @result NFT_SUCCESS or NFT_FAILURE
  */
-NftResult nft_prefs_node_to_file_light(NftPrefsNode * n, const char *filename,
+NftResult nft_prefs_node_to_file_minimal(NftPrefsNode * n, const char *filename,
                                        bool overwrite)
 {
         if(!n || !filename)
