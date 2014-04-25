@@ -1,6 +1,6 @@
 /*
  * libniftyprefs - lightweight modelless preferences management library
- * Copyright (C) 2006-2013 Daniel Hiepler <daniel@niftylight.de>
+ * Copyright (C) 2006-2014 Daniel Hiepler <daniel@niftylight.de>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
