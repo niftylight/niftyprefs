@@ -229,13 +229,13 @@ _pntb_exit:
  *
  * @param p NftPrefs context
  * @param n NftPrefsNode
- * @result string holding xml representation of object (use free() to deallocate)
- * @note s. @ref nft_prefs_node_to_file for description
+ * @result string holding xml representation of object or NULL upon error
+ * @note use free() to deallocate; s. @ref nft_prefs_node_to_file for description
  */
 char *nft_prefs_node_to_buffer(NftPrefs *p, NftPrefsNode * n)
 {
         if(!n)
-                NFT_LOG_NULL(NFT_FAILURE);
+                NFT_LOG_NULL(NULL);
 
         /* add prefs version to node */
         if(!(_updater_node_add_version(p, n)))
