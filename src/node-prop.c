@@ -52,8 +52,11 @@
  *
  */
 
+#include <stdlib.h>
 #include <niftylog.h>
 #include "prefs.h"
+
+
 
 
 /******************************************************************************/
@@ -175,18 +178,25 @@ NftResult nft_prefs_node_prop_int_get(NftPrefsNode * n, const char *name,
         char *tmp;
         if(!(tmp = nft_prefs_node_prop_string_get(n, name)))
         {
-                NFT_LOG(L_DEBUG, "property \"%s\" not found in <%s>", name,
+                NFT_LOG(L_DEBUG, "int-type property \"%s\" not found in <%s>", name,
                         n->name);
                 return NFT_FAILURE;
         }
 
         NftResult result = NFT_SUCCESS;
-        if(sscanf(tmp, "%64d", val) != 1)
+        long int parsed_val;
+        parsed_val = strtol(tmp, NULL, 10);
+        if(parsed_val == LONG_MAX ||
+           parsed_val == LONG_MIN ||
+           parsed_val < INT_MIN ||
+           parsed_val > INT_MAX)
         {
-                NFT_LOG(L_ERROR, "sscanf() failed");
+                NFT_LOG(L_ERROR, "int-type property \"%s\" out of range.", name);
                 result = NFT_FAILURE;
         }
 
+        *val = (int) parsed_val;
+        
         nft_prefs_free(tmp);
 
         return result;
@@ -235,15 +245,17 @@ NftResult nft_prefs_node_prop_double_get(NftPrefsNode * n, const char *name,
         char *tmp;
         if(!(tmp = nft_prefs_node_prop_string_get(n, name)))
         {
-                NFT_LOG(L_DEBUG, "property \"%s\" not found in <%s>", name,
+                NFT_LOG(L_DEBUG, "double-type property \"%s\" not found in <%s>", name,
                         n->name);
                 return NFT_FAILURE;
         }
 
-        NftResult result = NFT_SUCCESS;
-        if(sscanf(tmp, "%128lf", val) != 1)
+        NftResult result = NFT_SUCCESS; 
+        char *endptr = NULL;
+        *val = strtod(tmp, &endptr);
+        if(endptr == tmp)
         {
-                NFT_LOG(L_ERROR, "sscanf() failed");
+                NFT_LOG(L_ERROR, "failed to parse double-type property \"%s\".", name);
                 result = NFT_FAILURE;
         }
 
