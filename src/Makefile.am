@@ -49,12 +49,12 @@ lib_LTLIBRARIES = lib@PACKAGE@.la
 
 # cflags
 lib@PACKAGE@_la_CFLAGS = \
-		$(INCLUDE_DIRS) \
-        $(xml_CFLAGS) \
-        $(niftylog_CFLAGS) \
-		$(WARN_CFLAGS) \
-        $(DEBUG_CFLAGS) \
-        -DPACKAGE_GIT_VERSION="\"`$(top_srcdir)/version --git`\""
+    $(INCLUDE_DIRS) \
+    $(xml_CFLAGS) \
+    $(niftylog_CFLAGS) \
+    $(WARN_CFLAGS) \
+    $(DEBUG_CFLAGS) \
+    -DPACKAGE_GIT_VERSION="\"`$(top_srcdir)/version --git`\""
 
 # linker flags
 lib@PACKAGE@_la_LDFLAGS = \
@@ -66,6 +66,6 @@ lib@PACKAGE@_la_LDFLAGS = \
 
 # link in modules from subdirectories
 lib@PACKAGE@_la_LIBADD = \
-		$(SUBDIRS) \
-		$(xml_LIBS) \
-		$(niftylog_LIBS)
+    $(SUBDIRS) \
+    $(xml_LIBS) \
+    $(niftylog_LIBS)
