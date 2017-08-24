@@ -80,18 +80,18 @@
  */
 NftResult nft_prefs_node_prop_unset(NftPrefsNode * n, const char *name)
 {
-	if(!n || !name)
-			NFT_LOG_NULL(NFT_FAILURE);
+    if(!n || !name)
+            NFT_LOG_NULL(NFT_FAILURE);
 
-	if(xmlUnsetProp(n, BAD_CAST name) != 0)
-	{
-			NFT_LOG(L_ERROR, "Failed to unset property \"%s\" from node \"%s\"",
-			        name, nft_prefs_node_get_name(n));
+    if(xmlUnsetProp(n, BAD_CAST name) != 0)
+    {
+            NFT_LOG(L_ERROR, "Failed to unset property \"%s\" from node \"%s\"",
+                    name, nft_prefs_node_get_name(n));
 
-			return NFT_FAILURE;
-	}
+            return NFT_FAILURE;
+    }
 
-	return NFT_SUCCESS;
+    return NFT_SUCCESS;
 }
 
 
@@ -100,7 +100,7 @@ NftResult nft_prefs_node_prop_unset(NftPrefsNode * n, const char *name)
  * @param n node where property should be set
  * @param name name of property
  * @param value string-value of property
- * @result NFT_SUCCESS or NFT_FAILURE 
+ * @result NFT_SUCCESS or NFT_FAILURE
  */
 NftResult nft_prefs_node_prop_string_set(NftPrefsNode * n, const char *name,
                                          char *value)
@@ -124,7 +124,7 @@ NftResult nft_prefs_node_prop_string_set(NftPrefsNode * n, const char *name,
  *
  * @param n NftPrefsNode to get string property from
  * @param name name of property
- * @result string with value or NULL 
+ * @result string with value or NULL
  * @note free result using nft_prefs_free()
  */
 char *nft_prefs_node_prop_string_get(NftPrefsNode * n, const char *name)
@@ -184,24 +184,78 @@ NftResult nft_prefs_node_prop_int_get(NftPrefsNode * n, const char *name,
         }
 
         NftResult result = NFT_SUCCESS;
-        long int parsed_val;
+        int parsed_val;
         parsed_val = strtol(tmp, NULL, 10);
-        if(parsed_val == LONG_MAX ||
-           parsed_val == LONG_MIN ||
-           parsed_val < INT_MIN ||
+        if(parsed_val < INT_MIN ||
            parsed_val > INT_MAX)
         {
                 NFT_LOG(L_ERROR, "int-type property \"%s\" out of range.", name);
                 result = NFT_FAILURE;
         }
 
-        *val = (int) parsed_val;
-        
+        *val = parsed_val;
+
         nft_prefs_free(tmp);
 
         return result;
 }
 
+/**
+ * set long integer property
+ *
+ * @param n node where property should be set
+ * @param name name of property
+ * @param val value of property
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_prop_long_int_set(NftPrefsNode * n, const char *name,
+                                      long int val)
+{
+        if(!n || !name)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        char tmp[32];
+        if(snprintf(tmp, sizeof(tmp), "%ld", val) < 0)
+        {
+                NFT_LOG_PERROR("snprintf()");
+                return NFT_FAILURE;
+        }
+
+        return nft_prefs_node_prop_string_set(n, name, tmp);
+}
+
+/**
+ * get long integer property
+ *
+ * @param n node to read property from
+ * @param name name of property
+ * @param val space for value of property
+ * @result NFT_SUCCESS or NFT_FAILURE
+ */
+NftResult nft_prefs_node_prop_long_int_get(NftPrefsNode * n, const char *name,
+                                      long int *val)
+{
+        if(!n || !name || !val)
+                NFT_LOG_NULL(NFT_FAILURE);
+
+        char *tmp;
+        if(!(tmp = nft_prefs_node_prop_string_get(n, name)))
+        {
+                NFT_LOG(L_DEBUG, "int-type property \"%s\" not found in <%s>", name,
+                        n->name);
+                return NFT_FAILURE;
+        }
+
+        NftResult result = NFT_SUCCESS;
+        long int parsed_val;
+        parsed_val = strtol(tmp, NULL, 10);
+
+        *val = parsed_val;
+
+        nft_prefs_free(tmp);
+
+        return result;
+}
 
 /**
  * set double property
@@ -250,7 +304,7 @@ NftResult nft_prefs_node_prop_double_get(NftPrefsNode * n, const char *name,
                 return NFT_FAILURE;
         }
 
-        NftResult result = NFT_SUCCESS; 
+        NftResult result = NFT_SUCCESS;
         char *endptr = NULL;
         *val = strtod(tmp, &endptr);
         if(endptr == tmp)

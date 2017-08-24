@@ -50,7 +50,7 @@
  * @addtogroup prefs_node
  * @{
  * @defgroup prefs_node_prop NftPrefsNode properties
- * @brief API to handle properties of NftPrefsNode 
+ * @brief API to handle properties of NftPrefsNode
  * @{
  */
 
@@ -65,6 +65,8 @@ NftResult                       nft_prefs_node_prop_string_set(NftPrefsNode * n,
 char                          * nft_prefs_node_prop_string_get(NftPrefsNode * n, const char *name);
 NftResult                       nft_prefs_node_prop_int_set(NftPrefsNode * n, const char *name, int val);
 NftResult                       nft_prefs_node_prop_int_get(NftPrefsNode * n, const char *name, int *val);
+NftResult                       nft_prefs_node_prop_long_int_set(NftPrefsNode * n, const char *name, long int val);
+NftResult                       nft_prefs_node_prop_long_int_get(NftPrefsNode * n, const char *name, long int *val);
 NftResult                       nft_prefs_node_prop_double_set(NftPrefsNode * n, const char *name, double val);
 NftResult                       nft_prefs_node_prop_double_get(NftPrefsNode * n, const char *name, double *val);
 NftResult                       nft_prefs_node_prop_boolean_set(NftPrefsNode * n, const char *name, bool val);
